@@ -71,5 +71,9 @@ ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contracts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lead_events ENABLE ROW LEVEL SECURITY;
 
+GRANT USAGE ON SCHEMA public TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.leads, public.contracts, public.lead_events TO service_role;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO service_role;
+
 INSERT INTO storage.buckets (id, name, public) VALUES ('contracts','contracts', false)
   ON CONFLICT (id) DO NOTHING;

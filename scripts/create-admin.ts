@@ -13,14 +13,18 @@ const db = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const { data, error } = await db.auth.admin.createUser({
-  email,
-  password,
-  email_confirm: true,
-  app_metadata: { app_role: "admin" },
-})
-if (error) {
-  console.error(error.message)
-  process.exit(1)
+async function main() {
+  const { data, error } = await db.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    app_metadata: { app_role: "admin" },
+  })
+  if (error) {
+    console.error(error.message)
+    process.exit(1)
+  }
+  console.log(`Admin creado: ${data.user.email} (${data.user.id})`)
 }
-console.log(`Admin creado: ${data.user.email} (${data.user.id})`)
+
+void main()

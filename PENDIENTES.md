@@ -15,6 +15,6 @@
 8. Revisar `docs/marketing/estrategia.md`, `grupos.md` y `posts.md`. Decidir con qué perfil de FB se publica y unirte a los 6 grupos verificados. Reemplazar `[LINK]` y `?source=XXX` en los posts cuando haya dominio.
 
 ## Técnicos menores
-0. **Docker no descarga imágenes** — intenté levantar Supabase local (`supabase start`, CLI ya instalada vía brew) pero el daemon de Docker no puede bajar ni `alpine` (¿VPN/DNS/proxy?). Por eso el flujo completo con base de datos quedó SIN probar end-to-end; todo lo demás (UI de los 4 pasos, validaciones, manejo de errores, firma con token inválido, admin login, términos/privacidad) está verificado en navegador. Cuando arregles la red de Docker: `supabase start`, copiar las keys a `.env.local`, `supabase db reset`, y probar evaluate→firmar. Los 24 unit tests pasan y el build está limpio.
+0. ~~Docker no descargaba imágenes~~ **RESUELTO (27-jul mediodía):** era transitorio. Supabase local corre y el flujo completo quedó verificado end-to-end: pre-calificador → resultado ($12,000 Mod A / $8,719–$10,731 Mod B con datos de prueba) → firma con OTP → PDF en Storage (folio TLN-73904009, SHA-256 verificado contra la DB) → admin con timeline y transición a DISPERSED auditada. Entorno local: admin `admin@tulanaya.local` / `Tulanaya2026!`, Studio en http://127.0.0.1:54323.
 9. Twilio (fallback SMS del OTP) quedó especificado pero no implementado — solo tiene sentido si WhatsApp tarda en aprobarse.
 10. La UMA está hardcodeada en `lib/eligibility/constants.ts` ($117.31, DOF 09/01/2026) — actualizar cada febrero.
