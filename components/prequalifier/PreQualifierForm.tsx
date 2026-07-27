@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { AnimatePresence, motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -174,15 +173,7 @@ export function PreQualifierForm() {
         ))}
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, x: 24 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -24 }}
-          transition={{ duration: 0.18 }}
-          className="space-y-4"
-        >
+      <div key={step} className="space-y-4">
           {step === 0 && (
             <>
               {field("fullName", "Nombre completo", { autoComplete: "name" })}
@@ -280,8 +271,7 @@ export function PreQualifierForm() {
               )}
             </div>
           )}
-        </motion.div>
-      </AnimatePresence>
+      </div>
 
       {serverError && (
         <p className="mt-4 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
