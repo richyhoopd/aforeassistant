@@ -18,6 +18,25 @@ export async function POST(req: NextRequest) {
     const d = parsed.data
     const db = supabaseAdmin()
 
+    // Un lead que ya firmó (o cobró) no debe resetearse por re-evaluarse.
+    const { data: existing } = await db
+      .from("leads")
+      .select("id, status")
+      .eq("nss", d.nss)
+      .maybeSingle()
+    if (
+      existing &&
+      ["CONTRACT_SIGNED", "DISPERSED", "PAID"].includes(existing.status)
+    ) {
+      await logEvent(existing.id, "reevaluate_blocked", { status: existing.status })
+      return NextResponse.json({
+        eligible: true,
+        alreadySigned: true,
+        message:
+          "Ya tienes un contrato activo con nosotros. Te contactamos por WhatsApp; si tienes dudas, escríbenos.",
+      })
+    }
+
     const result = evaluateEligibility({
       fechaBaja: d.fechaBaja,
       today: new Date(),

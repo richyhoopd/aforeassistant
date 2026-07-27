@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 type Modality = { eligible: boolean; min: number; max: number; reasons: string[] }
 type Payload = {
   eligible: boolean
+  alreadySigned?: boolean
+  message?: string
   commission?: number
   signUrl?: string
   result: {
@@ -47,6 +49,16 @@ export default function Resultado() {
     )
   }
   if (!data) return null
+
+  if (data.alreadySigned) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16 text-center">
+        <CheckCircle2 className="mx-auto size-10 text-primary" />
+        <h1 className="mt-4 text-2xl font-bold">Ya tienes un contrato activo</h1>
+        <p className="mt-3 text-sm text-muted-foreground">{data.message}</p>
+      </div>
+    )
+  }
 
   if (!data.eligible) {
     return (
