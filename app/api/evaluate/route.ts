@@ -19,11 +19,14 @@ export async function POST(req: NextRequest) {
     const db = supabaseAdmin()
 
     // Un lead que ya firmó (o cobró) no debe resetearse por re-evaluarse.
-    const { data: existing } = await db
+    // Dedupe: por NSS cuando viene; si no, por teléfono.
+    const { data: existingRows } = await db
       .from("leads")
       .select("id, status")
-      .eq("nss", d.nss)
-      .maybeSingle()
+      .eq(d.nss ? "nss" : "phone", d.nss ?? d.phone)
+      .order("created_at", { ascending: false })
+      .limit(1)
+    const existing = existingRows?.[0] ?? null
     if (
       existing &&
       ["CONTRACT_SIGNED", "DISPERSED", "PAID"].includes(existing.status)
@@ -47,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     const leadRow = {
       full_name: d.fullName,
-      nss: d.nss,
+      ...(d.nss ? { nss: d.nss } : {}),
       curp: d.curp,
       phone: d.phone,
       email: d.email || null,
@@ -65,12 +68,15 @@ export async function POST(req: NextRequest) {
       source_ref: d.sourceRef ?? null,
     }
 
-    // Un NSS = un lead: si ya existe, se actualiza y se continúa su flujo.
-    const { data: lead, error } = await db
-      .from("leads")
-      .upsert(leadRow, { onConflict: "nss" })
-      .select("id")
-      .single()
+    // Un NSS (o teléfono) = un lead: si ya existe, se actualiza y continúa su flujo.
+    const { data: lead, error } = existing
+      ? await db
+          .from("leads")
+          .update(leadRow)
+          .eq("id", existing.id)
+          .select("id")
+          .single()
+      : await db.from("leads").insert(leadRow).select("id").single()
     if (error) throw error
     leadId = lead.id
 
@@ -84,6 +90,16 @@ export async function POST(req: NextRequest) {
 
     if (!result.eligible) {
       return NextResponse.json({ eligible: false, result })
+    }
+
+    if (!d.nss) {
+      await logEvent(leadId, "nss_pending", {})
+      return NextResponse.json({
+        eligible: true,
+        result,
+        commission: COMISION_DEFAULT,
+        nssPending: true,
+      })
     }
 
     const { data: contract, error: cErr } = await db

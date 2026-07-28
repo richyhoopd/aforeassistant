@@ -17,17 +17,21 @@ export const preQualifierSchema = z.object({
       return normalized
     }),
   email: z.string().trim().email("Correo inválido").optional().or(z.literal("")),
-  nss: z.string().transform((v, ctx) => {
-    const r = validateNSS(v)
-    if (!r.ok) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "El NSS debe tener 11 dígitos",
-      })
-      return z.NEVER
-    }
-    return r.normalized!
-  }),
+  nss: z
+    .string()
+    .optional()
+    .transform((v, ctx) => {
+      if (!v || !v.trim()) return undefined
+      const r = validateNSS(v)
+      if (!r.ok) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "El NSS debe tener 11 dígitos",
+        })
+        return z.NEVER
+      }
+      return r.normalized!
+    }),
   curp: z.string().transform((v, ctx) => {
     const r = validateCURP(v)
     if (!r.ok) {
