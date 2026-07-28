@@ -31,12 +31,22 @@ export async function GET(req: NextRequest) {
       "id, status, full_name, phone, updated_at, fecha_baja, rejection_reason, estimated_payout_min, estimated_payout_max, do_not_contact, human_takeover"
     )
     .in("status", ["QUALIFIED", "CONTRACT_PENDING", "REJECTED"])
+    .order("created_at", { ascending: true })
+    .limit(1000)
   if (lErr) {
-    return NextResponse.json({ error: String(lErr.message) }, { status: 500 })
+    console.error("followups leads fetch failed", lErr)
+    return NextResponse.json({ error: "Error de datos" }, { status: 500 })
+  }
+  const truncated = (leads ?? []).length === 1000
+  if (truncated) {
+    console.warn("followups: 1000-row cap hit")
   }
   const ids = (leads ?? []).map((l) => l.id)
 
-  const [{ data: contracts }, { data: events }] = await Promise.all([
+  const [
+    { data: contracts, error: cErr },
+    { data: events, error: eErr },
+  ] = await Promise.all([
     db
       .from("contracts")
       .select("lead_id, created_at, signed_at, sign_token")
@@ -47,6 +57,10 @@ export async function GET(req: NextRequest) {
       .in("lead_id", ids)
       .in("type", ["reminder_sent", "reminder_dry_run"]),
   ])
+  if (cErr || eErr) {
+    console.error("followups fetch failed", cErr ?? eErr)
+    return NextResponse.json({ error: "Error de datos" }, { status: 500 })
+  }
 
   const planned = planFollowups(
     (leads ?? []) as FollowupLead[],
@@ -63,13 +77,22 @@ export async function GET(req: NextRequest) {
   for (const r of planned) {
     // La liga de firma debe seguir viva cuando el lead la abra.
     if (r.kind === "firma" && r.signToken) {
-      await db
+      const { error: renewErr } = await db
         .from("contracts")
         .update({
           sign_token_expires_at: new Date(Date.now() + 72 * 3600_000).toISOString(),
         })
         .eq("sign_token", r.signToken)
         .is("signed_at", null)
+      if (renewErr) {
+        await logEvent(r.leadId, "reminder_failed", {
+          kind: r.kind,
+          round: r.round,
+          error: "renew_failed: " + renewErr.message,
+        })
+        failed++
+        continue
+      }
     }
 
     if (!config.whatsappEnabled) {
@@ -106,5 +129,6 @@ export async function GET(req: NextRequest) {
     sent,
     dryRun,
     failed,
+    ...(truncated ? { truncated: true } : {}),
   })
 }
