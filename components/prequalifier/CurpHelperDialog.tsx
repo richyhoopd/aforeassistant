@@ -39,6 +39,7 @@ export function CurpHelperDialog({
       setError("Llena todos los campos marcados para generar tu CURP")
       return
     }
+    setError("")
     onGenerated(
       generateCurp({
         nombres,
@@ -53,7 +54,13 @@ export function CurpHelperDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v)
+        setError("")
+      }}
+    >
       <DialogTrigger asChild>
         <button type="button" className="text-sm text-primary underline">
           ¿No sabes tu CURP? Génerala aquí en 30 segundos
