@@ -4,7 +4,7 @@ const sections: { h: string; p: string[] }[] = [
   {
     h: "Responsable",
     p: [
-      "[RAZÓN SOCIAL], con domicilio en [DOMICILIO] (el \"Responsable\"), es responsable del tratamiento de tus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).",
+      "Grupo Inmobiliario HeredaBienes, con domicilio en [DOMICILIO] (el \"Responsable\"), es responsable del tratamiento de tus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).",
     ],
   },
   {

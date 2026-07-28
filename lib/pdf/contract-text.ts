@@ -15,6 +15,11 @@ export function contractClauses(d: {
     n.toLocaleString("es-MX", { style: "currency", currency: "MXN" })
   return [
     {
+      heading: "Partes",
+      body:
+        'Celebran este contrato: (i) Grupo Inmobiliario HeredaBienes (el "Prestador"), operador de la plataforma Pensión+; y (ii) la persona identificada en la sección Datos del Cliente (el "Cliente").',
+    },
+    {
       heading: "Primera. Objeto",
       body:
         "El Prestador brindará al Cliente servicios de asesoría y acompañamiento para el trámite de retiro parcial por desempleo de su cuenta individual AFORE: verificación de requisitos, orientación para corrección de datos de identidad (CURP, NSS, expediente), preparación de documentación y acompañamiento durante el proceso. EL TRÁMITE ES PERSONAL: el Cliente lo realiza directamente ante su AFORE y/o el IMSS. El Prestador no realiza el trámite a nombre del Cliente, no recibe los recursos del retiro y no es una institución financiera ni tiene vínculo con CONSAR, las AFOREs o el IMSS.",
