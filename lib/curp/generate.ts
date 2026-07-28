@@ -70,10 +70,10 @@ const ALTISONANTES = new Set([
 function normalizar(s: string): string {
   return s
     .toUpperCase()
-    .replace(/Ñ/g, "") // preservar Ñ durante la des-acentuación
+    .replace(/Ñ/g, "\u0001") // preservar Ñ durante la des-acentuación
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(//g, "Ñ")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\u0001/g, "Ñ")
     .replace(/[^A-ZÑ ]/g, "")
     .trim()
 }
@@ -140,3 +140,4 @@ export function generateCurp(input: CurpInput): string {
     prefijo + fecha + input.sexo + input.estado + consonantes + homoclave
   return base17 + curpCheckDigit(base17)
 }
+
