@@ -18,9 +18,13 @@ export function NssHelperDialog({ curp }: { curp: string }) {
   const [copied, setCopied] = useState(false)
 
   const copiar = async () => {
-    await navigator.clipboard.writeText(curp)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    try {
+      await navigator.clipboard.writeText(curp)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard no disponible: el usuario aún puede leer la CURP del botón
+    }
   }
 
   return (

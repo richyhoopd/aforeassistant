@@ -112,7 +112,7 @@ export function PreQualifierForm() {
         fullName: data.fullName,
         phone: data.phone,
         email: data.email,
-        nss: data.nss || undefined,
+        nss: data.nss.trim() || undefined,
         curp: data.curp,
         fechaBaja: data.fechaBaja,
         monthlySalary: Number(data.monthlySalary),
