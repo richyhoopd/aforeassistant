@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog"
 
 const IMSS_URL =
-  "https://serviciosdigitales.imss.gob.mx/gestionAsegurados-web-externo/localizaNSS"
+  "https://serviciosdigitales.imss.gob.mx/gestionAsegurados-web-externo/asignacionNSS"
 
 export function NssHelperDialog({ curp }: { curp: string }) {
   const [copied, setCopied] = useState(false)
