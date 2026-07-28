@@ -4,7 +4,7 @@ const sections: { h: string; p: string[] }[] = [
   {
     h: "1. Quiénes somos y qué hacemos",
     p: [
-      "Pensión+ (operado por Grupo Inmobiliario HeredaBienes, con domicilio en [DOMICILIO]) presta servicios privados de asesoría y acompañamiento para el trámite de retiro parcial por desempleo de cuentas individuales AFORE.",
+      "Pensión+ (operado por Grupo Inmobiliario HeredaBienes, con domicilio en Av. López Mateos Norte 507, Col. Herrera y Cairo, C.P. 44680, Guadalajara, Jalisco, México) presta servicios privados de asesoría y acompañamiento para el trámite de retiro parcial por desempleo de cuentas individuales AFORE.",
       "NO somos una AFORE, institución de crédito, entidad financiera ni autoridad. No tenemos vínculo, autorización ni patrocinio de CONSAR, del IMSS ni de ninguna AFORE. No otorgamos préstamos ni manejamos recursos de los usuarios.",
       "El trámite de retiro por desempleo es personal y gratuito ante tu AFORE. Puedes realizarlo por tu cuenta sin contratar a nadie. Nuestro servicio consiste exclusivamente en asesorarte: verificar requisitos, orientarte para corregir datos de identidad (CURP, NSS, expediente), preparar documentación y acompañarte durante el proceso que tú realizas.",
     ],
