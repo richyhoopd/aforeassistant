@@ -90,4 +90,30 @@ describe("generateCurp", () => {
     expect(ESTADOS).toHaveLength(33)
     expect(ESTADOS.map(([k]) => k)).toContain("NE")
   })
+
+  it("María del Carmen usa CARMEN, no la preposición DEL", () => {
+    const curp = generateCurp({
+      nombres: "María del Carmen",
+      apellidoPaterno: "Gómez",
+      apellidoMaterno: "Martínez",
+      fechaNacimiento: "1990-05-14",
+      sexo: "M",
+      estado: "DF",
+    })
+    expect(curp.startsWith("GOMC")).toBe(true) // C de Carmen
+    expect(curp.slice(13, 16)).toBe("MRR")      // consonantes: GóMez, MaRtínez, CaRmen → M R R
+  })
+
+  it("José de Jesús usa JESUS, no la preposición DE", () => {
+    const curp = generateCurp({
+      nombres: "José de Jesús",
+      apellidoPaterno: "Gómez",
+      apellidoMaterno: "Martínez",
+      fechaNacimiento: "1990-05-14",
+      sexo: "H",
+      estado: "DF",
+    })
+    expect(curp.startsWith("GOMJ")).toBe(true) // J de Jesús
+    expect(curp.slice(13, 16)).toBe("MRS")      // consonantes: GóMez, MaRtínez, JeSús → M R S
+  })
 })

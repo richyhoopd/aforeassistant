@@ -88,7 +88,10 @@ function palabraSignificativa(s: string): string {
 function nombreDePila(nombres: string): string {
   const partes = normalizar(nombres).split(/\s+/).filter(Boolean)
   while (partes.length > 1 && PREFIJOS.has(partes[0])) partes.shift()
-  if (partes.length > 1 && NOMBRES_COMUNES.has(partes[0])) return partes[1]
+  if (partes.length > 1 && NOMBRES_COMUNES.has(partes[0])) {
+    partes.shift()
+    while (partes.length > 1 && PREFIJOS.has(partes[0])) partes.shift()
+  }
   return partes[0] ?? ""
 }
 
