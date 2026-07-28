@@ -8,4 +8,12 @@ export const config = {
   whatsappTemplateWelcome:
     process.env.WHATSAPP_TEMPLATE_WELCOME ?? "bienvenida_tulanaya",
   otpPepper: process.env.OTP_PEPPER ?? "dev-pepper-cambiar-en-prod",
+  cronSecret: process.env.CRON_SECRET ?? "",
+  whatsappVerifyToken: process.env.WHATSAPP_VERIFY_TOKEN ?? "",
+  whatsappTemplateNss:
+    process.env.WHATSAPP_TEMPLATE_NSS ?? "recordatorio_nss",
+  whatsappTemplateFirma:
+    process.env.WHATSAPP_TEMPLATE_FIRMA ?? "recordatorio_firma",
+  whatsappTemplateCalificas:
+    process.env.WHATSAPP_TEMPLATE_CALIFICAS ?? "ya_calificas_tulanaya",
 }
