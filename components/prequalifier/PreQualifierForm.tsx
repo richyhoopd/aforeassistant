@@ -13,6 +13,8 @@ import {
   validateCURP,
   validateNSS,
 } from "@/lib/validation/identifiers"
+import { CurpHelperDialog } from "./CurpHelperDialog"
+import { NssHelperDialog } from "./NssHelperDialog"
 
 type FormData = {
   fullName: string
@@ -67,12 +69,14 @@ export function PreQualifierForm() {
       if (data.email && !/^\S+@\S+\.\S+$/.test(data.email)) e.email = "Correo inválido"
     }
     if (step === 1) {
-      const nss = validateNSS(data.nss)
-      if (!nss.ok) e.nss = "El NSS tiene 11 dígitos (viene en tu estado de cuenta AFORE)"
-      else if (nss.warning) w.nss = nss.warning
       const curp = validateCURP(data.curp)
       if (!curp.ok) e.curp = "Revisa tu CURP (18 caracteres)"
       else if (curp.warning) w.curp = curp.warning
+      if (data.nss.trim()) {
+        const nss = validateNSS(data.nss)
+        if (!nss.ok) e.nss = "El NSS tiene 11 dígitos (o déjalo vacío y dánoslo después)"
+        else if (nss.warning) w.nss = nss.warning
+      }
     }
     if (step === 2) {
       if (!data.fechaBaja) e.fechaBaja = "Indica tu fecha de baja"
@@ -104,28 +108,30 @@ export function PreQualifierForm() {
     setSubmitting(true)
     setServerError("")
     try {
+      const payload = {
+        fullName: data.fullName,
+        phone: data.phone,
+        email: data.email,
+        nss: data.nss || undefined,
+        curp: data.curp,
+        fechaBaja: data.fechaBaja,
+        monthlySalary: Number(data.monthlySalary),
+        yearsContributing: Number(data.yearsContributing),
+        lastWithdrawalWithin5y: data.lastWithdrawalWithin5y === "si",
+        privacyConsent: data.privacyConsent,
+        sourceRef: search.get("source") ?? undefined,
+      }
       const res = await fetch("/api/evaluate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: data.fullName,
-          phone: data.phone,
-          email: data.email,
-          nss: data.nss,
-          curp: data.curp,
-          fechaBaja: data.fechaBaja,
-          monthlySalary: Number(data.monthlySalary),
-          yearsContributing: Number(data.yearsContributing),
-          lastWithdrawalWithin5y: data.lastWithdrawalWithin5y === "si",
-          privacyConsent: data.privacyConsent,
-          sourceRef: search.get("source") ?? undefined,
-        }),
+        body: JSON.stringify(payload),
       })
       const body = await res.json()
       if (!res.ok) {
         setServerError(body.error ?? "Ocurrió un error, intenta de nuevo.")
         return
       }
+      sessionStorage.setItem("tulanaya:solicitud", JSON.stringify(payload))
       sessionStorage.setItem("tulanaya:resultado", JSON.stringify(body))
       router.push("/resultado")
     } catch {
@@ -190,15 +196,17 @@ export function PreQualifierForm() {
           )}
           {step === 1 && (
             <>
-              {field("nss", "Número de Seguridad Social (NSS)", {
-                inputMode: "numeric",
-                placeholder: "11 dígitos",
-              })}
               {field("curp", "CURP", { placeholder: "18 caracteres" })}
+              <CurpHelperDialog
+                onGenerated={(curp) => set("curp", curp)}
+              />
+              {field("nss", "NSS — si no lo tienes a la mano, déjalo vacío", {
+                inputMode: "numeric",
+                placeholder: "11 dígitos (opcional)",
+              })}
+              <NssHelperDialog curp={data.curp} />
               <p className="text-xs text-muted-foreground">
-                Tu NSS aparece en tu estado de cuenta AFORE o en la app IMSS
-                Digital. Tus datos viajan cifrados y solo se usan para tu
-                evaluación.
+                Tus datos viajan cifrados y solo se usan para tu evaluación.
               </p>
             </>
           )}
