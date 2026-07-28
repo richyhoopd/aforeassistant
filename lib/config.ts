@@ -6,7 +6,7 @@ export const config = {
   whatsappToken: process.env.WHATSAPP_TOKEN ?? "",
   whatsappPhoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID ?? "",
   whatsappTemplateWelcome:
-    process.env.WHATSAPP_TEMPLATE_WELCOME ?? "bienvenida_tulanaya",
+    process.env.WHATSAPP_TEMPLATE_WELCOME ?? "bienvenida_pensionmas",
   otpPepper: process.env.OTP_PEPPER ?? "dev-pepper-cambiar-en-prod",
   cronSecret: process.env.CRON_SECRET ?? "",
   whatsappVerifyToken: process.env.WHATSAPP_VERIFY_TOKEN ?? "",
@@ -16,5 +16,5 @@ export const config = {
   whatsappTemplateFirma:
     process.env.WHATSAPP_TEMPLATE_FIRMA ?? "recordatorio_firma",
   whatsappTemplateCalificas:
-    process.env.WHATSAPP_TEMPLATE_CALIFICAS ?? "ya_calificas_tulanaya",
+    process.env.WHATSAPP_TEMPLATE_CALIFICAS ?? "ya_calificas_pensionmas",
 }

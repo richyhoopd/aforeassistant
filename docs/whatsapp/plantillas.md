@@ -10,7 +10,7 @@ Copiar el cuerpo EXACTO en Meta Business → WhatsApp Manager → Plantillas →
 Hola {{1}}, ya calificaste para tu retiro AFORE estimado de {{2}}. Solo falta tu NSS para generar tu contrato. Retómalo aquí: {{3}}. Responde BAJA si no deseas recordatorios.
 ```
 
-Ejemplos para la revisión de Meta: {{1}} = Carlos, {{2}} = $47,954 a $59,020, {{3}} = https://tulanaya.mx/pre-calificador?source=wa-nss
+Ejemplos para la revisión de Meta: {{1}} = Carlos, {{2}} = $47,954 a $59,020, {{3}} = https://www.pensionmas.com.mx/pre-calificador?source=wa-nss
 
 ### 2. `recordatorio_firma` — categoría **Utility**
 
@@ -18,17 +18,17 @@ Ejemplos para la revisión de Meta: {{1}} = Carlos, {{2}} = $47,954 a $59,020, {
 Hola {{1}}, tu contrato de asesoría está listo para firma. Fírmalo aquí: {{2}} (liga válida 72 horas). Responde BAJA si no deseas recordatorios.
 ```
 
-Ejemplos: {{1}} = Carlos, {{2}} = https://tulanaya.mx/firmar/abc123
+Ejemplos: {{1}} = Carlos, {{2}} = https://www.pensionmas.com.mx/firmar/abc123
 
-### 3. `ya_calificas_tulanaya` — categoría **Marketing**
+### 3. `ya_calificas_pensionmas` — categoría **Marketing**
 
 ```
 Hola {{1}}, cuando te evaluaste te faltaban días de desempleo — hoy ya cumples el requisito de 46 días. Evalúate de nuevo gratis: {{2}}.
 ```
 
-Ejemplos: {{1}} = Carlos, {{2}} = https://tulanaya.mx/pre-calificador?source=wa-califica
+Ejemplos: {{1}} = Carlos, {{2}} = https://www.pensionmas.com.mx/pre-calificador?source=wa-califica
 
-### 4. `bienvenida_tulanaya` — (ya especificada para el flujo de firma; sin cambios)
+### 4. `bienvenida_pensionmas` — (ya especificada para el flujo de firma; sin cambios)
 
 ## Guía paso a paso (solo tú puedes hacerlo)
 

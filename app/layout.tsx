@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tulanaya — Asesoría para tu retiro AFORE por desempleo",
+  title: "Pensión+ — Asesoría para tu retiro AFORE por desempleo",
   description:
     "Averigua en 2 minutos si calificas para el retiro parcial por desempleo de tu AFORE y cuánto podrías recibir. Asesoría honesta: sin anticipos y sin promesas falsas.",
 };

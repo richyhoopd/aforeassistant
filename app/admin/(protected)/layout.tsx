@@ -17,7 +17,7 @@ export default async function ProtectedAdminLayout({
       <header className="border-b">
         <div className="mx-auto flex h-12 w-full max-w-6xl items-center gap-6 px-4 text-sm">
           <Link href="/admin" className="font-semibold">
-            Tulanaya Admin
+            Pensión+ Admin
           </Link>
           <Link href="/admin" className="text-muted-foreground hover:text-foreground">
             Leads

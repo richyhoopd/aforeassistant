@@ -1,10 +1,10 @@
-export const metadata = { title: "Términos y condiciones — Tulanaya" }
+export const metadata = { title: "Términos y condiciones — Pensión+" }
 
 const sections: { h: string; p: string[] }[] = [
   {
     h: "1. Quiénes somos y qué hacemos",
     p: [
-      "Tulanaya (operado por [RAZÓN SOCIAL], con domicilio en [DOMICILIO]) presta servicios privados de asesoría y acompañamiento para el trámite de retiro parcial por desempleo de cuentas individuales AFORE.",
+      "Pensión+ (operado por [RAZÓN SOCIAL], con domicilio en [DOMICILIO]) presta servicios privados de asesoría y acompañamiento para el trámite de retiro parcial por desempleo de cuentas individuales AFORE.",
       "NO somos una AFORE, institución de crédito, entidad financiera ni autoridad. No tenemos vínculo, autorización ni patrocinio de CONSAR, del IMSS ni de ninguna AFORE. No otorgamos préstamos ni manejamos recursos de los usuarios.",
       "El trámite de retiro por desempleo es personal y gratuito ante tu AFORE. Puedes realizarlo por tu cuenta sin contratar a nadie. Nuestro servicio consiste exclusivamente en asesorarte: verificar requisitos, orientarte para corregir datos de identidad (CURP, NSS, expediente), preparar documentación y acompañarte durante el proceso que tú realizas.",
     ],
@@ -31,14 +31,14 @@ const sections: { h: string; p: string[] }[] = [
   {
     h: "5. Tus responsabilidades",
     p: [
-      "Proporcionar información veraz. Declarar datos falsos ante tu AFORE o el IMSS puede constituir un delito. Tulanaya no participa en, ni asesora sobre, esquemas para simular relaciones laborales, inflar semanas cotizadas o alterar información ante las autoridades; cualquier solicitud en ese sentido implica la terminación inmediata del servicio.",
+      "Proporcionar información veraz. Declarar datos falsos ante tu AFORE o el IMSS puede constituir un delito. Pensión+ no participa en, ni asesora sobre, esquemas para simular relaciones laborales, inflar semanas cotizadas o alterar información ante las autoridades; cualquier solicitud en ese sentido implica la terminación inmediata del servicio.",
       "Entender que el retiro parcial por desempleo puede descontar semanas cotizadas de tu registro y afectar el cálculo de tu pensión futura.",
     ],
   },
   {
     h: "6. Limitación de responsabilidad",
     p: [
-      "Tulanaya no responde por resoluciones de la AFORE, el IMSS u otra autoridad, ni por demoras o rechazos derivados de la información proporcionada por el usuario o de criterios de dichas instituciones.",
+      "Pensión+ no responde por resoluciones de la AFORE, el IMSS u otra autoridad, ni por demoras o rechazos derivados de la información proporcionada por el usuario o de criterios de dichas instituciones.",
     ],
   },
   {

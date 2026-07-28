@@ -9,7 +9,7 @@ import {
 const NOW = new Date("2026-07-27T15:00:00Z")
 const daysAgo = (n: number) =>
   new Date(NOW.getTime() - n * 86_400_000).toISOString()
-const SITE = "https://tulanaya.mx"
+const SITE = "https://www.pensionmas.com.mx"
 
 const baseLead: FollowupLead = {
   id: "lead-1",

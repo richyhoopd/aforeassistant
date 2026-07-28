@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { PreQualifierForm } from "@/components/prequalifier/PreQualifierForm"
 
-export const metadata = { title: "Pre-calificador — Tulanaya" }
+export const metadata = { title: "Pre-calificador — Pensión+" }
 
 export default function PreCalificador() {
   return (

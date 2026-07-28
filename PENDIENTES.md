@@ -8,7 +8,7 @@
 
 ## Cuentas / credenciales
 5. **Proyecto Supabase producción** — crear en supabase.com, correr `supabase db push` (o pegar `supabase/migrations/0001_init.sql`), llenar `.env.local` a partir de `.env.example` y crear el bucket ya lo hace la migración. Crear admin: `npx tsx scripts/create-admin.ts correo pass`.
-6. **Meta Business + WhatsApp Cloud API** — verificar el negocio, crear la app, número, y plantillas `bienvenida_tulanaya` (y una para OTP tipo authentication). Mientras tanto `WHATSAPP_ENABLED=false` (el flujo de firma muestra aviso de envío manual).
+6. **Meta Business + WhatsApp Cloud API** — verificar el negocio, crear la app, número, y plantillas `bienvenida_pensionmas` (y una para OTP tipo authentication). Mientras tanto `WHATSAPP_ENABLED=false` (el flujo de firma muestra aviso de envío manual).
    - **Avance 28-jul:** la app **Afore Assistant** (id `1071681545514592`) ya existe en dev_mode y el webhook quedó suscrito en Meta (`whatsapp_business_account` → `messages`, `message_template_status_update`) apuntando a un túnel temporal; el handshake GET y un mensaje entrante simulado se verificaron end-to-end contra el server local. Al desplegar en Vercel hay que re-suscribir con la URL de producción y el `WHATSAPP_VERIFY_TOKEN` de prod. Faltan (solo dashboard): agregar número, plantillas, token de system user, app secret, privacy policy URL y verificar el correo de contacto de la app (ambos requisitos para pasar a live mode). Cuando exista el número/WABA, también suscribir la WABA a la app (`POST /<WABA_ID>/subscribed_apps`).
 7. **Vercel** — conectar el repo y setear las env vars.
 

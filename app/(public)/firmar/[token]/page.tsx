@@ -4,7 +4,7 @@ import { SignFlow } from "@/components/sign/SignFlow"
 import { CONTRACT_TITLE, contractClauses } from "@/lib/pdf/contract-text"
 import { supabaseAdmin } from "@/lib/supabase/server"
 
-export const metadata = { title: "Firma tu contrato — Tulanaya" }
+export const metadata = { title: "Firma tu contrato — Pensión+" }
 export const dynamic = "force-dynamic"
 
 const mxn = (n: number) =>

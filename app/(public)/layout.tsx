@@ -8,7 +8,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <ShieldCheck className="size-5 text-primary" />
-            Tulanaya
+            Pensión+
           </Link>
           <nav className="flex items-center gap-4 text-sm text-muted-foreground">
             <Link href="/pre-calificador" className="hover:text-foreground">
@@ -24,7 +24,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <footer className="border-t py-8 text-sm text-muted-foreground">
         <div className="mx-auto w-full max-w-5xl space-y-3 px-4">
           <p>
-            Tulanaya es un servicio privado de asesoría y acompañamiento. No somos
+            Pensión+ es un servicio privado de asesoría y acompañamiento. No somos
             una AFORE, institución financiera ni autoridad; no tenemos vínculo con
             CONSAR, las AFOREs ni el IMSS. El trámite de retiro por desempleo es
             personal y gratuito ante tu AFORE; nuestros honorarios corresponden

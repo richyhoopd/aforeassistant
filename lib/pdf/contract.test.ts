@@ -13,7 +13,7 @@ const TINY_PNG = Uint8Array.from(
 describe("buildContractPdf", () => {
   it("genera un PDF válido con al menos una página", async () => {
     const bytes = await buildContractPdf({
-      folio: "TLN-0001",
+      folio: "PMAS-0001",
       fullName: "María Guadalupe Pérez Núñez",
       nss: "12345678903",
       curp: "GOMC950101HDFNRL09",

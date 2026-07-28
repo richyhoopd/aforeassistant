@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     const send = await sendWhatsAppText(
       phone,
-      `Tu código para firmar tu contrato Tulanaya es: ${code}. Vigencia 10 minutos. No lo compartas.`
+      `Tu código para firmar tu contrato Pensión+ es: ${code}. Vigencia 10 minutos. No lo compartas.`
     )
 
     await logEvent(contract.lead_id, "otp_sent", {

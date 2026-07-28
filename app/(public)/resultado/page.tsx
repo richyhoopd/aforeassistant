@@ -33,7 +33,7 @@ export default function Resultado() {
   const [missing, setMissing] = useState(false)
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("tulanaya:resultado")
+    const raw = sessionStorage.getItem("pensionmas:resultado")
     if (!raw) setMissing(true)
     else setData(JSON.parse(raw))
   }, [])

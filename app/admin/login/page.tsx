@@ -35,7 +35,7 @@ export default function AdminLogin() {
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-4">
-      <h1 className="text-xl font-bold">Tulanaya — Admin</h1>
+      <h1 className="text-xl font-bold">Pensión+ — Admin</h1>
       <form onSubmit={login} className="mt-6 space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="email">Correo</Label>

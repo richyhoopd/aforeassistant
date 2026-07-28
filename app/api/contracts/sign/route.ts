@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
 
     const lead = contract.leads as unknown as LeadJoin
     const signedAt = new Date()
-    const folio = `TLN-${String(Date.now()).slice(-8)}`
+    const folio = `PMAS-${String(Date.now()).slice(-8)}`
     const signatureBytes = Buffer.from(signaturePngBase64, "base64")
     const ip =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "desconocida"

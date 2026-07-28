@@ -20,7 +20,7 @@ export function NssPendingCard({
 
   const solicitudRaw =
     typeof window !== "undefined"
-      ? sessionStorage.getItem("tulanaya:solicitud")
+      ? sessionStorage.getItem("pensionmas:solicitud")
       : null
 
   const enviar = async () => {
@@ -44,8 +44,8 @@ export function NssPendingCard({
         setError(body.error ?? "Ocurrió un error, intenta de nuevo.")
         return
       }
-      sessionStorage.setItem("tulanaya:solicitud", JSON.stringify(payload))
-      sessionStorage.setItem("tulanaya:resultado", JSON.stringify(body))
+      sessionStorage.setItem("pensionmas:solicitud", JSON.stringify(payload))
+      sessionStorage.setItem("pensionmas:resultado", JSON.stringify(body))
       onUpdated(body)
     } catch {
       setError("Sin conexión. Revisa tu internet e intenta de nuevo.")

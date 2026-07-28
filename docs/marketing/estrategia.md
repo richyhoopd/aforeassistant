@@ -1,4 +1,4 @@
-# Estrategia de contenido — Tulanaya
+# Estrategia de contenido — Pensión+
 
 **Objetivo:** captar leads para el pre-calificador web con contenido de valor sobre el retiro parcial por desempleo AFORE, sin spam y sin promesas que nos quemen (legal y de reputación).
 

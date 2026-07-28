@@ -1,4 +1,4 @@
-export const metadata = { title: "Aviso de privacidad — Tulanaya" }
+export const metadata = { title: "Aviso de privacidad — Pensión+" }
 
 const sections: { h: string; p: string[] }[] = [
   {
