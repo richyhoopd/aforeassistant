@@ -19,14 +19,20 @@ export async function POST(req: NextRequest) {
     const db = supabaseAdmin()
 
     // Un lead que ya firmó (o cobró) no debe resetearse por re-evaluarse.
-    // Dedupe: por NSS cuando viene; si no, por teléfono.
-    const { data: existingRows } = await db
-      .from("leads")
-      .select("id, status")
-      .eq(d.nss ? "nss" : "phone", d.nss ?? d.phone)
-      .order("created_at", { ascending: false })
-      .limit(1)
-    const existing = existingRows?.[0] ?? null
+    // Dedupe: por NSS cuando viene (con fallback a teléfono para leads
+    // que evaluaron sin NSS y lo completan después); si no, por teléfono.
+    const findBy = async (column: "nss" | "phone", value: string) => {
+      const { data } = await db
+        .from("leads")
+        .select("id, status")
+        .eq(column, value)
+        .order("created_at", { ascending: false })
+        .limit(1)
+      return data?.[0] ?? null
+    }
+    const existing = d.nss
+      ? (await findBy("nss", d.nss)) ?? (await findBy("phone", d.phone))
+      : await findBy("phone", d.phone)
     if (
       existing &&
       ["CONTRACT_SIGNED", "DISPERSED", "PAID"].includes(existing.status)
