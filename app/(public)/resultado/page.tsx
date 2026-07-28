@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowRight, CheckCircle2, Info, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { NssPendingCard } from "@/components/prequalifier/NssPendingCard"
 
 type Modality = { eligible: boolean; min: number; max: number; reasons: string[] }
 type Payload = {
@@ -13,6 +14,7 @@ type Payload = {
   message?: string
   commission?: number
   signUrl?: string
+  nssPending?: boolean
   result: {
     daysUnemployed: number
     reasons: string[]
@@ -140,6 +142,9 @@ export default function Resultado() {
             Firmar contrato de asesoría <ArrowRight className="size-4" />
           </Link>
         </Button>
+      )}
+      {data.nssPending && !data.signUrl && (
+        <NssPendingCard onUpdated={(body) => setData(body as Payload)} />
       )}
       <p className="mt-3 text-center text-xs text-muted-foreground">
         Retirar puede descontar semanas cotizadas y afectar tu pensión futura.
