@@ -16,6 +16,9 @@ const TEMPLATE_POR_KIND = {
   califica: () => config.whatsappTemplateCalificas,
 } as const
 
+// Vercel: hasta 50 envíos secuenciales pueden tardar más que el timeout por defecto.
+export const maxDuration = 60
+
 export async function GET(req: NextRequest) {
   if (
     !config.cronSecret ||
@@ -75,26 +78,6 @@ export async function GET(req: NextRequest) {
   let failed = 0
 
   for (const r of planned) {
-    // La liga de firma debe seguir viva cuando el lead la abra.
-    if (r.kind === "firma" && r.signToken) {
-      const { error: renewErr } = await db
-        .from("contracts")
-        .update({
-          sign_token_expires_at: new Date(Date.now() + 72 * 3600_000).toISOString(),
-        })
-        .eq("sign_token", r.signToken)
-        .is("signed_at", null)
-      if (renewErr) {
-        await logEvent(r.leadId, "reminder_failed", {
-          kind: r.kind,
-          round: r.round,
-          error: "renew_failed: " + renewErr.message,
-        })
-        failed++
-        continue
-      }
-    }
-
     if (!config.whatsappEnabled) {
       await logEvent(r.leadId, "reminder_dry_run", {
         kind: r.kind,
@@ -104,6 +87,31 @@ export async function GET(req: NextRequest) {
       })
       dryRun++
       continue
+    }
+
+    // La liga de firma debe seguir viva cuando el lead la abra.
+    if (r.kind === "firma" && r.signToken) {
+      const { data: renewedRows, error: renewErr } = await db
+        .from("contracts")
+        .update({
+          sign_token_expires_at: new Date(Date.now() + 72 * 3600_000).toISOString(),
+        })
+        .eq("sign_token", r.signToken)
+        .is("signed_at", null)
+        .select("id")
+      if (renewErr) {
+        await logEvent(r.leadId, "reminder_failed", {
+          kind: r.kind,
+          round: r.round,
+          error: "renew_failed: " + renewErr.message,
+        })
+        failed++
+        continue
+      }
+      if (!renewedRows?.length) {
+        // El contrato ya se firmó entre la planeación y el envío: no molestar al lead.
+        continue
+      }
     }
 
     const result = await sendWhatsAppTemplate(

@@ -10,6 +10,7 @@ export const config = {
   otpPepper: process.env.OTP_PEPPER ?? "dev-pepper-cambiar-en-prod",
   cronSecret: process.env.CRON_SECRET ?? "",
   whatsappVerifyToken: process.env.WHATSAPP_VERIFY_TOKEN ?? "",
+  whatsappAppSecret: process.env.WHATSAPP_APP_SECRET ?? "",
   whatsappTemplateNss:
     process.env.WHATSAPP_TEMPLATE_NSS ?? "recordatorio_nss",
   whatsappTemplateFirma:

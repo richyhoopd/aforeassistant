@@ -44,6 +44,7 @@ Ejemplos: {{1}} = Carlos, {{2}} = https://tulanaya.mx/pre-calificador?source=wa-
    - Callback URL: `https://<tu-dominio>/api/whatsapp/webhook`
    - Verify token: el mismo valor que pongas en `WHATSAPP_VERIFY_TOKEN`
    - Suscribir el campo `messages`.
+   - Copiar el App Secret (App Settings → Basic) a `WHATSAPP_APP_SECRET` — sin esto el webhook no valida la firma de las peticiones entrantes.
 7. **Cron**: en Vercel, definir env `CRON_SECRET` (openssl rand -hex 32). El cron de `vercel.json` queda activo al desplegar.
 
 ## Operación
