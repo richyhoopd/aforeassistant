@@ -28,7 +28,19 @@ Hola {{1}}, cuando te evaluaste te faltaban días de desempleo — hoy ya cumple
 
 Ejemplos: {{1}} = Carlos, {{2}} = https://www.pensionmas.com.mx/pre-calificador?source=wa-califica
 
-### 4. `bienvenida_pensionmas` — (ya especificada para el flujo de firma; sin cambios)
+### 4. `bienvenida_pensionmas` — categoría **Utility**
+
+Enviada por `app/api/contracts/sign` al firmar: {{1}} = primer nombre, {{2}} = folio.
+
+```
+Hola {{1}}, recibimos tu contrato firmado con folio {{2}}. Te acompañaremos en tu trámite de retiro AFORE y te escribiremos por aquí con los siguientes pasos. Responde a este mensaje si tienes alguna duda.
+```
+
+Ejemplos: {{1}} = Carlos, {{2}} = PMAS-12345678
+
+### 5. `codigo_pensionmas` — categoría **Authentication** (OTP)
+
+Texto prefabricado de Meta con botón "Copiar código"; caducidad 10 minutos. El código debe migrarse de `sendWhatsAppText` a esta plantilla antes de prender envíos reales.
 
 ## Guía paso a paso (solo tú puedes hacerlo)
 
