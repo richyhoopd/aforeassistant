@@ -24,3 +24,5 @@
     - Dedupe de recordatorios es por vida del lead: un segundo contrato del mismo lead hereda las rondas agotadas del primero (incluir `sign_token` en el payload del evento para dedupear por ciclo).
     - El filtro "ya califica" depende del texto de `rejection_reason` ("46 días"/"5 años") — migrar a códigos estructurados de rechazo; hoy excluye por accidente a quienes solo califican vía Modalidad A con 3–4.9 años.
     - Sin tope de reintentos para `reminder_failed` (un teléfono inválido se reintenta a diario).
+    - Soporte de botones en plantillas (URL dinámica en `recordatorio_firma`, opt-out por botón, NSS por imagen) — lista completa en `docs/whatsapp/plantillas.md` § "Cambios de código requeridos".
+    - Migrar OTP de `sendWhatsAppText` a la plantilla Authentication `codigo_pensionmas` (texto libre solo funciona dentro de la ventana de 24h; el primer OTP fallaría).
