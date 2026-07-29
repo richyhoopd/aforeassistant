@@ -19,10 +19,5 @@
 0. ~~Docker no descargaba imágenes~~ **RESUELTO (27-jul mediodía):** era transitorio. Supabase local corre y el flujo completo quedó verificado end-to-end: pre-calificador → resultado ($12,000 Mod A / $8,719–$10,731 Mod B con datos de prueba) → firma con OTP → PDF en Storage (folio TLN-73904009, SHA-256 verificado contra la DB) → admin con timeline y transición a DISPERSED auditada. Entorno local: admin `admin@tulanaya.local` / `Tulanaya2026!`, Studio en http://127.0.0.1:54323.
 9. Twilio (fallback SMS del OTP) quedó especificado pero no implementado — solo tiene sentido si WhatsApp tarda en aprobarse.
 10. La UMA está hardcodeada en `lib/eligibility/constants.ts` ($117.31, DOF 09/01/2026) — actualizar cada febrero.
-11. **Antes de prender `WHATSAPP_ENABLED=true`** (del review final del loop de seguimientos, 27-jul noche):
-    - Webhook: guard de hex en `validSignature` (`/^[0-9a-f]+$/i` o try/catch en `timingSafeEqual`) — hoy un header malformado del mismo largo da 500 en vez de 401; sin bypass de seguridad.
-    - Dedupe de recordatorios es por vida del lead: un segundo contrato del mismo lead hereda las rondas agotadas del primero (incluir `sign_token` en el payload del evento para dedupear por ciclo).
-    - El filtro "ya califica" depende del texto de `rejection_reason` ("46 días"/"5 años") — migrar a códigos estructurados de rechazo; hoy excluye por accidente a quienes solo califican vía Modalidad A con 3–4.9 años.
-    - Sin tope de reintentos para `reminder_failed` (un teléfono inválido se reintenta a diario).
-    - Soporte de botones en plantillas (URL dinámica en `recordatorio_firma`, opt-out por botón, NSS por imagen) — lista completa en `docs/whatsapp/plantillas.md` § "Cambios de código requeridos".
-    - Migrar OTP de `sendWhatsAppText` a la plantilla Authentication `codigo_pensionmas` (texto libre solo funciona dentro de la ventana de 24h; el primer OTP fallaría).
+11. ~~Endurecimientos antes de `WHATSAPP_ENABLED=true`~~ **RESUELTO (29-jul, TDD, 85 tests):** hex guard en firma del webhook; dedupe de firma por ciclo (`sign_token` en eventos); tope de 3 reintentos por lead+kind; señal estructurada `requalify_by_days` (con fallback a texto para leads viejos); botones en plantillas (URL dinámica de firma como parámetro de botón); opt-out por tap de botón; imágenes/PDF entrantes → Storage (`inbound/`) + evento `inbound_media`; OTP migrado a plantilla Authentication `codigo_pensionmas`.
+    - ⚠️ Falta aplicar en **Supabase prod** (SQL Editor): `ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS requalify_by_days boolean;`

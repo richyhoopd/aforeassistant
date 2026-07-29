@@ -17,4 +17,6 @@ export const config = {
     process.env.WHATSAPP_TEMPLATE_FIRMA ?? "recordatorio_firma",
   whatsappTemplateCalificas:
     process.env.WHATSAPP_TEMPLATE_CALIFICAS ?? "ya_calificas_pensionmas",
+  whatsappTemplateOtp:
+    process.env.WHATSAPP_TEMPLATE_OTP ?? "codigo_pensionmas",
 }

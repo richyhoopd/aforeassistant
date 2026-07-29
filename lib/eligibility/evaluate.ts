@@ -34,6 +34,9 @@ export type EligibilityResult = {
   modalityB: ModalityEstimate
   payoutMin: number
   payoutMax: number
+  // Alguna modalidad quedó bloqueada ÚNICAMENTE por días de desempleo:
+  // el lead calificará solo con esperar (señal del followup "ya califica").
+  requalifyByDays: boolean
 }
 
 const round2 = (n: number) => Math.round(n * 100) / 100
@@ -93,7 +96,14 @@ export function evaluateEligibility(i: EligibilityInput): EligibilityResult {
   const best =
     modalityB.eligible && modalityB.max >= modalityA.max ? modalityB : modalityA
 
+  const faltanSoloDias =
+    daysUnemployed < DIAS_DESEMPLEO_MIN &&
+    !i.lastWithdrawalWithin5y &&
+    (i.yearsContributing >= ANIOS_MIN_MODALIDAD_A ||
+      i.yearsContributing >= ANIOS_MIN_MODALIDAD_B)
+
   return {
+    requalifyByDays: !eligible && faltanSoloDias,
     eligible,
     daysUnemployed,
     reasons: eligible ? [] : [...new Set([...aReasons, ...bReasons])],

@@ -82,3 +82,33 @@ describe("evaluateEligibility", () => {
     }
   })
 })
+
+describe("requalifyByDays — señal para el followup 'ya califica'", () => {
+  const pocosDias = { fechaBaja: new Date("2026-07-01T12:00:00Z") } // 26 días
+
+  it("bloqueado SOLO por días (ambas modalidades) → true", () => {
+    const r = evaluateEligibility(input(pocosDias))
+    expect(r.requalifyByDays).toBe(true)
+  })
+
+  it("3-4.9 años: modalidad B nunca aplicará, pero A solo espera días → true", () => {
+    const r = evaluateEligibility(input({ ...pocosDias, yearsContributing: 4 }))
+    expect(r.requalifyByDays).toBe(true)
+  })
+
+  it("con retiro reciente (5 años) → false aunque falten días", () => {
+    const r = evaluateEligibility(
+      input({ ...pocosDias, lastWithdrawalWithin5y: true })
+    )
+    expect(r.requalifyByDays).toBe(false)
+  })
+
+  it("sin años suficientes para ninguna modalidad → false", () => {
+    const r = evaluateEligibility(input({ ...pocosDias, yearsContributing: 2 }))
+    expect(r.requalifyByDays).toBe(false)
+  })
+
+  it("elegible → false (no hay nada que re-calificar)", () => {
+    expect(evaluateEligibility(input()).requalifyByDays).toBe(false)
+  })
+})

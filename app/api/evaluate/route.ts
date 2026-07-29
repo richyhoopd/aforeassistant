@@ -69,6 +69,7 @@ export async function POST(req: NextRequest) {
       commission_amount: COMISION_DEFAULT,
       status: result.eligible ? "QUALIFIED" : "REJECTED",
       rejection_reason: result.eligible ? null : result.reasons.join(" "),
+      requalify_by_days: result.requalifyByDays,
       privacy_consent_at: new Date().toISOString(),
       source: "WEB_APP",
       source_ref: d.sourceRef ?? null,

@@ -1,5 +1,6 @@
 import "server-only"
 import { config } from "@/lib/config"
+import { buildOtpTemplatePayload, buildTemplatePayload } from "./payload"
 
 type SendResult = { sent: boolean; error?: string }
 
@@ -33,24 +34,19 @@ async function callGraphApi(payload: Record<string, unknown>): Promise<SendResul
 export async function sendWhatsAppTemplate(
   phoneE164: string,
   template: string,
-  params: string[]
+  params: string[],
+  opts?: { buttonUrlParam?: string }
 ): Promise<SendResult> {
-  return callGraphApi({
-    to: phoneE164.replace("+", ""),
-    type: "template",
-    template: {
-      name: template,
-      language: { code: "es_MX" },
-      components: params.length
-        ? [
-            {
-              type: "body",
-              parameters: params.map((text) => ({ type: "text", text })),
-            },
-          ]
-        : [],
-    },
-  })
+  return callGraphApi(buildTemplatePayload(phoneE164, template, params, opts))
+}
+
+export async function sendWhatsAppOtp(
+  phoneE164: string,
+  code: string
+): Promise<SendResult> {
+  return callGraphApi(
+    buildOtpTemplatePayload(phoneE164, config.whatsappTemplateOtp, code)
+  )
 }
 
 export async function sendWhatsAppText(

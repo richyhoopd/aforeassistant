@@ -1,9 +1,11 @@
-import crypto from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 import { config } from "@/lib/config"
 import { logEvent } from "@/lib/events"
 import { supabaseAdmin } from "@/lib/supabase/server"
 import { normalizePhoneMX } from "@/lib/validation/identifiers"
+import { classifyInbound, type InboundMessage } from "@/lib/whatsapp/inbound"
+import { downloadWhatsAppMedia } from "@/lib/whatsapp/media"
+import { validSignature } from "@/lib/whatsapp/verify"
 
 // Verificación de Meta al registrar el webhook.
 export async function GET(req: NextRequest) {
@@ -16,18 +18,6 @@ export async function GET(req: NextRequest) {
     return new NextResponse(p.get("hub.challenge") ?? "", { status: 200 })
   }
   return NextResponse.json({ error: "Verificación inválida" }, { status: 403 })
-}
-
-const OPT_OUT = new Set(["BAJA", "STOP", "NO"])
-
-type InboundMessage = { from?: string; type?: string; text?: { body?: string } }
-
-function validSignature(raw: string, header: string | null, secret: string): boolean {
-  if (!header?.startsWith("sha256=")) return false
-  const expected = crypto.createHmac("sha256", secret).update(raw).digest("hex")
-  const given = header.slice(7)
-  if (given.length !== expected.length) return false
-  return crypto.timingSafeEqual(Buffer.from(given, "hex"), Buffer.from(expected, "hex"))
 }
 
 export async function POST(req: NextRequest) {
@@ -62,8 +52,9 @@ export async function POST(req: NextRequest) {
     const db = supabaseAdmin()
     for (const m of messages) {
       try {
-        if (!m.from) continue
-        const phone = normalizePhoneMX(m.from)
+        const inbound = classifyInbound(m)
+        if (inbound.action === "ignore") continue
+        const phone = normalizePhoneMX(m.from ?? "")
         if (!phone) continue
         const { data: leadRows } = await db
           .from("leads")
@@ -74,15 +65,46 @@ export async function POST(req: NextRequest) {
         const lead = leadRows?.[0]
         if (!lead) continue
 
-        const originalText = m.text?.body ?? ""
-        const text = originalText.toUpperCase().replace(/[^\p{L}]/gu, "")
-        if (OPT_OUT.has(text)) {
+        if (inbound.action === "opt_out") {
           await db.from("leads").update({ do_not_contact: true }).eq("id", lead.id)
-          await logEvent(lead.id, "opt_out", { text: originalText.slice(0, 500) })
+          await logEvent(lead.id, "opt_out", { text: inbound.text.slice(0, 500) })
+        } else if (inbound.action === "media") {
+          const media = await downloadWhatsAppMedia(
+            inbound.mediaId,
+            config.whatsappToken
+          )
+          if (!media) {
+            await logEvent(lead.id, "inbound_media_failed", {
+              media_id: inbound.mediaId,
+              mime_type: inbound.mimeType,
+            })
+            hadErrors = true
+            continue
+          }
+          const ext = inbound.mimeType?.split("/")[1]?.split("+")[0] ?? "bin"
+          const path = `inbound/${lead.id}/${Date.now()}-${inbound.mediaId}.${ext}`
+          const { error: upErr } = await db.storage
+            .from("contracts")
+            .upload(path, media.data, {
+              contentType: media.mimeType ?? "application/octet-stream",
+            })
+          if (upErr) {
+            await logEvent(lead.id, "inbound_media_failed", {
+              media_id: inbound.mediaId,
+              error: upErr.message,
+            })
+            hadErrors = true
+            continue
+          }
+          await logEvent(lead.id, "inbound_media", {
+            path,
+            mime_type: media.mimeType,
+            caption: inbound.caption?.slice(0, 500),
+          })
         } else {
           await logEvent(lead.id, "inbound_whatsapp", {
             type: m.type,
-            text: originalText.slice(0, 500),
+            text: inbound.text.slice(0, 500),
           })
         }
       } catch (err) {

@@ -3,7 +3,7 @@ import { config } from "@/lib/config"
 import { logEvent } from "@/lib/events"
 import { generateOtp, hashOtp } from "@/lib/otp"
 import { supabaseAdmin } from "@/lib/supabase/server"
-import { sendWhatsAppText } from "@/lib/whatsapp/client"
+import { sendWhatsAppOtp } from "@/lib/whatsapp/client"
 import { otpSendSchema } from "@/lib/validation/schemas"
 
 export async function POST(req: NextRequest) {
@@ -40,10 +40,9 @@ export async function POST(req: NextRequest) {
       })
       .eq("id", contract.id)
 
-    const send = await sendWhatsAppText(
-      phone,
-      `Tu código para firmar tu contrato Pensión+ es: ${code}. Vigencia 10 minutos. No lo compartas.`
-    )
+    // Plantilla Authentication: el texto libre solo llega dentro de la ventana
+    // de 24h, y el primer OTP de un cliente casi nunca cae ahí.
+    const send = await sendWhatsAppOtp(phone, code)
 
     await logEvent(contract.lead_id, "otp_sent", {
       channel: "whatsapp",

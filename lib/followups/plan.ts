@@ -10,6 +10,7 @@ export type FollowupLead = {
   estimated_payout_max: number | null
   do_not_contact: boolean | null
   human_takeover: boolean | null
+  requalify_by_days?: boolean | null
 }
 
 export type FollowupContract = {
@@ -22,7 +23,7 @@ export type FollowupContract = {
 export type FollowupEvent = {
   lead_id: string
   type: string
-  payload: { kind?: string; round?: number }
+  payload: { kind?: string; round?: number; sign_token?: string }
 }
 
 export type PlannedReminder = {
@@ -36,6 +37,7 @@ export type PlannedReminder = {
 
 const RONDAS = [1, 3, 7] // días mínimos para rondas 1, 2, 3
 const MAX_POR_CORRIDA = 50
+const MAX_FALLOS = 3 // fallos acumulados por lead+kind; después se abandona ese kind
 const DIAS_DESEMPLEO_MIN = 46
 const DIA_MS = 86_400_000
 
@@ -61,8 +63,7 @@ export function planFollowups(
   leads: FollowupLead[],
   contracts: FollowupContract[],
   events: FollowupEvent[],
-  now: Date,
-  siteUrl: string
+  now: Date
 ): PlannedReminder[] {
   const contratosPorLead = new Map<string, FollowupContract[]>()
   for (const c of contracts) {
@@ -71,19 +72,38 @@ export function planFollowups(
     contratosPorLead.set(c.lead_id, list)
   }
 
-  const rondasEnviadas = new Map<string, Set<number>>() // `${leadId}:${kind}` → rounds
+  // Firma se dedupea por ciclo de contrato (sign_token); eventos legacy sin
+  // token bloquean todos los ciclos para no re-spamear leads previos al cambio.
+  const rondasEnviadas = new Map<string, Set<number>>() // `${leadId}:${kind}[:${token|*}]` → rounds
   for (const e of events) {
     if (e.type !== "reminder_sent" && e.type !== "reminder_dry_run") continue
     const kind = e.payload.kind
     const round = e.payload.round
     if (!kind || !round) continue
-    const key = `${e.lead_id}:${kind}`
+    const key =
+      kind === "firma"
+        ? `${e.lead_id}:firma:${e.payload.sign_token ?? "*"}`
+        : `${e.lead_id}:${kind}`
     const set = rondasEnviadas.get(key) ?? new Set<number>()
     set.add(round)
     rondasEnviadas.set(key, set)
   }
+  const fallos = new Map<string, number>() // `${leadId}:${kind}` → conteo
+  for (const e of events) {
+    if (e.type !== "reminder_failed" || !e.payload.kind) continue
+    const key = `${e.lead_id}:${e.payload.kind}`
+    fallos.set(key, (fallos.get(key) ?? 0) + 1)
+  }
+  const agotado = (leadId: string, kind: string) =>
+    (fallos.get(`${leadId}:${kind}`) ?? 0) >= MAX_FALLOS
+
   const enviadas = (leadId: string, kind: string) =>
     rondasEnviadas.get(`${leadId}:${kind}`) ?? new Set<number>()
+  const enviadasFirma = (leadId: string, token: string) =>
+    new Set([
+      ...(rondasEnviadas.get(`${leadId}:firma:${token}`) ?? []),
+      ...(rondasEnviadas.get(`${leadId}:firma:*`) ?? []),
+    ])
 
   const out: PlannedReminder[] = []
 
@@ -92,7 +112,7 @@ export function planFollowups(
     const nombre = nombreDePila(lead.full_name)
     const leadContracts = contratosPorLead.get(lead.id) ?? []
 
-    if (lead.status === "QUALIFIED" && leadContracts.length === 0) {
+    if (lead.status === "QUALIFIED" && leadContracts.length === 0 && !agotado(lead.id, "nss")) {
       const dias = (now.getTime() - new Date(lead.updated_at).getTime()) / DIA_MS
       const ronda = rondaPendiente(dias, enviadas(lead.id, "nss"))
       if (ronda) {
@@ -105,38 +125,44 @@ export function planFollowups(
           phone: lead.phone,
           kind: "nss",
           round: ronda,
-          params: [nombre, rango, `${siteUrl}/pre-calificador?source=wa-nss`],
+          params: [nombre, rango],
         })
       }
     }
 
-    if (lead.status === "CONTRACT_PENDING") {
+    if (lead.status === "CONTRACT_PENDING" && !agotado(lead.id, "firma")) {
       const vigente = leadContracts
         .filter((c) => !c.signed_at)
         .sort((a, b) => b.created_at.localeCompare(a.created_at))[0]
       if (vigente) {
         const dias =
           (now.getTime() - new Date(vigente.created_at).getTime()) / DIA_MS
-        const ronda = rondaPendiente(dias, enviadas(lead.id, "firma"))
+        const ronda = rondaPendiente(dias, enviadasFirma(lead.id, vigente.sign_token))
         if (ronda) {
           out.push({
             leadId: lead.id,
             phone: lead.phone,
             kind: "firma",
             round: ronda,
-            params: [nombre, `${siteUrl}/firmar/${vigente.sign_token}`],
+            params: [nombre],
             signToken: vigente.sign_token,
           })
         }
       }
     }
 
+    // Señal estructurada de la evaluación; el texto es fallback para leads
+    // anteriores a la columna requalify_by_days.
+    const candidatoCalifica =
+      lead.requalify_by_days ??
+      (lead.rejection_reason?.includes("46 días") === true &&
+        !lead.rejection_reason?.includes("5 años"))
     if (
       lead.status === "REJECTED" &&
       lead.fecha_baja &&
-      lead.rejection_reason?.includes("46 días") &&
-      !lead.rejection_reason.includes("5 años") &&
-      !enviadas(lead.id, "califica").has(1)
+      candidatoCalifica &&
+      !enviadas(lead.id, "califica").has(1) &&
+      !agotado(lead.id, "califica")
     ) {
       const diasDesempleo =
         (now.getTime() - new Date(lead.fecha_baja).getTime()) / DIA_MS
@@ -146,7 +172,7 @@ export function planFollowups(
           phone: lead.phone,
           kind: "califica",
           round: 1,
-          params: [nombre, `${siteUrl}/pre-calificador?source=wa-califica`],
+          params: [nombre],
         })
       }
     }

@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   const { data: leads, error: lErr } = await db
     .from("leads")
     .select(
-      "id, status, full_name, phone, updated_at, fecha_baja, rejection_reason, estimated_payout_min, estimated_payout_max, do_not_contact, human_takeover"
+      "id, status, full_name, phone, updated_at, fecha_baja, rejection_reason, requalify_by_days, estimated_payout_min, estimated_payout_max, do_not_contact, human_takeover"
     )
     .in("status", ["QUALIFIED", "CONTRACT_PENDING", "REJECTED"])
     .order("created_at", { ascending: true })
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
       .from("lead_events")
       .select("lead_id, type, payload")
       .in("lead_id", ids)
-      .in("type", ["reminder_sent", "reminder_dry_run"]),
+      .in("type", ["reminder_sent", "reminder_dry_run", "reminder_failed"]),
   ])
   if (cErr || eErr) {
     console.error("followups fetch failed", cErr ?? eErr)
@@ -69,8 +69,7 @@ export async function GET(req: NextRequest) {
     (leads ?? []) as FollowupLead[],
     (contracts ?? []) as FollowupContract[],
     (events ?? []) as FollowupEvent[],
-    new Date(),
-    config.siteUrl
+    new Date()
   )
 
   let sent = 0
@@ -84,6 +83,7 @@ export async function GET(req: NextRequest) {
         round: r.round,
         template: TEMPLATE_POR_KIND[r.kind](),
         params: r.params,
+        ...(r.signToken ? { sign_token: r.signToken } : {}),
       })
       dryRun++
       continue
@@ -114,19 +114,26 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // El token de firma viaja como variable del botón URL de la plantilla.
     const result = await sendWhatsAppTemplate(
       r.phone,
       TEMPLATE_POR_KIND[r.kind](),
-      r.params
+      r.params,
+      r.kind === "firma" && r.signToken ? { buttonUrlParam: r.signToken } : undefined
     )
     if (result.sent) {
-      await logEvent(r.leadId, "reminder_sent", { kind: r.kind, round: r.round })
+      await logEvent(r.leadId, "reminder_sent", {
+        kind: r.kind,
+        round: r.round,
+        ...(r.signToken ? { sign_token: r.signToken } : {}),
+      })
       sent++
     } else {
       await logEvent(r.leadId, "reminder_failed", {
         kind: r.kind,
         round: r.round,
         error: result.error,
+        ...(r.signToken ? { sign_token: r.signToken } : {}),
       })
       failed++
     }
