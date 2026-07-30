@@ -1,0 +1,12 @@
+services:
+  generate:
+    build: .
+    env_file: .env
+    volumes:
+      - ./out:/app/out
+      - ./assets:/app/assets
+      - ./templates:/app/templates
+    # Para hablar con el Supabase local desde el contenedor:
+    # SUPABASE_URL=http://host.docker.internal:54321 en .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
