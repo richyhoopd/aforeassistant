@@ -15,3 +15,19 @@ Telegram listos para pegar.
 ## Tests
 `python -m pytest -m "not slow"` (rápidos) · `python -m pytest` (con render real,
 requiere `playwright install chromium`).
+
+## Secrets de GitHub Actions
+Para habilitar la publicación automática, cargar estos 7 secrets en el repositorio
+(values obtenidos de `content/.env`):
+
+```bash
+gh secret set SUPABASE_URL --body "https://wdczbfhfgpsbhwexikgp.supabase.co"
+gh secret set SUPABASE_SERVICE_ROLE_KEY --body "..."
+gh secret set TELEGRAM_BOT_TOKEN --body "..."
+gh secret set TELEGRAM_CHAT_ID --body "..."
+gh secret set FB_PAGE_ID --body "..."
+gh secret set FB_PAGE_TOKEN --body "..."
+gh secret set IG_USER_ID --body "..."
+```
+
+Pendiente: cargar los valores reales y ejecutar los comandos anteriores.
