@@ -44,9 +44,18 @@ export async function sendWhatsAppOtp(
   phoneE164: string,
   code: string
 ): Promise<SendResult> {
-  return callGraphApi(
+  const viaTemplate = await callGraphApi(
     buildOtpTemplatePayload(phoneE164, config.whatsappTemplateOtp, code)
   )
+  if (viaTemplate.sent || viaTemplate.error === "disabled") return viaTemplate
+  // Mientras la verificación del negocio no desbloquee la plantilla
+  // Authentication: texto libre, que solo entrega dentro de la ventana de 24h
+  // (el cliente debe haber escrito o tocado un botón antes).
+  const viaText = await sendWhatsAppText(
+    phoneE164,
+    `Tu código para firmar tu contrato Pensión+ es: ${code}. Vigencia 10 minutos. No lo compartas.`
+  )
+  return viaText.sent ? viaText : viaTemplate
 }
 
 export async function sendWhatsAppText(
