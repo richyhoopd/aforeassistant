@@ -23,8 +23,26 @@ def test_wait_decision_parsea_callback(monkeypatch):
     _env(monkeypatch)
     updates = [{"ok": True, "result": [
         {"update_id": 1, "callback_query": {"id": "cq", "data": "ok:item1"}},
-    ]}]
+    ]}, {"ok": True, "result": []}]
     monkeypatch.setattr(rv.requests, "get", lambda url, params=None, timeout=None: R(updates.pop(0)))
     monkeypatch.setattr(rv.requests, "post", lambda url, data=None, json=None, timeout=None: R({"ok": True}))
     decision, feedback = rv.wait_decision("item1", timeout_s=5)
     assert decision == "ok" and feedback is None
+
+def test_wait_decision_confirma_offset(monkeypatch):
+    _env(monkeypatch)
+    get_calls = []
+    updates = [{"ok": True, "result": [
+        {"update_id": 1, "callback_query": {"id": "cq", "data": "ok:item1"}},
+    ]}, {"ok": True, "result": []}]
+    def mock_get(url, params=None, timeout=None):
+        get_calls.append((url, params))
+        return R(updates.pop(0))
+    monkeypatch.setattr(rv.requests, "get", mock_get)
+    monkeypatch.setattr(rv.requests, "post", lambda url, data=None, json=None, timeout=None: R({"ok": True}))
+    decision, feedback = rv.wait_decision("item1", timeout_s=5)
+    assert decision == "ok" and feedback is None
+    # Verificar que se hizo un GET con offset=2 para confirmar el offset
+    assert len(get_calls) == 2
+    _, confirm_params = get_calls[1]
+    assert confirm_params["offset"] == 2

@@ -37,9 +37,13 @@ def wait_decision(item_key: str, timeout_s: int = 900) -> tuple[str, str | None]
                 decision = cq["data"].split(":", 1)[0]
                 requests.post(_api("answerCallbackQuery"), json={"callback_query_id": cq["id"]}, timeout=30)
                 if decision != "re":
+                    # Confirmar offset ante Telegram antes de retornar
+                    requests.get(_api("getUpdates"), params={"offset": offset, "timeout": 0}, timeout=10)
                     return decision, None
                 fin = time.time() + 60  # ventana corta para feedback de texto
             elif decision == "re" and up.get("message", {}).get("text"):
+                # Confirmar offset ante Telegram antes de retornar
+                requests.get(_api("getUpdates"), params={"offset": offset, "timeout": 0}, timeout=10)
                 return "re", up["message"]["text"]
         if decision == "re" and time.time() >= fin:
             break
