@@ -3,7 +3,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 _TPL_DIR = Path(__file__).parent.parent / "templates"
-_env = Environment(loader=FileSystemLoader(_TPL_DIR))
+_env = Environment(loader=FileSystemLoader(_TPL_DIR), autoescape=True)
 
 def render_html(plantilla: str, contexto: dict) -> str:
     return _env.get_template(f"{plantilla}.html").render(**contexto)

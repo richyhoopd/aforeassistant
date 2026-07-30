@@ -10,6 +10,14 @@ def test_render_html_tarjeta_incluye_contenido():
     assert "Título de prueba" in html and "uno" in html
     assert "gratuito" in html.lower()  # disclaimer fijo en la plantilla
 
+def test_render_html_escapa_html_del_llm():
+    html = render_html("tarjeta", {
+        "titulo": "<script>alert(1)</script>", "bullets": ["uno"],
+        "fuente": "CONSAR", "kicker": "AFORE POR DESEMPLEO",
+    })
+    assert "&lt;script&gt;" in html
+    assert "<script>alert(1)</script>" not in html
+
 @pytest.mark.slow
 def test_render_item_produce_png(tmp_path):
     copy = {"titulo": "T", "bullets": ["a", "b", "c"], "captions": {}, "laminas": []}

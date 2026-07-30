@@ -15,6 +15,7 @@ from src.review import send_for_review, send_text, wait_decision
 
 OUT = Path(__file__).parent / "out"
 MAX_INTENTOS = 3
+CAPTION_KEY_POR_CANAL = {"fb_page": "fb", "ig": "ig", "grupo": "grupo", "tiktok": "tiktok"}
 
 def procesar_item(item: dict) -> str | None:
     key = f"{item['tema']}_{item['formato']}"
@@ -23,7 +24,8 @@ def procesar_item(item: dict) -> str | None:
         copy = generate_copy(item, feedback=feedback)
         paths = render_item(item, copy, OUT)
         canal = "+".join(item["channels"])
-        caption = f"[{canal} · {item['scheduled_at']:%a %d}] {copy['captions'].get(item['channels'][0], copy.get('titulo', ''))}"
+        caption_key = CAPTION_KEY_POR_CANAL.get(item["channels"][0], item["channels"][0])
+        caption = f"[{canal} · {item['scheduled_at']:%a %d}] {copy['captions'].get(caption_key, copy.get('titulo', ''))}"
         send_for_review(paths, caption, key)
         decision, feedback = wait_decision(key)
         if decision == "ok":
