@@ -270,60 +270,66 @@ export default function Landing() {
         </div>
 
         {/* Diferenciador: corrección de datos */}
-        <Reveal className="mt-16">
-          <div className="rounded-2xl bg-secondary p-6 sm:p-10">
-            <div className="max-w-3xl">
-              <h3 className="text-balance font-display text-2xl font-semibold leading-tight tracking-[-0.01em] sm:text-3xl">
-                Aquí está la verdadera diferencia: corregimos los datos que
-                traban tu retiro.
-              </h3>
-              <p className="mt-3 text-muted-foreground">
-                Casi todos los rechazos vienen de cuatro problemas de datos.
-                Todos se corrigen por la vía legal, ante el IMSS, tu AFORE o
-                RENAPO, y nosotros te llevamos de la mano en lo complicado:
-              </p>
-            </div>
-            <div className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                {
-                  dot: "bg-primary",
-                  title: "Expediente desactualizado",
-                  body: "ID vencida, domicilio viejo o datos mal capturados. Lo actualizamos en tu AFORE.",
-                },
-                {
-                  dot: "bg-gold-deep",
-                  title: "CURP y NSS que no coinciden",
-                  body: "Tu nombre o fecha de nacimiento difieren entre IMSS y RENAPO. Se corrige ante el IMSS.",
-                },
-                {
-                  dot: "bg-card-teal",
-                  title: "Saldo partido en dos cuentas",
-                  body: "Un error de captura duplicó tu cuenta. Identificamos la buena y la separamos.",
-                },
-                {
-                  dot: "bg-[oklch(0.6_0.13_272)]",
-                  title: "Varias cuentas por varios empleos",
-                  body: "Más de un NSS legítimo. Los unificamos para juntar todo tu saldo en uno.",
-                },
-              ].map((d) => (
-                <div key={d.title}>
-                  <span aria-hidden className={`block size-2.5 rounded-full ${d.dot}`} />
-                  <h4 className="mt-3 font-display text-lg font-semibold leading-snug">
-                    {d.title}
-                  </h4>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                    {d.body}
-                  </p>
+        <div className="mt-16 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <Reveal className="relative">
+            <div className="rounded-2xl bg-[linear-gradient(140deg,oklch(0.44_0.1_215),oklch(0.76_0.11_240))] p-3 sm:p-4">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
+                <Image
+                  src="/images/asesoria-datos.jpg"
+                  alt="Asesor señalando un documento mientras una pareja mayor lo revisa"
+                  fill
+                  sizes="(min-width: 1024px) 540px, 100vw"
+                  className="object-cover"
+                />
+                <div className="absolute bottom-3 right-3 rounded-xl bg-white p-3.5 shadow-[0_8px_24px_-8px_oklch(0.23_0.06_265/0.5)]">
+                  <p className="text-[13px] font-semibold">Lo que dejamos listo:</p>
+                  <ul className="mt-2 space-y-1.5 text-[13px]">
+                    {[
+                      "Expediente actualizado",
+                      "CURP y NSS coinciden",
+                      "Cuenta duplicada separada",
+                      "Saldos unificados en uno",
+                    ].map((item) => (
+                      <li key={item} className="flex items-center gap-2">
+                        <Check
+                          className="size-3.5 shrink-0 text-[oklch(0.55_0.14_160)]"
+                          aria-hidden
+                          strokeWidth={3}
+                        />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              ))}
+              </div>
             </div>
-            <p className="mt-8 text-sm font-medium">
-              Si tu caso tiene alguno de estos nudos, no estás atorado: se
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p className="text-sm font-medium text-muted-foreground">Corrección de datos</p>
+            <h3 className="mt-3 max-w-md text-balance font-display text-3xl font-semibold leading-tight tracking-[-0.01em] sm:text-4xl">
+              La verdadera diferencia: corregimos los datos que traban tu
+              retiro.
+            </h3>
+            <p className="mt-4 max-w-md text-muted-foreground">
+              Casi todos los rechazos vienen de datos: expediente
+              desactualizado, un CURP y NSS que no coinciden, o tu saldo
+              partido en varias cuentas. Todo se corrige por la vía legal, ante
+              el IMSS, tu AFORE o RENAPO, y te llevamos de la mano en cada
+              paso.
+            </p>
+            <p className="mt-4 max-w-md text-muted-foreground">
+              Si tu caso tiene uno de estos nudos, no estás atorado: se
               resuelve. Empieza por el pre-calificador y te decimos cuál es el
               tuyo.
             </p>
-          </div>
-        </Reveal>
+            <a
+              href="#estimador"
+              className="mt-7 inline-flex h-11 items-center rounded-full bg-primary px-6 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[oklch(0.44_0.21_262)]"
+            >
+              Revisar mi caso
+            </a>
+          </Reveal>
+        </div>
       </section>
 
       {/* Requisitos */}
