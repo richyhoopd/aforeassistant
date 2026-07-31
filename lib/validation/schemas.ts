@@ -63,6 +63,29 @@ export const preQualifierSchema = z.object({
 
 export type PreQualifierInput = z.infer<typeof preQualifierSchema>
 
+export const leadCaptureSchema = z.object({
+  // Captura progresiva: el nombre es opcional (llega en una captura posterior);
+  // vacío/espacios se trata como ausente, pero si viene algo, mínimo 5 chars.
+  fullName: z
+    .string()
+    .trim()
+    .transform((v) => (v === "" ? undefined : v))
+    .optional()
+    .refine((v) => v === undefined || v.length >= 5, "Escribe tu nombre completo"),
+  phone: z.string().transform((v, ctx) => {
+    const normalized = normalizePhoneMX(v)
+    if (!normalized) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Teléfono inválido" })
+      return z.NEVER
+    }
+    return normalized
+  }),
+  monthlySalary: z.coerce.number().min(1000).max(1000000).optional(),
+  sourceRef: z.string().optional(),
+})
+
+export type LeadCaptureInput = z.infer<typeof leadCaptureSchema>
+
 export const otpSendSchema = z.object({
   token: z.string().uuid(),
 })
