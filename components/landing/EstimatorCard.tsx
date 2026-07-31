@@ -36,8 +36,9 @@ export function EstimatorCard() {
   const lastCapture = useRef("")
   const capturar = () => {
     if (telefono.replace(/\D/g, "").length !== 10) return
+    const nombreTrim = nombre.trim()
     const payload = JSON.stringify({
-      fullName: nombre.trim(),
+      ...(nombreTrim.length >= 5 ? { fullName: nombreTrim } : {}),
       phone: telefono.trim(),
       monthlySalary: salario,
       sourceRef: "landing-hero",
@@ -176,7 +177,7 @@ export function EstimatorCard() {
       <p className="mt-4 flex items-start justify-center gap-1.5 text-xs text-muted-foreground">
         <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden />
         <span>
-          Al continuar aceptas que te contactemos por WhatsApp y nuestro{" "}
+          Al escribir tus datos aceptas que te contactemos por WhatsApp y nuestro{" "}
           <a href="/privacidad" target="_blank" rel="noopener noreferrer" className="underline">
             aviso de privacidad
           </a>
