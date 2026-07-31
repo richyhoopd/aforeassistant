@@ -12,6 +12,14 @@ Automática vía GitHub Actions (`.github/workflows/content-publish.yml`, cron
 diario 15:00 UTC). Página FB e IG se publican solas; grupos y TikTok llegan por
 Telegram listos para pegar.
 
+## Métricas
+
+Tras publicar, el mismo workflow corre `python metrics.py`: guarda un snapshot
+diario por pieza publicada (FB: reactions/comments/shares/reach; IG:
+reach/likes/comments/saved/shares) en `content_metrics`, y si `ADS_ACCOUNT_ID`
+está configurado (secret opcional; el token necesita `ads_read`), los insights
+por campaña del día en `ads_metrics`. Todo se ve en `/admin/contenido`.
+
 ## Tests
 `python -m pytest -m "not slow"` (rápidos) · `python -m pytest` (con render real,
 requiere `playwright install chromium`).
