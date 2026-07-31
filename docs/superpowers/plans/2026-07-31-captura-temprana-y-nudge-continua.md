@@ -2,7 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: usa superpowers:subagent-driven-development (recomendado) o superpowers:executing-plans para implementar este plan tarea por tarea. Los pasos usan checkbox (`- [ ]`) para el seguimiento.
 
-**Goal:** Que ningún número se pierda. Registrar el lead apenas da nombre + WhatsApp en la `EstimatorCard` del hero (aunque no termine el pre-calificador), y si no completa, mandarle por WhatsApp el recordatorio "continúa tu trámite" con la cadencia 1/3/7 que ya existe.
+**Goal:** Que ningún número se pierda. Registrar el lead **apenas hay un número de WhatsApp válido** en la `EstimatorCard` del hero (el nombre y el salario se completan después si llegan; captura progresiva), y si no completa el pre-calificador, mandarle por WhatsApp el recordatorio "continúa tu trámite" con la cadencia 1/3/7 que ya existe.
+
+**Ajuste del usuario (31-jul, antes de dormir):** la captura NO espera nombre + teléfono: dispara desde que el teléfono es válido (aunque el nombre esté vacío), y una segunda captura con más datos COMPLETA los campos faltantes del mismo lead NEW (nunca sobreescribe datos ya presentes ni resetea leads avanzados).
 
 **Architecture:** Nuevo endpoint `POST /api/lead/capture` que hace *fire-and-forget* desde la `EstimatorCard` y crea un lead `status='NEW'` deduplicado por teléfono (sin resetear leads que ya avanzaron). El planificador de followups (`lib/followups/plan.ts`) gana un `kind: "continua"` para leads `NEW`. El cron incluye `NEW` en su consulta y una plantilla nueva `continuar_pensionmas`. Todo reusa el motor de rondas, el dedupe por eventos, el tope de fallos y el opt-out ya probados.
 
@@ -59,9 +61,22 @@ describe("leadCaptureSchema", () => {
     expect(r.success).toBe(true)
   })
 
-  it("rechaza nombre corto y teléfono inválido", () => {
+  it("acepta SOLO teléfono (captura progresiva: el nombre llega después)", () => {
+    const r = leadCaptureSchema.safeParse({ phone: "5512345678" })
+    expect(r.success).toBe(true)
+    if (r.success) expect(r.data.fullName).toBeUndefined()
+  })
+
+  it("trata nombre vacío como ausente (no lo rechaza)", () => {
+    const r = leadCaptureSchema.safeParse({ fullName: "  ", phone: "5512345678" })
+    expect(r.success).toBe(true)
+    if (r.success) expect(r.data.fullName).toBeUndefined()
+  })
+
+  it("rechaza nombre corto (si viene) y teléfono inválido", () => {
     expect(leadCaptureSchema.safeParse({ fullName: "Ana", phone: "5512345678" }).success).toBe(false)
     expect(leadCaptureSchema.safeParse({ fullName: "Ana María", phone: "123" }).success).toBe(false)
+    expect(leadCaptureSchema.safeParse({ phone: "123" }).success).toBe(false)
   })
 })
 ```
@@ -74,7 +89,14 @@ En `lib/validation/schemas.ts`, después de `preQualifierSchema`, agrega (reusa 
 
 ```ts
 export const leadCaptureSchema = z.object({
-  fullName: z.string().trim().min(5, "Escribe tu nombre completo"),
+  // Captura progresiva: el nombre es opcional (llega en una captura posterior);
+  // vacío/espacios se trata como ausente, pero si viene algo, mínimo 5 chars.
+  fullName: z
+    .string()
+    .trim()
+    .transform((v) => (v === "" ? undefined : v))
+    .optional()
+    .refine((v) => v === undefined || v.length >= 5, "Escribe tu nombre completo"),
   phone: z.string().transform((v, ctx) => {
     const normalized = normalizePhoneMX(v)
     if (!normalized) {
@@ -110,19 +132,32 @@ export async function POST(req: NextRequest) {
     const d = parsed.data
     const db = supabaseAdmin()
 
-    // Dedupe por teléfono: si ya existe un lead (capturado o en flujo), NO se
-    // resetea; /api/evaluate lo retomará por teléfono cuando termine.
+    // Dedupe por teléfono: si ya existe un lead NO se resetea. Captura
+    // progresiva: si el existente es NEW y esta captura trae datos que al
+    // lead le faltan (nombre, salario), se COMPLETAN — nunca se sobreescribe
+    // un dato ya presente. /api/evaluate lo retomará por teléfono al terminar.
     const { data: rows } = await db
       .from("leads")
-      .select("id, status")
+      .select("id, status, full_name, monthly_salary")
       .eq("phone", d.phone)
       .order("created_at", { ascending: false })
       .limit(1)
     const existing = rows?.[0] ?? null
     if (existing) {
+      const patch: Record<string, unknown> = {}
+      if (existing.status === "NEW") {
+        if (!existing.full_name && d.fullName) patch.full_name = d.fullName
+        if (existing.monthly_salary == null && d.monthlySalary) {
+          patch.monthly_salary = d.monthlySalary
+        }
+      }
+      if (Object.keys(patch).length > 0) {
+        await db.from("leads").update(patch).eq("id", existing.id)
+      }
       await logEvent(existing.id, "lead_recaptured", {
         source_ref: d.sourceRef ?? null,
         status: existing.status,
+        completed_fields: Object.keys(patch),
       })
       return NextResponse.json({ ok: true })
     }
@@ -130,7 +165,7 @@ export async function POST(req: NextRequest) {
     const { data: lead, error } = await db
       .from("leads")
       .insert({
-        full_name: d.fullName,
+        full_name: d.fullName ?? null,
         phone: d.phone,
         status: "NEW",
         source: "WEB_APP",
@@ -140,7 +175,10 @@ export async function POST(req: NextRequest) {
       .select("id")
       .single()
     if (error) throw error
-    await logEvent(lead.id, "lead_captured", { source_ref: d.sourceRef ?? null })
+    await logEvent(lead.id, "lead_captured", {
+      source_ref: d.sourceRef ?? null,
+      has_name: Boolean(d.fullName),
+    })
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error("lead capture failed", err)
@@ -190,6 +228,11 @@ describe("planFollowups — continúa (lead sin terminar)", () => {
     const [r] = plan([nuevo])
     expect(r).toMatchObject({ leadId: "lead-new", kind: "continua", round: 1 })
     expect(r.params).toEqual(["Carlos"])
+  })
+
+  it("lead NEW sin nombre (captura solo-teléfono) usa fallback amigable, no 'hola'", () => {
+    const [r] = plan([{ ...nuevo, full_name: null }])
+    expect(r.params).toEqual(["amigo(a)"])
   })
 
   it("respeta la cadencia 1/3/7 (con ronda 1 enviada y 4 días manda ronda 2)", () => {
@@ -243,7 +286,8 @@ En `lib/followups/plan.ts`:
 
 **2b.** Dentro del `for (const lead of leads)`, **antes** de la rama `QUALIFIED`, agrega:
 ```ts
-    // Lead capturado en el hero que no terminó el pre-calificador.
+    // Lead capturado en el hero que no terminó el pre-calificador. Puede no
+    // tener nombre (captura solo-teléfono): fallback amigable, no "hola".
     if (lead.status === "NEW" && !agotado(lead.id, "continua")) {
       const dias = (now.getTime() - new Date(lead.updated_at).getTime()) / DIA_MS
       const ronda = rondaPendiente(dias, enviadas(lead.id, "continua"))
@@ -253,7 +297,7 @@ En `lib/followups/plan.ts`:
           phone: lead.phone,
           kind: "continua",
           round: ronda,
-          params: [nombre],
+          params: [lead.full_name ? nombre : "amigo(a)"],
         })
       }
     }
@@ -329,23 +373,38 @@ git commit -m "feat: el cron de followups atiende leads NEW con la plantilla con
 
 - [ ] **Step 1: Fire-and-forget de la captura**
 
-En `components/landing/EstimatorCard.tsx`, dentro de `comenzar()`, **después** de validar y **antes** de `router.push(...)`, agrega:
+En `components/landing/EstimatorCard.tsx` hay DOS momentos de captura (captura progresiva — ajuste del usuario). Adapta los nombres de estados (`nombre`, `telefono`, `salario`) a los reales del componente:
+
+**1a. Helper con guard, disparado en cuanto el teléfono es válido** (aunque el nombre esté vacío). Importa `useRef` si falta:
 
 ```ts
-    // Captura temprana: registra el lead aunque no complete el pre-calificador.
-    // keepalive permite que la petición sobreviva a la navegación inmediata.
+  // Captura progresiva: manda lo que haya en cuanto el teléfono es válido.
+  // Guard por payload para no repetir la misma petición; el endpoint deduplica
+  // por teléfono y completa campos faltantes en capturas posteriores.
+  // keepalive permite que la petición sobreviva a una navegación inmediata.
+  const lastCapture = useRef("")
+  const capturar = () => {
+    if (telefono.replace(/\D/g, "").length !== 10) return
+    const payload = JSON.stringify({
+      fullName: nombre.trim(),
+      phone: telefono.trim(),
+      monthlySalary: salario,
+      sourceRef: "landing-hero",
+    })
+    if (payload === lastCapture.current) return
+    lastCapture.current = payload
     void fetch("/api/lead/capture", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       keepalive: true,
-      body: JSON.stringify({
-        fullName: nombre.trim(),
-        phone: telefono.trim(),
-        monthlySalary: salario,
-        sourceRef: "landing-hero",
-      }),
+      body: payload,
     }).catch(() => {})
+  }
 ```
+
+Dispara `capturar()` en el `onBlur` del input de teléfono Y en el `onBlur` del input de nombre (si el teléfono ya es válido, esa segunda llamada completa el nombre en el mismo lead).
+
+**1b. Al enviar:** dentro de `comenzar()`, **después** de validar y **antes** de `router.push(...)`, llama `capturar()` (mismo helper).
 
 - [ ] **Step 2: Consentimiento visible junto al botón**
 
@@ -397,6 +456,8 @@ Botones:
 - **Respuesta rápida** · texto: `No recibir más mensajes`
 
 Ejemplos para revisión de Meta: {{1}} = Carlos
+
+Nota: para leads capturados solo con teléfono (sin nombre), el sistema manda {{1}} = "amigo(a)" — el cuerpo debe leerse natural con ambos casos.
 ```
 
 - [ ] **Step 2: Commit**
@@ -455,6 +516,7 @@ Con `.env.local` en modo **local** y el dev server:
    Con `WHATSAPP_ENABLED=false` debe registrar `reminder_dry_run` con `kind:"continua", round:1` en el timeline del lead. (Ajusta `updated_at` del lead ~2 días atrás en Studio para que la ronda 1 aplique.)
 3. **Continuidad:** completa ahora el pre-calificador con **ese mismo teléfono** → `/api/evaluate` debe retomar el MISMO lead (dedupe por teléfono) y moverlo a `QUALIFIED`/`CONTRACT_PENDING`. Corre el cron otra vez: ya **no** debe planear `continua` para ese lead.
 4. **Idempotencia:** vuelve a la landing con el mismo teléfono → no se crea un segundo lead (evento `lead_recaptured`, sin insertar).
+5. **Captura solo-teléfono (ajuste del usuario):** con OTRO teléfono, llena SOLO el WhatsApp (sin nombre) y sal del campo (blur) → lead `NEW` con `full_name` null. Luego escribe el nombre y sal del campo → el MISMO lead ahora tiene `full_name` (evento `lead_recaptured` con `completed_fields:["full_name"]`). Nota: estos pasos con curl directo a `/api/lead/capture` también valen si el navegador no está disponible.
 
 - [ ] **Step 3: Commit final (si hubo ajustes)**
 
