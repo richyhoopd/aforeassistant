@@ -52,3 +52,25 @@ def upload_image(path: Path) -> str:
     r = requests.post(url, headers={**_h(), "Content-Type": "image/png"}, data=path.read_bytes(), timeout=60)
     r.raise_for_status()
     return f"{cfg().supabase_url}/storage/v1/object/public/content-media/{nombre}"
+
+def published_items() -> list[dict]:
+    r = requests.get(_rest("content_items"), headers=_h(),
+                     params={"status": "eq.published", "select": "*"}, timeout=30)
+    r.raise_for_status()
+    return r.json()
+
+def upsert_metric(item_id: str, channel: str, snapshot_date: str, metrics: dict) -> None:
+    r = requests.post(_rest("content_metrics"),
+                      headers={**_h(), "Prefer": "resolution=merge-duplicates"},
+                      params={"on_conflict": "item_id,channel,snapshot_date"},
+                      json={"item_id": item_id, "channel": channel,
+                            "snapshot_date": snapshot_date, "metrics": metrics},
+                      timeout=30)
+    r.raise_for_status()
+
+def upsert_ad_metric(row: dict) -> None:
+    r = requests.post(_rest("ads_metrics"),
+                      headers={**_h(), "Prefer": "resolution=merge-duplicates"},
+                      params={"on_conflict": "campaign_id,snapshot_date"},
+                      json=row, timeout=30)
+    r.raise_for_status()

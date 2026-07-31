@@ -40,3 +40,30 @@ def test_upload_image_devuelve_url_publica(monkeypatch, tmp_path):
     url = db.upload_image(png)
     assert url.startswith("http://sb/storage/v1/object/public/content-media/")
     assert url.endswith("x.png")
+
+def test_published_items_filtra_por_status(monkeypatch):
+    _env(monkeypatch)
+    calls = []
+    monkeypatch.setattr(db.requests, "get", lambda url, headers=None, params=None, timeout=None: (calls.append(params), R([{"id": "x"}]))[1])
+    assert db.published_items() == [{"id": "x"}]
+    assert calls[0]["status"] == "eq.published"
+
+def test_upsert_metric_hace_upsert_postgrest(monkeypatch):
+    _env(monkeypatch)
+    calls = []
+    monkeypatch.setattr(db.requests, "post", lambda url, headers=None, params=None, json=None, timeout=None: (calls.append((url, headers, params, json)), R([]))[1])
+    db.upsert_metric("it1", "ig", "2026-08-05", {"reach": 100})
+    url, headers, params, body = calls[0]
+    assert url.endswith("/content_metrics")
+    assert headers["Prefer"] == "resolution=merge-duplicates"
+    assert params["on_conflict"] == "item_id,channel,snapshot_date"
+    assert body == {"item_id": "it1", "channel": "ig", "snapshot_date": "2026-08-05", "metrics": {"reach": 100}}
+
+def test_upsert_ad_metric(monkeypatch):
+    _env(monkeypatch)
+    calls = []
+    monkeypatch.setattr(db.requests, "post", lambda url, headers=None, params=None, json=None, timeout=None: (calls.append((url, params, json)), R([]))[1])
+    db.upsert_ad_metric({"campaign_id": "c1", "snapshot_date": "2026-08-05", "spend": 10.5})
+    url, params, body = calls[0]
+    assert url.endswith("/ads_metrics") and params["on_conflict"] == "campaign_id,snapshot_date"
+    assert body["campaign_id"] == "c1"

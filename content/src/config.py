@@ -15,6 +15,7 @@ class Config:
     fb_page_id: str
     fb_page_token: str
     ig_user_id: str
+    ads_account_id: str
     site_url: str
 
 def cfg() -> Config:
@@ -27,5 +28,6 @@ def cfg() -> Config:
         fb_page_id=os.environ.get("FB_PAGE_ID", ""),
         fb_page_token=os.environ.get("FB_PAGE_TOKEN", ""),
         ig_user_id=os.environ.get("IG_USER_ID", ""),
+        ads_account_id=os.environ.get("ADS_ACCOUNT_ID", ""),
         site_url=os.environ.get("SITE_URL", "https://www.pensionmas.com.mx"),
     )
