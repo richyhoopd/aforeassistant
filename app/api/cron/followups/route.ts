@@ -14,6 +14,7 @@ const TEMPLATE_POR_KIND = {
   nss: () => config.whatsappTemplateNss,
   firma: () => config.whatsappTemplateFirma,
   califica: () => config.whatsappTemplateCalificas,
+  continua: () => config.whatsappTemplateContinua,
 } as const
 
 // Vercel: hasta 50 envíos secuenciales pueden tardar más que el timeout por defecto.
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
     .select(
       "id, status, full_name, phone, updated_at, fecha_baja, rejection_reason, requalify_by_days, estimated_payout_min, estimated_payout_max, do_not_contact, human_takeover"
     )
-    .in("status", ["QUALIFIED", "CONTRACT_PENDING", "REJECTED"])
+    .in("status", ["NEW", "QUALIFIED", "CONTRACT_PENDING", "REJECTED"])
     .order("created_at", { ascending: true })
     .limit(1000)
   if (lErr) {
