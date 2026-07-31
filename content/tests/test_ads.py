@@ -27,3 +27,13 @@ def test_recolecta_campanias(monkeypatch):
     assert "act_123/insights" in calls[0]
     assert rows[0] == {"campaign_id": "c1", "campaign_name": "Antisapo", "snapshot_date": "2026-08-05",
                        "spend": 45.3, "impressions": 1000, "clicks": 80, "leads_reported": 5}
+
+def test_usa_ads_token_dedicado(monkeypatch):
+    monkeypatch.setenv("ADS_ACCOUNT_ID", "123")
+    monkeypatch.setenv("ADS_TOKEN", "adstok")
+    monkeypatch.setenv("FB_PAGE_TOKEN", "ptok")
+    data = {"data": []}
+    calls = []
+    monkeypatch.setattr(ads.requests, "get", lambda url, params=None, timeout=None: (calls.append(params), R(data))[1])
+    ads.collect_ads("2026-08-05")
+    assert calls[0]["access_token"] == "adstok"

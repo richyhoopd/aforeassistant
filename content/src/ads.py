@@ -14,7 +14,7 @@ def collect_ads(snapshot_date: str) -> int:
         "level": "campaign",
         "fields": "campaign_id,campaign_name,spend,impressions,clicks,actions",
         "time_range": json.dumps({"since": snapshot_date, "until": snapshot_date}),
-        "access_token": c.fb_page_token,
+        "access_token": c.ads_token or c.fb_page_token,
     }, timeout=60)
     r.raise_for_status()
     n = 0

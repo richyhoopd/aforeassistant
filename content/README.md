@@ -17,8 +17,10 @@ Telegram listos para pegar.
 Tras publicar, el mismo workflow corre `python metrics.py`: guarda un snapshot
 diario por pieza publicada (FB: reactions/comments/shares/reach; IG:
 reach/likes/comments/saved/shares) en `content_metrics`, y si `ADS_ACCOUNT_ID`
-está configurado (secret opcional; el token necesita `ads_read`), los insights
-por campaña del día en `ads_metrics`. Todo se ve en `/admin/contenido`.
+está configurado, los insights por campaña del día en `ads_metrics`. Al pautar,
+configurar además `ADS_ACCOUNT_ID` y `ADS_TOKEN` (secrets opcionales; el token
+es de un system user con permiso `ads_read`, ya que la Marketing API no acepta
+tokens de página). Todo se ve en `/admin/contenido`.
 
 ## Tests
 `python -m pytest -m "not slow"` (rápidos) · `python -m pytest` (con render real,
