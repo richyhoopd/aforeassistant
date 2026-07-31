@@ -29,7 +29,7 @@ export type FollowupEvent = {
 export type PlannedReminder = {
   leadId: string
   phone: string
-  kind: "nss" | "firma" | "califica"
+  kind: "nss" | "firma" | "califica" | "continua"
   round: number
   params: string[]
   signToken?: string
@@ -111,6 +111,22 @@ export function planFollowups(
     if (lead.do_not_contact || lead.human_takeover) continue
     const nombre = nombreDePila(lead.full_name)
     const leadContracts = contratosPorLead.get(lead.id) ?? []
+
+    // Lead capturado en el hero que no terminó el pre-calificador. Puede no
+    // tener nombre (captura solo-teléfono): fallback amigable, no "hola".
+    if (lead.status === "NEW" && !agotado(lead.id, "continua")) {
+      const dias = (now.getTime() - new Date(lead.updated_at).getTime()) / DIA_MS
+      const ronda = rondaPendiente(dias, enviadas(lead.id, "continua"))
+      if (ronda) {
+        out.push({
+          leadId: lead.id,
+          phone: lead.phone,
+          kind: "continua",
+          round: ronda,
+          params: [lead.full_name ? nombre : "amigo(a)"],
+        })
+      }
+    }
 
     if (lead.status === "QUALIFIED" && leadContracts.length === 0 && !agotado(lead.id, "nss")) {
       const dias = (now.getTime() - new Date(lead.updated_at).getTime()) / DIA_MS

@@ -250,3 +250,61 @@ describe("planFollowups — generales", () => {
     expect(r.params[0]).toBe("hola")
   })
 })
+
+describe("planFollowups — continúa (lead sin terminar)", () => {
+  const nuevo: FollowupLead = {
+    ...baseLead,
+    id: "lead-new",
+    status: "NEW",
+    estimated_payout_min: null,
+    estimated_payout_max: null,
+    updated_at: daysAgo(2),
+  }
+
+  it("lead NEW a 2 días manda ronda 1 de 'continua' solo con el nombre", () => {
+    const [r] = plan([nuevo])
+    expect(r).toMatchObject({ leadId: "lead-new", kind: "continua", round: 1 })
+    expect(r.params).toEqual(["Carlos"])
+  })
+
+  it("lead NEW sin nombre (captura solo-teléfono) usa fallback amigable, no 'hola'", () => {
+    const [r] = plan([{ ...nuevo, full_name: null }])
+    expect(r.params).toEqual(["amigo(a)"])
+  })
+
+  it("respeta la cadencia 1/3/7 (con ronda 1 enviada y 4 días manda ronda 2)", () => {
+    const events: FollowupEvent[] = [
+      { lead_id: "lead-new", type: "reminder_sent", payload: { kind: "continua", round: 1 } },
+    ]
+    const [r] = plan([{ ...nuevo, updated_at: daysAgo(4) }], [], events)
+    expect(r.round).toBe(2)
+  })
+
+  it("3 rondas enviadas ⇒ nada", () => {
+    const events: FollowupEvent[] = [1, 2, 3].map((round) => ({
+      lead_id: "lead-new",
+      type: "reminder_sent" as const,
+      payload: { kind: "continua", round },
+    }))
+    expect(plan([{ ...nuevo, updated_at: daysAgo(30) }], [], events)).toHaveLength(0)
+  })
+
+  it("menos de 1 día / do_not_contact / human_takeover ⇒ nada", () => {
+    expect(plan([{ ...nuevo, updated_at: daysAgo(0.5) }])).toHaveLength(0)
+    expect(plan([{ ...nuevo, do_not_contact: true }])).toHaveLength(0)
+    expect(plan([{ ...nuevo, human_takeover: true }])).toHaveLength(0)
+  })
+
+  it("al avanzar de NEW (p.ej. QUALIFIED) ya no manda 'continua'", () => {
+    expect(plan([{ ...nuevo, status: "QUALIFIED" }]).some((r) => r.kind === "continua")).toBe(false)
+  })
+
+  it("3 fallos de 'continua' ⇒ deja de planear ese kind", () => {
+    const events: FollowupEvent[] = [1, 1, 1].map((round) => ({
+      lead_id: "lead-new",
+      type: "reminder_failed" as const,
+      payload: { kind: "continua", round },
+    }))
+    expect(plan([nuevo], [], events)).toHaveLength(0)
+  })
+})
