@@ -22,6 +22,9 @@ export default async function ProtectedAdminLayout({
           <Link href="/admin" className="text-muted-foreground hover:text-foreground">
             Leads
           </Link>
+          <Link href="/admin/contenido" className="text-muted-foreground hover:text-foreground">
+            Contenido
+          </Link>
           <span className="ml-auto text-muted-foreground">{user.email}</span>
         </div>
       </header>
