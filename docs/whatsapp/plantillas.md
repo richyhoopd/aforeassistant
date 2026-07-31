@@ -61,6 +61,20 @@ Ejemplos: {{1}} = Carlos, {{2}} = PMAS-12345678
 
 Texto prefabricado de Meta con botón **"Copiar código"** (actívalo); caducidad del código: 10 minutos. El código debe migrarse de `sendWhatsAppText` a esta plantilla antes de prender envíos reales.
 
+### 6. `continuar_pensionmas` — categoría **Marketing**
+
+```
+Hola {{1}}, empezaste tu evaluación de retiro AFORE en Pensión+ y quedó a medias. Es gratis y te toma 2 minutos terminarla. Cuando quieras, aquí seguimos.
+```
+
+Botones:
+- **Ir al sitio web** · texto: `Continuar mi trámite` · URL estática: `https://www.pensionmas.com.mx/pre-calificador?source=wa-continua`
+- **Respuesta rápida** · texto: `No recibir más mensajes`
+
+Ejemplos para la revisión de Meta: {{1}} = Carlos
+
+Nota: para leads capturados solo con teléfono (sin nombre), el sistema manda {{1}} = "amigo(a)" — el cuerpo debe leerse natural con ambos casos.
+
 ## NSS por imagen — evaluación
 
 **Sí conviene.** El NSS son 11 dígitos que el cliente típico no sabe de memoria; pedirle que lo teclee en un formulario web es la mayor fricción del funnel. Casi todos tienen una foto de su credencial del IMSS o su constancia. Flujo propuesto (manual primero, sin OCR):
