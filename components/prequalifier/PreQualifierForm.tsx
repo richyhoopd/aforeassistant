@@ -26,6 +26,8 @@ type FormData = {
   monthlySalary: string
   yearsContributing: string
   lastWithdrawalWithin5y: string
+  expedienteActualizado: string
+  cuentaBancaria: string
   privacyConsent: boolean
 }
 
@@ -39,6 +41,8 @@ const empty: FormData = {
   monthlySalary: "",
   yearsContributing: "",
   lastWithdrawalWithin5y: "",
+  expedienteActualizado: "",
+  cuentaBancaria: "",
   privacyConsent: false,
 }
 
@@ -47,15 +51,27 @@ const STEPS = ["Contacto", "Identificación", "Tu situación", "Consentimiento"]
 export function PreQualifierForm() {
   const router = useRouter()
   const search = useSearchParams()
-  const [step, setStep] = useState(0)
-  const [data, setData] = useState<FormData>(empty)
+  // Si el hero ya capturó nombre y WhatsApp válidos, el paso Contacto sobra.
+  const [step, setStep] = useState(() => {
+    const nombre = search.get("nombre") ?? ""
+    const tel = search.get("tel") ?? ""
+    return nombre.trim().length >= 5 && normalizePhoneMX(tel) ? 1 : 0
+  })
+  const [data, setData] = useState<FormData>(() => ({
+    ...empty,
+    fullName: search.get("nombre") ?? "",
+    phone: (search.get("tel") ?? "").replace(/\D/g, "").slice(0, 10),
+    monthlySalary: search.get("salario") ?? "",
+  }))
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [warnings, setWarnings] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [serverError, setServerError] = useState("")
 
   const set = (k: keyof FormData, v: string | boolean) => {
-    setData((d) => ({ ...d, [k]: v }))
+    const value =
+      k === "phone" && typeof v === "string" ? v.replace(/\D/g, "").slice(0, 10) : v
+    setData((d) => ({ ...d, [k]: value }))
     setErrors((e) => ({ ...e, [k]: "" }))
   }
 
@@ -90,6 +106,9 @@ export function PreQualifierForm() {
         e.yearsContributing = "Indica tus años cotizando aproximados"
       if (data.lastWithdrawalWithin5y === "")
         e.lastWithdrawalWithin5y = "Selecciona una opción"
+      if (data.expedienteActualizado === "")
+        e.expedienteActualizado = "Selecciona una opción"
+      if (data.cuentaBancaria === "") e.cuentaBancaria = "Selecciona una opción"
     }
     if (step === 3 && !data.privacyConsent)
       e.privacyConsent = "Necesitas aceptar el aviso de privacidad para continuar"
@@ -118,6 +137,8 @@ export function PreQualifierForm() {
         monthlySalary: Number(data.monthlySalary),
         yearsContributing: Number(data.yearsContributing),
         lastWithdrawalWithin5y: data.lastWithdrawalWithin5y === "si",
+        expedienteActualizado: data.expedienteActualizado,
+        cuentaBancaria: data.cuentaBancaria,
         privacyConsent: data.privacyConsent,
         sourceRef: search.get("source") ?? undefined,
       }
@@ -187,6 +208,7 @@ export function PreQualifierForm() {
                 inputMode: "tel",
                 autoComplete: "tel",
                 placeholder: "5512345678",
+                maxLength: 10,
               })}
               {field("email", "Correo (opcional)", {
                 type: "email",
@@ -246,6 +268,45 @@ export function PreQualifierForm() {
                   </p>
                 )}
               </div>
+              {(
+                [
+                  [
+                    "expedienteActualizado",
+                    "¿Tu Expediente de Identificación está actualizado en tu AFORE?",
+                    "Si no lo sabes, no te preocupes: lo revisamos contigo.",
+                  ],
+                  [
+                    "cuentaBancaria",
+                    "¿Tienes una cuenta bancaria a tu nombre (con CLABE)?",
+                    "Ahí te depositará tu AFORE. Debe estar a tu nombre.",
+                  ],
+                ] as const
+              ).map(([k, label, hint]) => (
+                <div key={k} className="space-y-1.5">
+                  <Label>{label}</Label>
+                  <div className="flex gap-2">
+                    {[
+                      ["si", "Sí"],
+                      ["no", "No"],
+                      ["nose", "No sé"],
+                    ].map(([v, l]) => (
+                      <Button
+                        key={v}
+                        type="button"
+                        variant={data[k] === v ? "default" : "outline"}
+                        className="flex-1"
+                        onClick={() => set(k, v)}
+                      >
+                        {l}
+                      </Button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">{hint}</p>
+                  {errors[k] && (
+                    <p className="text-sm text-destructive">{errors[k]}</p>
+                  )}
+                </div>
+              ))}
             </>
           )}
           {step === 3 && (

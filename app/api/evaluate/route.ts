@@ -93,6 +93,8 @@ export async function POST(req: NextRequest) {
       payoutMin: result.payoutMin,
       payoutMax: result.payoutMax,
       reasons: result.reasons,
+      expedienteActualizado: d.expedienteActualizado ?? null,
+      cuentaBancaria: d.cuentaBancaria ?? null,
     })
 
     if (!result.eligible) {

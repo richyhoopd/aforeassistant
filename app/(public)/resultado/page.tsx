@@ -31,11 +31,38 @@ const mxn = (n: number) =>
 export default function Resultado() {
   const [data, setData] = useState<Payload | null>(null)
   const [missing, setMissing] = useState(false)
+  const [pendientes, setPendientes] = useState<string[]>([])
 
   useEffect(() => {
     const raw = sessionStorage.getItem("pensionmas:resultado")
     if (!raw) setMissing(true)
     else setData(JSON.parse(raw))
+
+    try {
+      const solicitud = JSON.parse(
+        sessionStorage.getItem("pensionmas:solicitud") ?? "{}"
+      )
+      const p: string[] = []
+      if (solicitud.expedienteActualizado === "no")
+        p.push(
+          "Actualizar tu Expediente de Identificación en tu AFORE. Te decimos cómo, es un trámite corto."
+        )
+      if (solicitud.expedienteActualizado === "nose")
+        p.push(
+          "Confirmar que tu Expediente de Identificación esté actualizado. Lo revisamos contigo por WhatsApp."
+        )
+      if (solicitud.cuentaBancaria === "no")
+        p.push(
+          "Abrir una cuenta bancaria a tu nombre (con CLABE) donde tu AFORE te depositará."
+        )
+      if (solicitud.cuentaBancaria === "nose")
+        p.push(
+          "Confirmar que tu cuenta bancaria esté a tu nombre y tenga CLABE. Te ayudamos a verificarlo."
+        )
+      setPendientes(p)
+    } catch {
+      // sin solicitud guardada no hay checklist; el resultado sigue completo
+    }
   }, [])
 
   if (missing) {
@@ -122,6 +149,24 @@ export default function Resultado() {
           </Card>
         ))}
       </div>
+
+      {pendientes.length > 0 && (
+        <div className="mt-6 rounded-lg border p-4 text-sm">
+          <p className="font-semibold">Pendientes antes de tu solicitud:</p>
+          <ul className="mt-2 space-y-2 text-muted-foreground">
+            {pendientes.map((p) => (
+              <li key={p} className="flex items-start gap-2">
+                <Info className="mt-0.5 size-4 shrink-0 text-primary" />
+                {p}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Ninguno te descalifica: son pasos que resolvemos contigo durante el
+            acompañamiento.
+          </p>
+        </div>
+      )}
 
       <div className="mt-6 rounded-lg border bg-muted/40 p-4 text-sm">
         <p className="flex items-start gap-2">
