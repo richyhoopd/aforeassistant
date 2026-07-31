@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { BadgeCheck, Lock } from "lucide-react"
 import { normalizePhoneMX } from "@/lib/validation/identifiers"
@@ -29,6 +29,29 @@ export function EstimatorCard() {
   const topado = bruto >= TOPE_RETIRO
   const pct = ((salario - MIN) / (MAX - MIN)) * 100
 
+  // Captura progresiva: manda lo que haya en cuanto el teléfono es válido.
+  // Guard por payload para no repetir la misma petición; el endpoint deduplica
+  // por teléfono y completa campos faltantes en capturas posteriores.
+  // keepalive permite que la petición sobreviva a una navegación inmediata.
+  const lastCapture = useRef("")
+  const capturar = () => {
+    if (telefono.replace(/\D/g, "").length !== 10) return
+    const payload = JSON.stringify({
+      fullName: nombre.trim(),
+      phone: telefono.trim(),
+      monthlySalary: salario,
+      sourceRef: "landing-hero",
+    })
+    if (payload === lastCapture.current) return
+    lastCapture.current = payload
+    void fetch("/api/lead/capture", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: payload,
+    }).catch(() => {})
+  }
+
   const comenzar = () => {
     const errs: { nombre?: string; telefono?: string } = {}
     if (nombre.trim().length < 5) errs.nombre = "Escribe tu nombre completo"
@@ -36,6 +59,7 @@ export function EstimatorCard() {
       errs.telefono = "Tu WhatsApp de 10 dígitos, ahí te contactamos"
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
+    capturar()
     const params = new URLSearchParams({
       nombre: nombre.trim(),
       tel: telefono.trim(),
@@ -108,6 +132,7 @@ export function EstimatorCard() {
               setNombre(e.target.value)
               if (errors.nombre) setErrors((p) => ({ ...p, nombre: undefined }))
             }}
+            onBlur={capturar}
             aria-invalid={!!errors.nombre}
             className={`mt-1.5 h-11 w-full rounded-lg border bg-white px-3 text-[15px] outline-none transition-shadow placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/25 ${errors.nombre ? "border-destructive" : "border-input"}`}
           />
@@ -131,6 +156,7 @@ export function EstimatorCard() {
               setTelefono(e.target.value.replace(/\D/g, "").slice(0, 10))
               if (errors.telefono) setErrors((p) => ({ ...p, telefono: undefined }))
             }}
+            onBlur={capturar}
             aria-invalid={!!errors.telefono}
             className={`mt-1.5 h-11 w-full rounded-lg border bg-white px-3 text-[15px] outline-none transition-shadow placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/25 ${errors.telefono ? "border-destructive" : "border-input"}`}
           />
@@ -147,9 +173,15 @@ export function EstimatorCard() {
         Comenzar mi trámite
       </button>
 
-      <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-        <Lock className="size-3.5 shrink-0" aria-hidden />
-        Tus datos van cifrados y nunca se venden. 2 minutos, sin compromiso.
+      <p className="mt-4 flex items-start justify-center gap-1.5 text-xs text-muted-foreground">
+        <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+        <span>
+          Al continuar aceptas que te contactemos por WhatsApp y nuestro{" "}
+          <a href="/privacidad" target="_blank" rel="noopener noreferrer" className="underline">
+            aviso de privacidad
+          </a>
+          . Tus datos van cifrados y nunca se venden.
+        </span>
       </p>
     </div>
   )
