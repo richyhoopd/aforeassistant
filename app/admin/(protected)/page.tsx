@@ -38,7 +38,7 @@ export default async function AdminLeads({
   let query = supabaseAdmin()
     .from("leads")
     .select(
-      "id, created_at, full_name, phone, status, source, estimated_payout_min, estimated_payout_max, human_takeover"
+      "id, created_at, full_name, phone, status, source, source_ref, estimated_payout_min, estimated_payout_max, human_takeover"
     )
     .order("created_at", { ascending: false })
     .limit(200)
@@ -75,6 +75,7 @@ export default async function AdminLeads({
             <TableHead>Teléfono</TableHead>
             <TableHead>Estatus</TableHead>
             <TableHead>Fuente</TableHead>
+            <TableHead>Origen</TableHead>
             <TableHead>Estimado</TableHead>
             <TableHead>Alta</TableHead>
           </TableRow>
@@ -101,6 +102,7 @@ export default async function AdminLeads({
                 </span>
               </TableCell>
               <TableCell className="text-xs text-muted-foreground">{l.source}</TableCell>
+              <TableCell className="text-xs text-muted-foreground">{l.source_ref ?? "—"}</TableCell>
               <TableCell className="text-xs">
                 {mxn(l.estimated_payout_min)} – {mxn(l.estimated_payout_max)}
               </TableCell>
@@ -111,7 +113,7 @@ export default async function AdminLeads({
           ))}
           {(leads ?? []).length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+              <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
                 Sin leads todavía
               </TableCell>
             </TableRow>
