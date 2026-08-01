@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase/server"
 import { normalizePhoneMX } from "@/lib/validation/identifiers"
 import { classifyInbound, type InboundMessage } from "@/lib/whatsapp/inbound"
 import { downloadWhatsAppMedia } from "@/lib/whatsapp/media"
+import { extractStatuses } from "@/lib/whatsapp/statuses"
 import { validSignature } from "@/lib/whatsapp/verify"
 
 // Verificación de Meta al registrar el webhook.
@@ -50,6 +51,33 @@ export async function POST(req: NextRequest) {
       ) ?? []
 
     const db = supabaseAdmin()
+
+    // Acuses de entrega: un "failed" aquí es la única forma de enterarnos de
+    // que un envío aceptado por el API nunca llegó (plantilla pausada, cuenta
+    // sin método de pago, número inválido...).
+    for (const s of extractStatuses(body)) {
+      if (s.status !== "failed") continue
+      console.error(
+        `whatsapp delivery failed: code=${s.error?.code} title=${s.error?.title} details=${s.error?.details} to=${s.recipient} wamid=${s.messageId}`
+      )
+      const phone = normalizePhoneMX(s.recipient ?? "")
+      if (!phone) continue
+      const { data: rows } = await db
+        .from("leads")
+        .select("id")
+        .eq("phone", phone)
+        .order("created_at", { ascending: false })
+        .limit(1)
+      if (rows?.[0]) {
+        await logEvent(rows[0].id, "whatsapp_delivery_failed", {
+          message_id: s.messageId,
+          code: s.error?.code,
+          title: s.error?.title,
+          details: s.error?.details,
+        })
+      }
+    }
+
     for (const m of messages) {
       try {
         const inbound = classifyInbound(m)
