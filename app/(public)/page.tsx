@@ -8,6 +8,7 @@ import {
   Wallet,
 } from "lucide-react"
 import { HeroShowcase } from "@/components/landing/HeroShowcase"
+import { MoneyBackdrop } from "@/components/landing/MoneyBackdrop"
 import { Reveal } from "@/components/landing/Reveal"
 import { StatsBars } from "@/components/landing/StatsBars"
 
@@ -337,8 +338,12 @@ export default function Landing() {
       </section>
 
       {/* Requisitos */}
-      <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28" id="requisitos">
-        <Reveal>
+      <section
+        className="relative mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-28 lg:px-8"
+        id="requisitos"
+      >
+        <MoneyBackdrop />
+        <Reveal className="relative">
           <h2 className="mx-auto max-w-3xl text-balance text-center font-display text-[clamp(2rem,4vw,2.9rem)] font-semibold leading-tight tracking-[-0.01em]">
             ¿Qué necesitas para calificar?
           </h2>
@@ -347,7 +352,7 @@ export default function Landing() {
             revisa contigo en 2 minutos.
           </p>
         </Reveal>
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="relative mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
               title: "46 días sin empleo",
