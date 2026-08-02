@@ -89,7 +89,9 @@ export function PreQualifierForm() {
     ...empty,
     fullName: search.get("nombre") ?? "",
     phone: (search.get("tel") ?? "").replace(/\D/g, "").slice(0, 10),
-    monthlySalary: search.get("salario") ?? "10000",
+    // Sin default: el 10000 tenía sentido para posicionar la barra, pero en un
+    // campo de texto confunde y ensuciaba el salario de los leads capturados.
+    monthlySalary: search.get("salario") ?? "",
   }))
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [warnings, setWarnings] = useState<Record<string, string>>({})
