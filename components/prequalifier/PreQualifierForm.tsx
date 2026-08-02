@@ -49,7 +49,7 @@ const empty: FormData = {
 const STEPS = ["Contacto", "Identificación", "Tu situación", "Consentimiento"]
 
 const STEP_META = [
-  { title: "Calcula tu retiro estimado", hint: "Mueve la barra a tu último salario y déjanos tu contacto." },
+  { title: "Calcula tu retiro estimado", hint: "Escribe tu último salario y déjanos tu contacto." },
   { title: "Tu identificación", hint: "Con tu CURP y NSS revisamos tu caso ante el IMSS y tu AFORE." },
   { title: "Tu situación laboral", hint: "Con esto calculamos cuánto podrías retirar." },
   { title: "Último paso", hint: "Tu autorización para tratar tus datos y evaluar tu caso." },
@@ -57,8 +57,6 @@ const STEP_META = [
 
 const HOY = new Date().toISOString().slice(0, 10)
 
-const SALARIO_MIN = 8000
-const SALARIO_MAX = 100000
 /** Tope aproximado del retiro parcial por desempleo. */
 const TOPE_RETIRO = 33492
 
@@ -169,6 +167,13 @@ export function PreQualifierForm() {
     }).catch(() => {})
   }
 
+  // Estimado del paso 0: solo cuando hay un salario real capturado.
+  const salarioNum = Number(data.monthlySalary)
+  const estimado =
+    salarioNum >= 1000
+      ? Math.min(Math.round((salarioNum * 3) / 500) * 500, TOPE_RETIRO)
+      : null
+
   const next = () => {
     if (!validateStep()) return
     if (step === 0) capturar()
@@ -269,56 +274,63 @@ export function PreQualifierForm() {
       <div key={step} className="space-y-4">
           {step === 0 && (
             <>
-              <div className="rounded-2xl bg-accent/60 p-5 text-center">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Tu retiro estimado
+              {/* El salario se escribe (el usuario ya lo sabe); el estimado
+                  aparece como consecuencia, no como una barra que atinar. */}
+              <div className="rounded-2xl bg-accent/60 p-5">
+                <Label htmlFor="monthlySalary" className="text-[15px]">
+                  Tu último salario mensual
+                </Label>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Bruto, antes de descuentos. Si no lo recuerdas exacto, un
+                  aproximado sirve.
                 </p>
-                <p className="mt-1 font-display text-5xl font-semibold leading-none tracking-[-0.02em]">
-                  {mxn.format(
-                    Math.min(
-                      Math.round((Number(data.monthlySalary || 10000) * 3) / 500) * 500,
-                      TOPE_RETIRO
-                    )
-                  )}
-                </p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  {Number(data.monthlySalary || 10000) * 3 >= TOPE_RETIRO
-                    ? `El retiro por desempleo tiene un tope de ${mxn.format(TOPE_RETIRO)}.`
-                    : "Entre 30 y 90 días de tu salario base. El monto final lo determina tu AFORE."}
-                </p>
-                <div className="mt-4 text-left">
-                  <label
-                    htmlFor="salario-slider"
-                    className="flex items-baseline justify-between text-sm"
+                <div className="relative mt-3">
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-y-0 left-4 flex items-center font-display text-2xl font-semibold text-muted-foreground"
                   >
-                    <span className="font-medium">Tu último salario mensual</span>
-                    <span className="font-semibold text-primary tabular-nums">
-                      {mxn.format(Number(data.monthlySalary || 10000))}
-                    </span>
-                  </label>
+                    $
+                  </span>
                   <input
-                    id="salario-slider"
-                    type="range"
-                    min={SALARIO_MIN}
-                    max={SALARIO_MAX}
-                    step={1000}
-                    value={Math.min(
-                      Math.max(Number(data.monthlySalary || 10000), SALARIO_MIN),
-                      SALARIO_MAX
-                    )}
-                    onChange={(ev) => set("monthlySalary", ev.target.value)}
-                    className="estimator-range mt-3 w-full"
-                    style={
-                      {
-                        "--pct": `${((Math.min(Math.max(Number(data.monthlySalary || 10000), SALARIO_MIN), SALARIO_MAX) - SALARIO_MIN) / (SALARIO_MAX - SALARIO_MIN)) * 100}%`,
-                      } as React.CSSProperties
+                    id="monthlySalary"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    placeholder="12,000"
+                    value={
+                      data.monthlySalary
+                        ? Number(data.monthlySalary).toLocaleString("es-MX")
+                        : ""
                     }
+                    onChange={(ev) => set("monthlySalary", ev.target.value)}
+                    aria-invalid={!!errors.monthlySalary}
+                    aria-describedby={estimado !== null ? "estimado" : undefined}
+                    className="h-16 w-full rounded-xl border border-input bg-white pl-11 pr-4 font-display text-3xl font-semibold tabular-nums shadow-xs outline-none transition-[box-shadow,border-color] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-[invalid=true]:border-destructive"
                   />
-                  <div className="mt-1.5 flex justify-between text-xs font-medium text-muted-foreground tabular-nums">
-                    <span>{mxn.format(SALARIO_MIN)}</span>
-                    <span>{mxn.format(SALARIO_MAX)}+</span>
-                  </div>
                 </div>
+                {errors.monthlySalary && (
+                  <p className="mt-1.5 text-sm text-destructive">
+                    {errors.monthlySalary}
+                  </p>
+                )}
+
+                {estimado !== null && (
+                  <div
+                    id="estimado"
+                    className="mt-5 border-t border-ink/10 pt-4 text-center"
+                  >
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Tu retiro estimado
+                    </p>
+                    <p className="mt-1 font-display text-4xl font-semibold leading-none tracking-[-0.02em]">
+                      {mxn.format(estimado)}
+                    </p>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      {estimado >= TOPE_RETIRO
+                        ? `El retiro por desempleo tiene un tope de ${mxn.format(TOPE_RETIRO)}.`
+                        : "Entre 30 y 90 días de tu salario base. El monto final lo determina tu AFORE."}
+                    </p>
+                  </div>
+                )}
               </div>
               {field("fullName", "Nombre completo", {
                 autoComplete: "name",
