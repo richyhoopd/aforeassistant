@@ -33,12 +33,19 @@ Escala contenida (nada de pills gigantes): botones `rounded-lg` (8px), inputs `r
 
 ## Components
 
-- **EstimatorCard** (hero, primero en móvil): ES el formulario inicial. Tope del estimado `TOPE_RETIRO = $32,900` (constante en `components/landing/EstimatorCard.tsx`); slider de salario con track degradado cobalto; inputs nombre + WhatsApp validados; al enviar navega a `/pre-calificador?nombre&tel&salario&source` (el form prellena desde esos params). Badge "Sin costo", microcopy de cifrado.
+- **HeroShowcase** (hero derecho): persona con dinero en card blanca + link "Calcular mi retiro ↗", heading "+500 personas asesoradas" y 3 review cards escalonadas (avatares en `public/images/avatar-*.jpg`; reseñas ficticias pedidas por Ricardo). Fondo con retícula sutil (`.hero-grid`) y cuadritos accent. El estimador (slider + estimado con tope `TOPE_RETIRO = $33,492`) vive como paso 1 del pre-calificador (`PreQualifierForm`).
+- **Pantalla de éxito** `/firmado/[folio]`: navy completo con `.money-pattern`, folio gigante + CopyFolio, 3 pasos numerados en oro, foto de persona feliz con celular y burbuja de WhatsApp. La firma redirige aquí.
 - **Franja de compromisos**: fila de 4 bullets con ShieldCheck bajo el hero.
 - **StatsBars**: barras con altura por defecto (solo animan con JS+IO); 2024 en cobalto con texto blanco; cifra gigante con subrayado dorado.
 - **Cards de proceso**: teal oscuro / periwinkle / oro, chip "PASO N" cuadrado, icon tile blanco.
 - **Footer**: navy 4 columnas (marca+blurb, Páginas, Legal, Compromiso + chip WhatsApp), disclaimers legales en `text-white/50`, bottom bar con © y dominio.
 - **CTA final**: panel navy con glows radiales cobalto+oro, botón blanco (hover dorado).
+
+## Prohibiciones (pedidas por Ricardo)
+
+- **Cards con contorno gris** (`border border-border` como marco de tarjetas): nunca. Las cards se definen con sombra suave (`shadow-[0_1px_2px_oklch(0.23_0.06_265/0.05),0_16px_40px_-24px_oklch(0.23_0.06_265/0.25)]`) o con relleno tenue (`bg-secondary/60`). Sobreviven solo hairlines tipográficas (separadores `border-t`/`border-b` al 60%), chips sobre cards de color y botones outline.
+- **Alerts/avisos con borde de color + fondo tintado** (estilo `border-amber-300 bg-amber-50`, `border-destructive/40 bg-destructive/5`): banneados, huelen a IA. Un aviso es relleno tintado sin borde + icono + texto en tinta: advertencia `bg-gold/25 text-ink` con icono `text-gold-deep`; error `bg-destructive/8 text-destructive font-medium`; info `bg-accent text-ink`.
+- **Recuadros de diálogo tintados decorativos** (citas o notas en cajitas con borde): las citas van como tipografía serif plana con pie, no en caja.
 
 ## Motion
 

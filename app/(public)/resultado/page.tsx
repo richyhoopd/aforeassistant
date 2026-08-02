@@ -98,7 +98,7 @@ export default function Resultado() {
         </h1>
         <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
           {data.result.reasons.map((r) => (
-            <li key={r} className="rounded-md border p-3">
+            <li key={r} className="rounded-lg bg-secondary/70 p-3">
               {r}
             </li>
           ))}
@@ -151,7 +151,7 @@ export default function Resultado() {
       </div>
 
       {pendientes.length > 0 && (
-        <div className="mt-6 rounded-lg border p-4 text-sm">
+        <div className="mt-6 rounded-xl bg-secondary/70 p-4 text-sm">
           <p className="font-semibold">Pendientes antes de tu solicitud:</p>
           <ul className="mt-2 space-y-2 text-muted-foreground">
             {pendientes.map((p) => (
@@ -168,7 +168,7 @@ export default function Resultado() {
         </div>
       )}
 
-      <div className="mt-6 rounded-lg border bg-muted/40 p-4 text-sm">
+      <div className="mt-6 rounded-xl bg-secondary/70 p-4 text-sm">
         <p className="flex items-start gap-2">
           <Info className="mt-0.5 size-4 shrink-0 text-primary" />
           <span>

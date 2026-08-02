@@ -539,7 +539,7 @@ export function PensionCalculator() {
 
 function ResultPlaceholder({ text }: { text: string }) {
   return (
-    <div className="flex min-h-64 items-center justify-center rounded-2xl border border-dashed border-foreground/20 bg-secondary/50 p-8">
+    <div className="flex min-h-64 items-center justify-center rounded-2xl bg-secondary/70 p-8">
       <p className="max-w-xs text-center text-sm text-muted-foreground">{text}</p>
     </div>
   )

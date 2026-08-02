@@ -1,20 +1,23 @@
 "use client"
 
 import { useState } from "react"
-import { CheckCircle2, Loader2, MessageCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Loader2, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SignaturePad } from "./SignaturePad"
 
 export function SignFlow({ token }: { token: string }) {
+  const router = useRouter()
+  const [accepted, setAccepted] = useState(false)
   const [signature, setSignature] = useState<string | null>(null)
   const [otpRequested, setOtpRequested] = useState(false)
   const [otpDelivered, setOtpDelivered] = useState<boolean | null>(null)
   const [otp, setOtp] = useState("")
   const [busy, setBusy] = useState<"otp" | "sign" | null>(null)
   const [error, setError] = useState("")
-  const [folio, setFolio] = useState("")
 
   const requestOtp = async () => {
     setBusy("otp")
@@ -40,6 +43,10 @@ export function SignFlow({ token }: { token: string }) {
   }
 
   const sign = async () => {
+    if (!accepted) {
+      setError("Confirma que leíste y aceptas los términos del contrato.")
+      return
+    }
     if (!signature) {
       setError("Primero dibuja tu firma.")
       return
@@ -61,7 +68,8 @@ export function SignFlow({ token }: { token: string }) {
         setError(body.error ?? "No pudimos completar la firma.")
         return
       }
-      setFolio(body.folio)
+      router.push(`/firmado/${encodeURIComponent(body.folio)}`)
+      return
     } catch {
       setError("Sin conexión. Intenta de nuevo.")
     } finally {
@@ -69,22 +77,24 @@ export function SignFlow({ token }: { token: string }) {
     }
   }
 
-  if (folio) {
-    return (
-      <div className="rounded-lg border bg-muted/30 p-6 text-center">
-        <CheckCircle2 className="mx-auto size-10 text-primary" />
-        <h2 className="mt-3 text-xl font-semibold">¡Contrato firmado!</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Tu folio es <strong>{folio}</strong>. En breve te escribimos por
-          WhatsApp con los siguientes pasos para tu trámite.
-        </p>
-      </div>
-    )
-  }
-
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="space-y-6 rounded-2xl bg-white p-6 shadow-[0_1px_2px_oklch(0.23_0.06_265/0.05),0_16px_40px_-24px_oklch(0.23_0.06_265/0.25)] sm:p-8">
+      <label className="flex items-start gap-3 rounded-xl bg-secondary/70 p-4 text-sm font-medium transition-colors has-[[data-state=checked]]:bg-accent">
+        <Checkbox
+          checked={accepted}
+          onCheckedChange={(v) => {
+            setAccepted(v === true)
+            setError("")
+          }}
+          className="mt-0.5"
+        />
+        <span>
+          Leí el contrato completo y acepto sus términos, incluidos los
+          honorarios de asesoría que se pagan solo después de recibir mi retiro.
+        </span>
+      </label>
+
+      <div className={accepted ? "" : "pointer-events-none select-none opacity-40"}>
         <Label className="mb-2 block">Tu firma</Label>
         <SignaturePad onChange={setSignature} />
       </div>
@@ -99,7 +109,7 @@ export function SignFlow({ token }: { token: string }) {
           type="button"
           variant="outline"
           onClick={requestOtp}
-          disabled={busy !== null}
+          disabled={busy !== null || !accepted}
         >
           {busy === "otp" ? (
             <Loader2 className="size-4 animate-spin" />
@@ -109,7 +119,8 @@ export function SignFlow({ token }: { token: string }) {
           {otpRequested ? "Reenviar código" : "Enviarme el código"}
         </Button>
         {otpRequested && otpDelivered === false && (
-          <p className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+          <p className="flex items-start gap-2 rounded-lg bg-gold/25 p-3 text-sm text-ink">
+            <MessageCircle className="mt-0.5 size-4 shrink-0 text-gold-deep" aria-hidden />
             El envío automático aún no está activo. Escríbenos por WhatsApp y te
             compartimos tu código de forma manual.
           </p>
@@ -130,7 +141,7 @@ export function SignFlow({ token }: { token: string }) {
       </div>
 
       {error && (
-        <p className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
+        <p className="rounded-lg bg-destructive/8 p-3 text-sm font-medium text-destructive">
           {error}
         </p>
       )}
@@ -139,7 +150,7 @@ export function SignFlow({ token }: { token: string }) {
         size="lg"
         className="w-full"
         onClick={sign}
-        disabled={busy !== null || !otpRequested}
+        disabled={busy !== null || !otpRequested || !accepted}
       >
         {busy === "sign" && <Loader2 className="size-4 animate-spin" />}
         Firmar contrato

@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { EmailContractButton } from "@/components/sign/EmailContractButton"
 import { SignFlow } from "@/components/sign/SignFlow"
 import { CONTRACT_TITLE, contractClauses } from "@/lib/pdf/contract-text"
 import { supabaseAdmin } from "@/lib/supabase/server"
@@ -39,8 +40,10 @@ export default async function Firmar({
   if (contract.signed_at) {
     return (
       <Shell>
-        <h1 className="text-2xl font-bold">Este contrato ya fue firmado</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h1 className="font-display text-3xl font-semibold tracking-[-0.01em]">
+          Este contrato ya fue firmado
+        </h1>
+        <p className="mt-3 text-muted-foreground">
           Folio {contract.folio}. Te contactamos por WhatsApp con los siguientes
           pasos. Si tienes dudas, escríbenos.
         </p>
@@ -50,12 +53,14 @@ export default async function Firmar({
   if (new Date(contract.sign_token_expires_at) < new Date()) {
     return (
       <Shell>
-        <h1 className="text-2xl font-bold">Tu enlace expiró</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h1 className="font-display text-3xl font-semibold tracking-[-0.01em]">
+          Tu enlace expiró
+        </h1>
+        <p className="mt-3 text-muted-foreground">
           Por seguridad los enlaces de firma duran 72 horas. Vuelve a evaluarte
           para generar uno nuevo — tus datos se conservan.
         </p>
-        <Button asChild className="mt-4">
+        <Button asChild className="mt-5">
           <Link href="/pre-calificador">Generar nuevo enlace</Link>
         </Button>
       </Shell>
@@ -69,47 +74,70 @@ export default async function Firmar({
   })
 
   return (
-    <Shell>
-      <h1 className="text-2xl font-bold">Firma tu contrato de asesoría</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        {lead.full_name} · NSS {lead.nss}
-      </p>
-
-      <div className="mt-6 max-h-96 space-y-4 overflow-y-auto rounded-lg border p-4">
-        <h2 className="font-semibold">{CONTRACT_TITLE}</h2>
-        {clauses.map((c) => (
-          <div key={c.heading}>
-            <h3 className="text-sm font-semibold">{c.heading}</h3>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">{c.body}</p>
+    <div className="bg-[linear-gradient(180deg,oklch(0.96_0.025_250),oklch(1_0_0)_320px)]">
+      <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:py-16">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="font-display text-3xl font-semibold tracking-[-0.01em] sm:text-4xl">
+              Firma tu contrato de asesoría
+            </h1>
+            <p className="mt-2 text-muted-foreground">
+              {lead.full_name} · NSS {lead.nss}
+            </p>
           </div>
-        ))}
-      </div>
-      <p className="mt-2 text-xs text-muted-foreground">
-        Honorarios: {mxn(Number(contract.commission_amount ?? 5000))} — pagaderos
-        solo después de recibir tu retiro. Este documento es exactamente el que
-        quedará firmado en PDF.
-      </p>
+          <EmailContractButton />
+        </div>
 
-      <div className="mt-8">
-        <SignFlow token={token} />
+        <div className="mt-8 rounded-2xl bg-white shadow-[0_1px_2px_oklch(0.23_0.06_265/0.05),0_16px_40px_-24px_oklch(0.23_0.06_265/0.25)]">
+          <div className="border-b border-border/60 px-6 py-4 sm:px-8">
+            <h2 className="font-display text-xl font-semibold leading-snug">
+              {CONTRACT_TITLE}
+            </h2>
+          </div>
+          <div className="max-h-[30rem] space-y-6 overflow-y-auto px-6 py-6 sm:px-8">
+            {clauses.map((c) => (
+              <div key={c.heading}>
+                <h3 className="font-semibold">{c.heading}</h3>
+                <p className="mt-1.5 text-[15px] leading-7 text-foreground/80">
+                  {c.body}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-border/60 px-6 py-4 text-sm text-muted-foreground sm:px-8">
+            Honorarios: <strong className="text-foreground">{mxn(Number(contract.commission_amount ?? 5000))}</strong>{" "}
+            — pagaderos solo después de recibir tu retiro. Este documento es
+            exactamente el que quedará firmado en PDF.
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <SignFlow token={token} />
+        </div>
       </div>
-    </Shell>
+    </div>
   )
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
-  return <div className="mx-auto w-full max-w-lg px-4 py-10">{children}</div>
+  return (
+    <div className="bg-[linear-gradient(180deg,oklch(0.96_0.025_250),oklch(1_0_0)_320px)]">
+      <div className="mx-auto w-full max-w-3xl px-4 py-16">{children}</div>
+    </div>
+  )
 }
 
 function Invalid() {
   return (
     <Shell>
-      <h1 className="text-2xl font-bold">Enlace inválido</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
+      <h1 className="font-display text-3xl font-semibold tracking-[-0.01em]">
+        Enlace inválido
+      </h1>
+      <p className="mt-3 text-muted-foreground">
         Este enlace de firma no existe. Revisa que lo hayas copiado completo o
         vuelve a evaluarte.
       </p>
-      <Button asChild className="mt-4">
+      <Button asChild className="mt-5">
         <Link href="/pre-calificador">Ir al pre-calificador</Link>
       </Button>
     </Shell>
