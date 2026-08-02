@@ -114,7 +114,6 @@ export function PreQualifierForm() {
       if (data.fullName.trim().length < 5) e.fullName = "Escribe tu nombre completo"
       if (!normalizePhoneMX(data.phone))
         e.phone = "Escribe un teléfono mexicano de 10 dígitos (es donde te contactamos)"
-      if (data.email && !/^\S+@\S+\.\S+$/.test(data.email)) e.email = "Correo inválido"
     }
     if (step === 1) {
       const curp = validateCURP(data.curp)
@@ -139,8 +138,11 @@ export function PreQualifierForm() {
         e.expedienteActualizado = "Selecciona una opción"
       if (data.cuentaBancaria === "") e.cuentaBancaria = "Selecciona una opción"
     }
-    if (step === 3 && !data.privacyConsent)
-      e.privacyConsent = "Necesitas aceptar el aviso de privacidad para continuar"
+    if (step === 3) {
+      if (data.email && !/^\S+@\S+\.\S+$/.test(data.email)) e.email = "Correo inválido"
+      if (!data.privacyConsent)
+        e.privacyConsent = "Necesitas aceptar el aviso de privacidad para continuar"
+    }
     setErrors(e)
     setWarnings(w)
     return Object.keys(e).length === 0
@@ -249,7 +251,9 @@ export function PreQualifierForm() {
 
   return (
     <div className="mx-auto w-full max-w-md">
-      <div className="mb-7">
+      {/* En móvil las etiquetas de paso y la pista se ocultan: "Paso N de 4" y
+          el título ya dan el contexto, y el formulario debe caber sin scroll. */}
+      <div className="mb-3 sm:mb-7">
         <div className="flex items-center gap-2">
           {STEPS.map((s, i) => (
             <div key={s} className="flex-1">
@@ -257,36 +261,37 @@ export function PreQualifierForm() {
                 className={`h-1.5 rounded-full transition-colors duration-300 ${i <= step ? "bg-primary" : "bg-muted"}`}
               />
               <p
-                className={`mt-1.5 text-[11px] font-medium ${i === step ? "text-foreground" : i < step ? "text-primary" : "text-muted-foreground"}`}
+                className={`mt-1.5 hidden text-[11px] font-medium sm:block ${i === step ? "text-foreground" : i < step ? "text-primary" : "text-muted-foreground"}`}
               >
                 {s}
               </p>
             </div>
           ))}
         </div>
-        <div className="mt-5 flex items-baseline justify-between gap-4">
+        <div className="mt-3 flex items-baseline justify-between gap-4 sm:mt-5">
           <h2 className="font-display text-xl font-semibold">{STEP_META[step].title}</h2>
           <p className="shrink-0 text-xs font-medium text-muted-foreground">
             Paso {step + 1} de {STEPS.length}
           </p>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">{STEP_META[step].hint}</p>
+        <p className="mt-1 hidden text-sm text-muted-foreground sm:block">
+          {STEP_META[step].hint}
+        </p>
       </div>
 
-      <div key={step} className="space-y-4">
+      <div key={step} className="space-y-3 sm:space-y-4">
           {step === 0 && (
             <>
               {/* El salario se escribe (el usuario ya lo sabe); el estimado
                   aparece como consecuencia, no como una barra que atinar. */}
-              <div className="rounded-2xl bg-accent/60 p-5">
+              <div className="rounded-2xl bg-accent/60 p-4 sm:p-5">
                 <Label htmlFor="monthlySalary" className="text-[15px]">
                   Tu último salario mensual
                 </Label>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Bruto, antes de descuentos. Si no lo recuerdas exacto, un
-                  aproximado sirve.
+                  Bruto, antes de descuentos. Un aproximado sirve.
                 </p>
-                <div className="relative mt-3">
+                <div className="relative mt-2.5 sm:mt-3">
                   <span
                     aria-hidden
                     className="pointer-events-none absolute inset-y-0 left-4 flex items-center font-display text-2xl font-semibold text-muted-foreground"
@@ -306,7 +311,7 @@ export function PreQualifierForm() {
                     onChange={(ev) => set("monthlySalary", ev.target.value)}
                     aria-invalid={!!errors.monthlySalary}
                     aria-describedby={estimado !== null ? "estimado" : undefined}
-                    className="h-16 w-full rounded-xl border border-input bg-white pl-11 pr-4 font-display text-3xl font-semibold tabular-nums shadow-xs outline-none transition-[box-shadow,border-color] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-[invalid=true]:border-destructive"
+                    className="h-14 w-full rounded-xl sm:h-16 border border-input bg-white pl-11 pr-4 font-display text-3xl font-semibold tabular-nums shadow-xs outline-none transition-[box-shadow,border-color] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-[invalid=true]:border-destructive"
                   />
                 </div>
                 {errors.monthlySalary && (
@@ -346,12 +351,6 @@ export function PreQualifierForm() {
                 placeholder: "5512345678",
                 maxLength: 10,
                 onBlur: capturar,
-              })}
-              {field("email", "Correo (opcional)", {
-                type: "email",
-                autoComplete: "email",
-                maxLength: 100,
-                placeholder: "tucorreo@ejemplo.com",
               })}
             </>
           )}
@@ -456,6 +455,14 @@ export function PreQualifierForm() {
           )}
           {step === 3 && (
             <div className="space-y-4">
+              {/* El correo vive aquí (no en Contacto) para que el paso 1 quepa
+                  en una pantalla; es opcional y solo sirve para mandarte copia. */}
+              {field("email", "Correo (opcional)", {
+                type: "email",
+                autoComplete: "email",
+                maxLength: 100,
+                placeholder: "tucorreo@ejemplo.com",
+              })}
               <div className="rounded-lg border p-4 text-sm text-muted-foreground">
                 Antes de evaluar tu caso necesitamos tu autorización para tratar
                 tus datos (NSS, CURP y datos laborales) conforme a nuestro aviso
