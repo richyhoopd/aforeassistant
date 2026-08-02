@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Loader2 } from "lucide-react"
@@ -48,6 +48,36 @@ const empty: FormData = {
 
 const STEPS = ["Contacto", "Identificación", "Tu situación", "Consentimiento"]
 
+const STEP_META = [
+  { title: "Calcula tu retiro estimado", hint: "Mueve la barra a tu último salario y déjanos tu contacto." },
+  { title: "Tu identificación", hint: "Con tu CURP y NSS revisamos tu caso ante el IMSS y tu AFORE." },
+  { title: "Tu situación laboral", hint: "Con esto calculamos cuánto podrías retirar." },
+  { title: "Último paso", hint: "Tu autorización para tratar tus datos y evaluar tu caso." },
+]
+
+const HOY = new Date().toISOString().slice(0, 10)
+
+const SALARIO_MIN = 8000
+const SALARIO_MAX = 100000
+/** Tope aproximado del retiro parcial por desempleo. */
+const TOPE_RETIRO = 33492
+
+const mxn = new Intl.NumberFormat("es-MX", {
+  style: "currency",
+  currency: "MXN",
+  maximumFractionDigits: 0,
+})
+
+const sanitizers: Partial<Record<keyof FormData, (v: string) => string>> = {
+  phone: (v) => v.replace(/\D/g, "").slice(0, 10),
+  nss: (v) => v.replace(/\D/g, "").slice(0, 11),
+  curp: (v) => v.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 18),
+  monthlySalary: (v) => v.replace(/\D/g, "").slice(0, 7),
+  yearsContributing: (v) => v.replace(/\D/g, "").slice(0, 2),
+  fullName: (v) => v.replace(/[0-9]/g, "").slice(0, 80),
+  email: (v) => v.slice(0, 100),
+}
+
 export function PreQualifierForm() {
   const router = useRouter()
   const search = useSearchParams()
@@ -61,7 +91,7 @@ export function PreQualifierForm() {
     ...empty,
     fullName: search.get("nombre") ?? "",
     phone: (search.get("tel") ?? "").replace(/\D/g, "").slice(0, 10),
-    monthlySalary: search.get("salario") ?? "",
+    monthlySalary: search.get("salario") ?? "10000",
   }))
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [warnings, setWarnings] = useState<Record<string, string>>({})
@@ -69,8 +99,7 @@ export function PreQualifierForm() {
   const [serverError, setServerError] = useState("")
 
   const set = (k: keyof FormData, v: string | boolean) => {
-    const value =
-      k === "phone" && typeof v === "string" ? v.replace(/\D/g, "").slice(0, 10) : v
+    const value = typeof v === "string" ? (sanitizers[k]?.(v) ?? v) : v
     setData((d) => ({ ...d, [k]: value }))
     setErrors((e) => ({ ...e, [k]: "" }))
   }
@@ -79,6 +108,9 @@ export function PreQualifierForm() {
     const e: Record<string, string> = {}
     const w: Record<string, string> = {}
     if (step === 0) {
+      const salary = Number(data.monthlySalary)
+      if (!salary || salary < 1000)
+        e.monthlySalary = "Indica tu último salario mensual"
       if (data.fullName.trim().length < 5) e.fullName = "Escribe tu nombre completo"
       if (!normalizePhoneMX(data.phone))
         e.phone = "Escribe un teléfono mexicano de 10 dígitos (es donde te contactamos)"
@@ -98,9 +130,6 @@ export function PreQualifierForm() {
       if (!data.fechaBaja) e.fechaBaja = "Indica tu fecha de baja"
       else if (new Date(data.fechaBaja) > new Date())
         e.fechaBaja = "La fecha no puede ser futura"
-      const salary = Number(data.monthlySalary)
-      if (!salary || salary < 1000)
-        e.monthlySalary = "Indica tu último salario mensual aproximado"
       const years = Number(data.yearsContributing)
       if (data.yearsContributing === "" || isNaN(years) || years < 0 || years > 60)
         e.yearsContributing = "Indica tus años cotizando aproximados"
@@ -117,8 +146,32 @@ export function PreQualifierForm() {
     return Object.keys(e).length === 0
   }
 
+  // Captura temprana: registra el lead en cuanto hay un teléfono válido, aunque
+  // abandone antes de terminar. El endpoint deduplica por teléfono y completa
+  // los campos que falten, así que se puede llamar varias veces sin duplicar.
+  const lastCapture = useRef("")
+  const capturar = () => {
+    if (!normalizePhoneMX(data.phone)) return
+    const nombre = data.fullName.trim()
+    const payload = JSON.stringify({
+      ...(nombre.length >= 5 ? { fullName: nombre } : {}),
+      phone: data.phone,
+      monthlySalary: Number(data.monthlySalary) || undefined,
+      sourceRef: search.get("source") ?? undefined,
+    })
+    if (payload === lastCapture.current) return
+    lastCapture.current = payload
+    void fetch("/api/lead/capture", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: payload,
+    }).catch(() => {})
+  }
+
   const next = () => {
     if (!validateStep()) return
+    if (step === 0) capturar()
     if (step < 3) setStep(step + 1)
     else void submit()
   }
@@ -171,7 +224,11 @@ export function PreQualifierForm() {
       <Label htmlFor={k}>{label}</Label>
       <Input
         id={k}
-        value={String(data[k])}
+        value={
+          k === "monthlySalary" && data.monthlySalary
+            ? Number(data.monthlySalary).toLocaleString("es-MX")
+            : String(data[k])
+        }
         onChange={(ev) => set(k, ev.target.value)}
         aria-invalid={!!errors[k]}
         {...props}
@@ -185,46 +242,120 @@ export function PreQualifierForm() {
 
   return (
     <div className="mx-auto w-full max-w-md">
-      <div className="mb-6 flex items-center gap-2">
-        {STEPS.map((s, i) => (
-          <div key={s} className="flex-1">
-            <div
-              className={`h-1.5 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`}
-            />
-            <p
-              className={`mt-1 text-[11px] ${i === step ? "text-foreground" : "text-muted-foreground"}`}
-            >
-              {s}
-            </p>
-          </div>
-        ))}
+      <div className="mb-7">
+        <div className="flex items-center gap-2">
+          {STEPS.map((s, i) => (
+            <div key={s} className="flex-1">
+              <div
+                className={`h-1.5 rounded-full transition-colors duration-300 ${i <= step ? "bg-primary" : "bg-muted"}`}
+              />
+              <p
+                className={`mt-1.5 text-[11px] font-medium ${i === step ? "text-foreground" : i < step ? "text-primary" : "text-muted-foreground"}`}
+              >
+                {s}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex items-baseline justify-between gap-4">
+          <h2 className="font-display text-xl font-semibold">{STEP_META[step].title}</h2>
+          <p className="shrink-0 text-xs font-medium text-muted-foreground">
+            Paso {step + 1} de {STEPS.length}
+          </p>
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">{STEP_META[step].hint}</p>
       </div>
 
       <div key={step} className="space-y-4">
           {step === 0 && (
             <>
-              {field("fullName", "Nombre completo", { autoComplete: "name" })}
+              <div className="rounded-2xl bg-accent/60 p-5 text-center">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Tu retiro estimado
+                </p>
+                <p className="mt-1 font-display text-5xl font-semibold leading-none tracking-[-0.02em]">
+                  {mxn.format(
+                    Math.min(
+                      Math.round((Number(data.monthlySalary || 10000) * 3) / 500) * 500,
+                      TOPE_RETIRO
+                    )
+                  )}
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {Number(data.monthlySalary || 10000) * 3 >= TOPE_RETIRO
+                    ? `El retiro por desempleo tiene un tope de ${mxn.format(TOPE_RETIRO)}.`
+                    : "Entre 30 y 90 días de tu salario base. El monto final lo determina tu AFORE."}
+                </p>
+                <div className="mt-4 text-left">
+                  <label
+                    htmlFor="salario-slider"
+                    className="flex items-baseline justify-between text-sm"
+                  >
+                    <span className="font-medium">Tu último salario mensual</span>
+                    <span className="font-semibold text-primary tabular-nums">
+                      {mxn.format(Number(data.monthlySalary || 10000))}
+                    </span>
+                  </label>
+                  <input
+                    id="salario-slider"
+                    type="range"
+                    min={SALARIO_MIN}
+                    max={SALARIO_MAX}
+                    step={1000}
+                    value={Math.min(
+                      Math.max(Number(data.monthlySalary || 10000), SALARIO_MIN),
+                      SALARIO_MAX
+                    )}
+                    onChange={(ev) => set("monthlySalary", ev.target.value)}
+                    className="estimator-range mt-3 w-full"
+                    style={
+                      {
+                        "--pct": `${((Math.min(Math.max(Number(data.monthlySalary || 10000), SALARIO_MIN), SALARIO_MAX) - SALARIO_MIN) / (SALARIO_MAX - SALARIO_MIN)) * 100}%`,
+                      } as React.CSSProperties
+                    }
+                  />
+                  <div className="mt-1.5 flex justify-between text-xs font-medium text-muted-foreground tabular-nums">
+                    <span>{mxn.format(SALARIO_MIN)}</span>
+                    <span>{mxn.format(SALARIO_MAX)}+</span>
+                  </div>
+                </div>
+              </div>
+              {field("fullName", "Nombre completo", {
+                autoComplete: "name",
+                maxLength: 80,
+                placeholder: "Como aparece en tu identificación",
+                onBlur: capturar,
+              })}
               {field("phone", "Teléfono con WhatsApp (10 dígitos)", {
                 inputMode: "tel",
                 autoComplete: "tel",
                 placeholder: "5512345678",
                 maxLength: 10,
+                onBlur: capturar,
               })}
               {field("email", "Correo (opcional)", {
                 type: "email",
                 autoComplete: "email",
+                maxLength: 100,
+                placeholder: "tucorreo@ejemplo.com",
               })}
             </>
           )}
           {step === 1 && (
             <>
-              {field("curp", "CURP", { placeholder: "18 caracteres" })}
+              {field("curp", "CURP", {
+                placeholder: "18 caracteres, letras y números",
+                maxLength: 18,
+                autoCapitalize: "characters",
+                spellCheck: false,
+              })}
               <CurpHelperDialog
                 onGenerated={(curp) => set("curp", curp)}
               />
               {field("nss", "NSS — si no lo tienes a la mano, déjalo vacío", {
                 inputMode: "numeric",
                 placeholder: "11 dígitos (opcional)",
+                maxLength: 11,
               })}
               <NssHelperDialog curp={data.curp} />
               <p className="text-xs text-muted-foreground">
@@ -236,13 +367,13 @@ export function PreQualifierForm() {
             <>
               {field("fechaBaja", "¿Cuándo fue tu último día de trabajo?", {
                 type: "date",
-              })}
-              {field("monthlySalary", "Último salario mensual aproximado (bruto)", {
-                inputMode: "numeric",
-                placeholder: "$",
+                max: HOY,
+                min: "1990-01-01",
               })}
               {field("yearsContributing", "¿Cuántos años llevas cotizando al IMSS?", {
                 inputMode: "numeric",
+                placeholder: "Por ejemplo: 12",
+                maxLength: 2,
               })}
               <div className="space-y-1.5">
                 <Label>¿Has retirado por desempleo en los últimos 5 años?</Label>
@@ -343,7 +474,7 @@ export function PreQualifierForm() {
       </div>
 
       {serverError && (
-        <p className="mt-4 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
+        <p className="mt-4 rounded-lg bg-destructive/8 p-3 text-sm font-medium text-destructive">
           {serverError}
         </p>
       )}
