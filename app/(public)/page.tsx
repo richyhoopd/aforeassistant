@@ -7,7 +7,7 @@ import {
   ShieldCheck,
   Wallet,
 } from "lucide-react"
-import { EstimatorCard } from "@/components/landing/EstimatorCard"
+import { HeroShowcase } from "@/components/landing/HeroShowcase"
 import { Reveal } from "@/components/landing/Reveal"
 import { StatsBars } from "@/components/landing/StatsBars"
 
@@ -78,33 +78,32 @@ export default function Landing() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[linear-gradient(175deg,oklch(1_0_0)_0%,oklch(0.96_0.025_250)_40%,var(--hero-glow)_100%)] pb-24 pt-10 sm:pt-14">
-        <div className="relative mx-auto grid w-full max-w-6xl items-start px-4 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
-          <div className="contents lg:block lg:pt-6">
+      <section className="relative overflow-x-clip bg-[linear-gradient(175deg,oklch(1_0_0)_0%,oklch(0.96_0.025_250)_40%,var(--hero-glow)_100%)] pb-14 pt-6 sm:pt-9">
+        <div className="relative mx-auto grid w-full max-w-6xl items-start px-4 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
+          <div className="contents lg:block lg:pt-2">
             <div className="anim-rise order-1">
-              <h1 className="max-w-xl text-balance font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.06] tracking-[-0.02em]">
-                Quedarte sin empleo no te deja sin opciones.
+              <h1 className="max-w-xl text-balance font-display text-[clamp(2rem,4.2vw,3.1rem)] font-semibold leading-[1.06] tracking-[-0.02em]">
+                Retira ya tu ayuda por desempleo.
               </h1>
             </div>
             <div
               className="anim-rise order-2"
               style={{ "--rise-delay": "0.08s" } as React.CSSProperties}
             >
-              <p className="mt-4 max-w-md text-lg text-muted-foreground lg:mt-6">
-                Si cotizabas al IMSS, la ley te permite retirar hasta{" "}
-                <strong className="font-semibold text-foreground">$33,492</strong> de tu AFORE.
-                Averigua en 2 minutos si calificas y hazlo acompañado, sin pagar
-                nada por adelantado.
+              <p className="mt-3 max-w-md text-lg text-muted-foreground lg:mt-4">
+                Hasta{" "}
+                <strong className="font-semibold text-foreground">$33,492</strong> de tu AFORE
+                si cotizabas al IMSS. Contesta 2 minutos y sabrás si calificas.
               </p>
             </div>
             <div
-              className="anim-rise order-4"
+              className="anim-rise order-3"
               style={{ "--rise-delay": "0.16s" } as React.CSSProperties}
             >
-              <div className="mt-7 flex flex-wrap items-center gap-3 lg:mt-8">
+              <div className="mt-5 flex flex-wrap items-center gap-3 lg:mt-6">
                 <a
-                  href="#estimador"
-                  className="hidden h-12 items-center rounded-full bg-ink px-7 text-base font-semibold text-white transition-colors duration-200 hover:bg-[oklch(0.3_0.07_265)] lg:inline-flex"
+                  href="/pre-calificador"
+                  className="inline-flex h-12 items-center rounded-full bg-ink px-7 text-base font-semibold text-white transition-colors duration-200 hover:bg-[oklch(0.3_0.07_265)]"
                 >
                   Calcular mi retiro
                 </a>
@@ -115,7 +114,7 @@ export default function Landing() {
                   ¿Cómo funciona?
                 </a>
               </div>
-              <p className="mt-6 flex flex-wrap gap-x-5 gap-y-1 text-[15px] font-medium text-ink/80">
+              <p className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-[15px] font-medium text-ink/80">
                 <span className="inline-flex items-center gap-1.5">
                   <Check className="size-4 text-ink" aria-hidden strokeWidth={2.5} />
                   Sin anticipos
@@ -128,16 +127,22 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="order-3 mt-7 scroll-mt-24 lg:order-none lg:mt-0" id="estimador">
-            <EstimatorCard />
+          {/* z-20: la animación crea contexto de apilamiento, así que el
+              z-index vive aquí para que la persona se monte sobre la banda. */}
+          <div
+            className="anim-rise relative z-20 order-4 mt-8 lg:order-none lg:mt-0"
+            style={{ "--rise-delay": "0.15s" } as React.CSSProperties}
+          >
+            <HeroShowcase />
           </div>
         </div>
       </section>
 
-      {/* Franja de compromisos */}
-      <section className="relative -mt-9 rounded-t-3xl bg-background">
+      {/* Franja de compromisos — la persona del hero se le monta encima */}
+      <section className="relative z-10 -mt-9 rounded-t-3xl bg-background">
         <div className="mx-auto w-full max-w-6xl px-4">
-          <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-b border-border py-5 text-[13px] font-medium text-muted-foreground">
+          {/* pt generoso: la persona del hero baja hasta aquí y no debe tapar el texto. */}
+          <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-b border-border pb-5 pt-20 text-[13px] font-medium text-muted-foreground sm:pt-24 lg:pt-28">
             {compromisos.map((c) => (
               <li key={c} className="flex items-center gap-2">
                 <ShieldCheck className="size-4 text-primary" aria-hidden />
@@ -208,7 +213,7 @@ export default function Landing() {
               por WhatsApp, con fechas y documentos exactos.
             </p>
             <a
-              href="#estimador"
+              href="/pre-calificador"
               className="mt-7 inline-flex h-11 items-center rounded-full bg-primary px-6 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[oklch(0.44_0.21_262)]"
             >
               Ver si califico
@@ -323,7 +328,7 @@ export default function Landing() {
               tuyo.
             </p>
             <a
-              href="#estimador"
+              href="/pre-calificador"
               className="mt-7 inline-flex h-11 items-center rounded-full bg-primary px-6 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[oklch(0.44_0.21_262)]"
             >
               Revisar mi caso
@@ -349,42 +354,42 @@ export default function Landing() {
               title: "46 días sin empleo",
               body: "Llevar al menos 46 días naturales desempleado al momento de solicitar tu retiro.",
               dot: "bg-primary",
-              hover: "hover:border-primary/30 hover:bg-accent",
+              hover: "hover:bg-accent",
             },
             {
               title: "5 años sin usar este derecho",
               body: "No haber hecho un retiro por desempleo en los 5 años anteriores al trámite.",
               dot: "bg-gold-deep",
-              hover: "hover:border-gold-deep/30 hover:bg-[oklch(0.93_0.08_92)]",
+              hover: "hover:bg-[oklch(0.93_0.08_92)]",
             },
             {
               title: "12 bimestres cotizados",
               body: "Contar con un mínimo de 12 bimestres de cotización acreditados ante el IMSS.",
               dot: "bg-[oklch(0.6_0.13_272)]",
-              hover: "hover:border-[oklch(0.6_0.13_272/0.35)] hover:bg-[oklch(0.92_0.06_272)]",
+              hover: "hover:bg-[oklch(0.92_0.06_272)]",
             },
             {
               title: "Cuenta con 3 años de antigüedad",
               body: "Que tu cuenta individual AFORE tenga al menos 3 años de haber sido abierta.",
               dot: "bg-card-teal",
-              hover: "hover:border-card-teal/40 hover:bg-[oklch(0.93_0.06_210)]",
+              hover: "hover:bg-[oklch(0.93_0.06_210)]",
             },
             {
               title: "Expediente de identificación al día",
               body: "Tu Expediente de Identificación actualizado en tu AFORE. Si no lo está, te ayudamos a ponerlo al corriente.",
               dot: "bg-[oklch(0.62_0.14_20)]",
-              hover: "hover:border-[oklch(0.62_0.14_20/0.3)] hover:bg-[oklch(0.93_0.05_20)]",
+              hover: "hover:bg-[oklch(0.93_0.05_20)]",
             },
             {
               title: "Cuenta bancaria a tu nombre",
               body: "Una cuenta bancaria certificada, con CLABE, donde tu AFORE te depositará el retiro.",
               dot: "bg-[oklch(0.62_0.12_160)]",
-              hover: "hover:border-[oklch(0.62_0.12_160/0.3)] hover:bg-[oklch(0.93_0.06_160)]",
+              hover: "hover:bg-[oklch(0.93_0.06_160)]",
             },
           ].map((r, i) => (
             <Reveal key={r.title} delay={i * 0.04} className="h-full">
               <div
-                className={`h-full rounded-xl border border-border bg-white p-6 transition-colors duration-200 ${r.hover}`}
+                className={`h-full rounded-xl bg-secondary/60 p-6 transition-colors duration-200 ${r.hover}`}
               >
                 <span aria-hidden className={`block size-2.5 rounded-full ${r.dot}`} />
                 <h3 className="mt-4 font-display text-xl font-semibold">{r.title}</h3>
@@ -396,7 +401,7 @@ export default function Landing() {
         <Reveal>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <a
-              href="#estimador"
+              href="/pre-calificador"
               className="inline-flex h-12 items-center rounded-full bg-primary px-7 text-base font-semibold text-white transition-colors duration-200 hover:bg-[oklch(0.44_0.21_262)]"
             >
               ¡Cumplo los requisitos!
@@ -469,7 +474,7 @@ export default function Landing() {
           <div className="space-y-3">
             {faqs.map((f, i) => (
               <Reveal key={f.q} delay={i * 0.05}>
-                <details className="group rounded-xl border border-border bg-white p-5 transition-colors open:border-primary/30 open:bg-accent/40">
+                <details className="group rounded-xl bg-secondary/60 p-5 transition-colors open:bg-accent/60">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold [&::-webkit-details-marker]:hidden">
                     {f.q}
                     <span className="text-xl leading-none text-primary transition-transform duration-200 group-open:rotate-45 motion-reduce:transition-none">
@@ -526,7 +531,7 @@ export default function Landing() {
                 asesoría y recibes tu retiro.
               </p>
               <a
-                href="#estimador"
+                href="/pre-calificador"
                 className="mt-8 inline-flex h-12 items-center rounded-full bg-white px-8 text-base font-semibold text-ink transition-colors duration-200 hover:bg-gold"
               >
                 Comenzar mi trámite
