@@ -35,26 +35,29 @@ export function HeroShowcase() {
       />
       <div
         aria-hidden
-        className="absolute left-[30%] top-1 size-5 rounded-md bg-card-periwinkle/50"
+        className="absolute left-[26%] top-16 size-5 rounded-md bg-card-periwinkle/50"
       />
 
       <div className="relative flex items-end gap-3 sm:gap-5">
-        {/* La persona sobresale hacia la banda blanca de abajo. */}
-        <div className="relative z-20 -mb-8 w-[42%] shrink-0 self-end sm:-mb-12 sm:w-[44%] lg:-mb-16 lg:-ml-20 lg:w-[52%]">
+        {/* La persona sobresale hacia la banda blanca de abajo. La foto de
+            origen la recorta por la derecha, así que ese costado se mete
+            DETRÁS de las reseñas (margen negativo + z menor) y el corte recto
+            nunca queda a la vista. */}
+        <div className="relative -mb-8 -mr-4 w-[44%] shrink-0 self-end sm:-mb-12 sm:-mr-6 sm:w-[46%] lg:-mb-16 lg:-ml-16 lg:-mr-8 lg:w-[52%]">
           <Image
             src="/images/persona-hero.png"
             alt="Hombre sonriendo mientras revisa su trámite de retiro AFORE en el celular"
-            width={900}
-            height={869}
+            width={725}
+            height={700}
             priority
-            sizes="(min-width: 1024px) 320px, 44vw"
-            /* El recorte termina en corte recto: se difumina para que la
-               persona se funda con la banda blanca en vez de cortarse. */
-            className="h-auto w-full [mask-image:linear-gradient(to_bottom,black_82%,transparent_99%)] drop-shadow-[0_24px_40px_oklch(0.23_0.06_265/0.28)]"
+            sizes="(min-width: 1024px) 340px, 48vw"
+            /* La foto termina en corte recto abajo: la máscara la funde con la
+               banda blanca. Sin drop-shadow, que delataría el degradado. */
+            className="h-auto w-full [mask-image:linear-gradient(to_bottom,black_84%,transparent_99%)]"
           />
         </div>
 
-        <div className="min-w-0 flex-1 pb-2">
+        <div className="relative z-10 min-w-0 flex-1 pb-2">
           <p className="font-display text-xl font-semibold tracking-[-0.01em] sm:text-2xl">
             <span className="text-primary">+500</span> personas asesoradas
           </p>
