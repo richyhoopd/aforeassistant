@@ -43,17 +43,19 @@ export function HeroShowcase() {
             origen la recorta por la derecha, así que ese costado se mete
             DETRÁS de las reseñas (margen negativo + z menor) y el corte recto
             nunca queda a la vista. */}
-        <div className="relative -mb-8 -mr-4 w-[44%] shrink-0 self-end sm:-mb-12 sm:-mr-6 sm:w-[46%] lg:-mb-16 lg:-ml-16 lg:-mr-8 lg:w-[52%]">
+        {/* -mb-5 = pb del hero (56px) menos el -mt-9 de la banda (36px): deja
+            el pie de la foto exactamente sobre la línea blanca, al ras. */}
+        <div className="relative -mb-5 -mr-4 w-[45%] shrink-0 self-end sm:-mr-6 sm:w-[50%] lg:-ml-36 lg:-mr-8 lg:w-[68%]">
           <Image
             src="/images/persona-hero.png"
             alt="Hombre sonriendo mientras revisa su trámite de retiro AFORE en el celular"
             width={725}
             height={700}
             priority
-            sizes="(min-width: 1024px) 340px, 48vw"
-            /* La foto termina en corte recto abajo: la máscara la funde con la
-               banda blanca. Sin drop-shadow, que delataría el degradado. */
-            className="h-auto w-full [mask-image:linear-gradient(to_bottom,black_84%,transparent_99%)]"
+            sizes="(min-width: 1024px) 360px, 52vw"
+            /* Sin máscara: el corte de la foto cae justo sobre la línea blanca,
+               así que se lee como si estuviera parado sobre ella. */
+            className="h-auto w-full"
           />
         </div>
 

@@ -141,8 +141,7 @@ export default function Landing() {
       {/* Franja de compromisos — la persona del hero se le monta encima */}
       <section className="relative z-10 -mt-9 rounded-t-3xl bg-background">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-          {/* pt generoso: la persona del hero baja hasta aquí y no debe tapar el texto. */}
-          <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-b border-border pb-5 pt-20 text-[13px] font-medium text-muted-foreground sm:pt-24 lg:gap-x-7 lg:pt-28">
+          <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-b border-border py-6 text-[13px] font-medium text-muted-foreground lg:gap-x-7">
             {compromisos.map((c) => (
               <li key={c} className="flex items-center gap-2">
                 <ShieldCheck className="size-4 text-primary" aria-hidden />
