@@ -35,12 +35,12 @@ export function HeroShowcase() {
       />
       <div
         aria-hidden
-        className="absolute right-2 top-2 size-5 rounded-md bg-card-periwinkle/50"
+        className="absolute left-[30%] top-1 size-5 rounded-md bg-card-periwinkle/50"
       />
 
       <div className="relative flex items-end gap-3 sm:gap-5">
         {/* La persona sobresale hacia la banda blanca de abajo. */}
-        <div className="relative z-20 -mb-8 w-[42%] shrink-0 self-end sm:-mb-12 sm:w-[44%] lg:-mb-16 lg:-ml-10 lg:w-[52%]">
+        <div className="relative z-20 -mb-8 w-[42%] shrink-0 self-end sm:-mb-12 sm:w-[44%] lg:-mb-16 lg:-ml-20 lg:w-[52%]">
           <Image
             src="/images/persona-hero.png"
             alt="Hombre sonriendo mientras revisa su trámite de retiro AFORE en el celular"
@@ -50,7 +50,7 @@ export function HeroShowcase() {
             sizes="(min-width: 1024px) 320px, 44vw"
             /* El recorte termina en corte recto: se difumina para que la
                persona se funda con la banda blanca en vez de cortarse. */
-            className="h-auto w-full [mask-image:linear-gradient(to_bottom,black_86%,transparent_100%)] drop-shadow-[0_24px_40px_oklch(0.23_0.06_265/0.28)]"
+            className="h-auto w-full [mask-image:linear-gradient(to_bottom,black_82%,transparent_99%)] drop-shadow-[0_24px_40px_oklch(0.23_0.06_265/0.28)]"
           />
         </div>
 

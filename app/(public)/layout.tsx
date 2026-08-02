@@ -32,7 +32,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             ))}
           </nav>
           <Link
-            href="/#estimador"
+            href="/pre-calificador"
             className="inline-flex h-10 items-center rounded-full bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[oklch(0.44_0.21_262)]"
           >
             Ver si califico
@@ -42,7 +42,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <main className="flex-1">{children}</main>
 
       <footer className="bg-ink text-white/70">
-        <div className="mx-auto w-full max-w-6xl px-4 py-14">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-14">
           <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
             <div>
               <p className="flex items-center gap-2 text-lg font-semibold text-white">

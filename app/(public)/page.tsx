@@ -79,7 +79,7 @@ export default function Landing() {
     <div>
       {/* Hero */}
       <section className="relative overflow-x-clip bg-[linear-gradient(175deg,oklch(1_0_0)_0%,oklch(0.96_0.025_250)_40%,var(--hero-glow)_100%)] pb-14 pt-6 sm:pt-9">
-        <div className="relative mx-auto grid w-full max-w-6xl items-start px-4 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
+        <div className="relative mx-auto grid w-full max-w-6xl items-start px-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:px-8">
           <div className="contents lg:block lg:pt-2">
             <div className="anim-rise order-1">
               <h1 className="max-w-xl text-balance font-display text-[clamp(2rem,4.2vw,3.1rem)] font-semibold leading-[1.06] tracking-[-0.02em]">
@@ -140,9 +140,9 @@ export default function Landing() {
 
       {/* Franja de compromisos — la persona del hero se le monta encima */}
       <section className="relative z-10 -mt-9 rounded-t-3xl bg-background">
-        <div className="mx-auto w-full max-w-6xl px-4">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
           {/* pt generoso: la persona del hero baja hasta aquí y no debe tapar el texto. */}
-          <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-b border-border pb-5 pt-20 text-[13px] font-medium text-muted-foreground sm:pt-24 lg:pt-28">
+          <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-b border-border pb-5 pt-20 text-[13px] font-medium text-muted-foreground sm:pt-24 lg:gap-x-7 lg:pt-28">
             {compromisos.map((c) => (
               <li key={c} className="flex items-center gap-2">
                 <ShieldCheck className="size-4 text-primary" aria-hidden />
@@ -154,7 +154,7 @@ export default function Landing() {
       </section>
 
       {/* Por qué */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:pt-20" id="por-que">
+      <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20" id="por-que">
         <Reveal>
           <h2 className="mx-auto max-w-3xl text-balance text-center font-display text-[clamp(2rem,4vw,2.9rem)] font-semibold leading-tight tracking-[-0.01em]">
             ¿Por qué hacerlo con Pensión+?
@@ -338,7 +338,7 @@ export default function Landing() {
       </section>
 
       {/* Requisitos */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:pt-28" id="requisitos">
+      <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28" id="requisitos">
         <Reveal>
           <h2 className="mx-auto max-w-3xl text-balance text-center font-display text-[clamp(2rem,4vw,2.9rem)] font-semibold leading-tight tracking-[-0.01em]">
             ¿Qué necesitas para calificar?
@@ -421,7 +421,7 @@ export default function Landing() {
       </section>
 
       {/* Cómo funciona */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:pt-28" id="como-funciona">
+      <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28" id="como-funciona">
         <Reveal>
           <h2 className="mx-auto max-w-3xl text-balance text-center font-display text-[clamp(2rem,4vw,2.9rem)] font-semibold leading-tight tracking-[-0.01em]">
             ¿Cómo funciona?
@@ -456,7 +456,7 @@ export default function Landing() {
       </section>
 
       {/* FAQ */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:pt-28" id="preguntas">
+      <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28" id="preguntas">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <Reveal>
             <h2 className="max-w-sm text-balance font-display text-[clamp(2rem,4vw,2.9rem)] font-semibold leading-tight tracking-[-0.01em]">
@@ -491,7 +491,7 @@ export default function Landing() {
 
       {/* Stats */}
       <section className="pt-24 sm:pt-28">
-        <div className="mx-auto w-full max-w-6xl px-4">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-6 pb-12 lg:flex-row lg:items-end lg:justify-between">
             <Reveal>
               <h2 className="max-w-md text-balance font-display text-[clamp(1.9rem,3.5vw,2.75rem)] font-semibold leading-tight tracking-[-0.01em]">
@@ -518,7 +518,7 @@ export default function Landing() {
       </section>
 
       {/* CTA final */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-24 sm:py-28">
+      <section className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-24 sm:py-28">
         <Reveal>
           <div className="group/cta relative overflow-hidden rounded-2xl bg-ink px-6 py-14 text-center sm:px-12 sm:py-18">
             <div aria-hidden className="money-pattern absolute inset-0" />
