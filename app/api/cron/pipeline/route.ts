@@ -38,19 +38,31 @@ export async function GET(req: NextRequest) {
 
   const ids = (leads ?? []).map((l) => l.id)
   const abiertos = new Set<string>()
+  const fallos = new Map<string, number>()
   if (ids.length > 0) {
-    const { data: contracts } = await db
-      .from("contracts")
-      .select("lead_id")
-      .in("lead_id", ids)
-      .is("signed_at", null)
-      .gt("sign_token_expires_at", now.toISOString())
+    const [{ data: contracts }, { data: eventos }] = await Promise.all([
+      db
+        .from("contracts")
+        .select("lead_id")
+        .in("lead_id", ids)
+        .is("signed_at", null)
+        .gt("sign_token_expires_at", now.toISOString()),
+      db
+        .from("lead_events")
+        .select("lead_id")
+        .in("lead_id", ids)
+        .eq("type", "contract_send_failed"),
+    ])
     for (const c of contracts ?? []) abiertos.add(c.lead_id)
+    for (const e of eventos ?? []) {
+      fallos.set(e.lead_id, (fallos.get(e.lead_id) ?? 0) + 1)
+    }
   }
 
   const candidatos: PipelineLead[] = (leads ?? []).map((l) => ({
     ...l,
     has_open_contract: abiertos.has(l.id),
+    failed_sends: fallos.get(l.id) ?? 0,
   }))
 
   const planned = planPipeline(candidatos, now)

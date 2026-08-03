@@ -7,7 +7,12 @@ export type PipelineLead = {
   do_not_contact: boolean | null
   human_takeover: boolean | null
   has_open_contract: boolean
+  // Envíos fallidos acumulados; a los MAX_FALLOS se deja para revisión manual
+  // en vez de reintentar cada 15 minutos para siempre.
+  failed_sends: number
 }
+
+export const MAX_FALLOS = 3
 
 // Horario de envío. Configurable porque el horario de atención es una decisión
 // operativa, no una constante del dominio.
@@ -49,7 +54,8 @@ export function planPipeline(
         new Date(l.contract_due_at) <= now &&
         !l.has_open_contract &&
         !l.do_not_contact &&
-        !l.human_takeover
+        !l.human_takeover &&
+        l.failed_sends < MAX_FALLOS
     )
     .slice(0, MAX_POR_CORRIDA)
     .map((l) => ({ leadId: l.id }))

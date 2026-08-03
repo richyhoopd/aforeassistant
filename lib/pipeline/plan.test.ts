@@ -15,6 +15,7 @@ const lead: PipelineLead = {
   do_not_contact: false,
   human_takeover: false,
   has_open_contract: false,
+  failed_sends: 0,
 }
 
 const mediodia = new Date("2026-08-03T19:00:00Z") // 13:00 CDMX
@@ -43,8 +44,15 @@ describe("planPipeline", () => {
     ["con takeover humano", { human_takeover: true }],
     ["ya enviado", { status: "CONTRACT_PENDING" }],
     ["rechazado", { status: "REJECTED" }],
+    ["con 3 envíos fallidos", { failed_sends: 3 }],
   ])("excluye un lead %s", (_, patch) => {
     expect(planPipeline([{ ...lead, ...patch }], mediodia)).toEqual([])
+  })
+
+  it("todavía reintenta con dos fallos acumulados", () => {
+    expect(planPipeline([{ ...lead, failed_sends: 2 }], mediodia)).toEqual([
+      { leadId: "l1" },
+    ])
   })
 
   it("tope de 50 por corrida", () => {
