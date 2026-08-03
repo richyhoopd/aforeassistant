@@ -11,6 +11,7 @@ export type FollowupLead = {
   do_not_contact: boolean | null
   human_takeover: boolean | null
   requalify_by_days?: boolean | null
+  nss: string | null
 }
 
 export type FollowupContract = {
@@ -128,7 +129,14 @@ export function planFollowups(
       }
     }
 
-    if (lead.status === "QUALIFIED" && leadContracts.length === 0 && !agotado(lead.id, "nss")) {
+    // Solo a quien todavía no da su NSS: con NSS el lead está esperando la
+    // revisión del caso y el contrato sale por el pipeline, no por aquí.
+    if (
+      lead.status === "QUALIFIED" &&
+      !lead.nss &&
+      leadContracts.length === 0 &&
+      !agotado(lead.id, "nss")
+    ) {
       const dias = (now.getTime() - new Date(lead.updated_at).getTime()) / DIA_MS
       const ronda = rondaPendiente(dias, enviadas(lead.id, "nss"))
       if (ronda) {

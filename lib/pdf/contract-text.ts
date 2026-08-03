@@ -7,7 +7,7 @@ export const CONTRACT_TITLE =
 export type Clause = { heading: string; body: string }
 
 export function contractClauses(d: {
-  commissionAmount: number
+  commissionPct: number
   estimatedMin: number
   estimatedMax: number
 }): Clause[] {
@@ -34,9 +34,13 @@ export function contractClauses(d: {
     },
     {
       heading: "Tercera. Honorarios",
-      body: `El Cliente pagará al Prestador honorarios únicos de ${mxn(
-        d.commissionAmount
-      )} (IVA incluido), exigibles ÚNICAMENTE después de que la AFORE haya depositado efectivamente el retiro al Cliente. Si el trámite no procede por cualquier causa, el Cliente no deberá cantidad alguna. El Prestador no cobra anticipos.`,
+      body: `El Cliente pagará al Prestador honorarios equivalentes al ${d.commissionPct}% (IVA incluido) del monto que la AFORE le deposite efectivamente por concepto de retiro parcial por desempleo, exigibles ÚNICAMENTE después de que ese depósito se haya realizado. Sobre el rango estimado de ${mxn(
+        d.estimatedMin
+      )} a ${mxn(d.estimatedMax)}, los honorarios equivaldrían aproximadamente a ${mxn(
+        (d.estimatedMin * d.commissionPct) / 100
+      )} a ${mxn(
+        (d.estimatedMax * d.commissionPct) / 100
+      )}; el monto definitivo se calcula sobre el depósito real. Si el trámite no procede por cualquier causa, el Cliente no deberá cantidad alguna. El Prestador no cobra anticipos.`,
     },
     {
       heading: "Cuarta. Obligaciones del Cliente",

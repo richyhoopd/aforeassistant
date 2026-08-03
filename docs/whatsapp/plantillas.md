@@ -1,5 +1,40 @@
 # Plantillas de WhatsApp y configuración de Meta
 
+## Orden real del funnel (desde 3-ago-2026)
+
+El contrato ya **no** se crea al calificar. La secuencia es:
+
+1. El cliente califica en el pre-calificador → sale `revisando_caso_pensionmas` de inmediato.
+2. Se agenda `contract_due_at = +1 hora` y el semáforo de revisión decide el camino:
+   verde se envía solo, ámbar y rojo esperan el tap de "Enviar contrato ahora" en el panel.
+3. Al vencer la hora, dentro de 8:00–21:00 CDMX, sale `caso_revisado_pensionmas` con el
+   enlace de firma en el botón.
+4. Al firmar, `bienvenida_pensionmas` como siempre.
+
+El tick de 15 minutos lo dispara `pg_cron` de Supabase (`supabase/snippets/pipeline-cron.sql`),
+no `vercel.json`: el plan Hobby solo permite un cron diario y ese lo ocupa el de followups.
+
+## Estado real en la WABA (2828213904220650, verificado 3-ago-2026)
+
+| Plantilla | Estado | Categoría |
+|---|---|---|
+| `recordatorio_nss` | APPROVED | **MARKETING** (Meta la recategorizó; el doc decía Utility) |
+| `recordatorio_firma` | APPROVED | UTILITY |
+| `ya_calificas_pensionmas` | APPROVED | MARKETING |
+| `continuar_pensionmas` | APPROVED | MARKETING |
+| `bienvenida_pensionmas` | APPROVED | UTILITY |
+| `pendientes_datos_pensionmas` | APPROVED | MARKETING (aprobada pero sin cablear en el código) |
+| `contrato_firmado_pensionmas` | APPROVED | UTILITY (se traslapa con `bienvenida_pensionmas`) |
+| `revision_iniciada_pensionmas` | PENDING (enviada 3-ago) | UTILITY | ← **en uso** |
+| `contrato_listo_pensionmas` | PENDING (enviada 3-ago) | UTILITY | ← **en uso** |
+| `revisando_caso_pensionmas` | PENDING | UTILITY | descartada: prometía "1 hora", borrar |
+| `caso_revisado_pensionmas` | PENDING | MARKETING | descartada: mencionaba precio, borrar |
+| `codigo_pensionmas` | **NO EXISTE** | bloqueada por Meta (error 2388185) |
+
+`codigo_pensionmas` no se puede crear hasta que pase la verificación del negocio:
+`business_verification_status` del WABA sigue en `pending_submission`, o sea que la
+solicitud ni siquiera está enviada.
+
 ## Plantillas para registrar (idioma: es_MX)
 
 Copiar el cuerpo EXACTO en Meta Business → WhatsApp Manager → Plantillas → Crear.
@@ -74,6 +109,49 @@ Botones:
 Ejemplos para la revisión de Meta: {{1}} = Carlos
 
 Nota: para leads capturados solo con teléfono (sin nombre), el sistema manda {{1}} = "amigo(a)" — el cuerpo debe leerse natural con ambos casos.
+
+### 7. `revision_iniciada_pensionmas` — categoría **Utility** (creada 3-ago-2026)
+
+Sale al calificar, desde `/api/evaluate`. {{1}} = primer nombre, {{2}} = asesor.
+
+```
+Hola {{1}}, soy {{2}} de Pensión+. Recibí tu evaluación y voy a revisar tu caso personalmente: tus días sin empleo, que tus datos de identidad cuadren y qué modalidad de retiro te conviene. Te escribo con el resultado en cuanto termine, dentro de nuestro horario de 8 de la mañana a 9 de la noche.
+```
+
+Botones: **Respuesta rápida** `Tengo una duda` · `No enviar recordatorios`
+
+⚠️ Sustituye a `revisando_caso_pensionmas`, que prometía "en menos de 1 hora" — plazo que no
+se cumple si el cliente califica de madrugada, porque el envío respeta la ventana de
+8:00–21:00. **Bórrala a mano** en WhatsApp Manager junto con `caso_revisado_pensionmas`.
+
+### 8. `contrato_listo_pensionmas` — categoría **Utility** (creada 3-ago-2026)
+
+Sale del cron o del botón del panel, vía `lib/contracts/send.ts`. {{1}} = primer nombre,
+{{2}} = hallazgo (catálogo cerrado en `lib/contracts/hallazgo.ts`), {{3}} = asesor.
+
+```
+Hola {{1}}, ya revisé tu caso. {{2}} Tu contrato de asesoría quedó listo para tu firma y el enlace es válido por 72 horas. Soy {{3}}, tu asesor en Pensión+, y cualquier duda me escribes por aquí.
+```
+
+⚠️ **Existe una versión anterior, `caso_revisado_pensionmas`, que quedó en MARKETING** porque
+mencionaba el precio ("cobramos 10% de lo que recibas"). Meta clasifica sola al crear, y una
+plantilla Marketing está sujeta a límites por usuario — inaceptable para el mensaje que
+entrega el contrato. No pude borrarla por API (el token no tiene permiso de borrado sobre la
+WABA): **bórrala a mano en WhatsApp Manager**. El código usa `contrato_listo_pensionmas`.
+El precio sigue visible donde importa: la página de firma y la cláusula tercera del contrato.
+
+Botones:
+- **Ir al sitio web** · `Firmar mi contrato` · URL dinámica `https://www.pensionmas.com.mx/firmar/{{1}}`
+- **Respuesta rápida** · `Quiero que me expliquen`
+
+Dos cosas que Meta rechaza y ya costaron un intento: una variable **no puede ir al
+principio ni al final** del cuerpo (error 2388299), y el hallazgo {{2}} nunca debe afirmar
+consultas al IMSS, la AFORE o CONSAR — no tenemos ese acceso.
+
+El tap de `Quiero que me expliquen` genera un mensaje entrante y por lo tanto **abre la
+ventana de servicio de 24 h**: el webhook responde con el enlace y, mientras
+`codigo_pensionmas` siga bloqueada, esa ventana es lo que permite entregar el OTP por texto
+libre.
 
 ## NSS por imagen — evaluación
 

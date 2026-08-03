@@ -3,6 +3,7 @@ import { config } from "@/lib/config"
 import { logEvent } from "@/lib/events"
 import { supabaseAdmin } from "@/lib/supabase/server"
 import { normalizePhoneMX } from "@/lib/validation/identifiers"
+import { sendWhatsAppText } from "@/lib/whatsapp/client"
 import { classifyInbound, type InboundMessage } from "@/lib/whatsapp/inbound"
 import { downloadWhatsAppMedia } from "@/lib/whatsapp/media"
 import { extractStatuses } from "@/lib/whatsapp/statuses"
@@ -86,7 +87,7 @@ export async function POST(req: NextRequest) {
         if (!phone) continue
         const { data: leadRows } = await db
           .from("leads")
-          .select("id")
+          .select("id, phone")
           .eq("phone", phone)
           .order("created_at", { ascending: false })
           .limit(1)
@@ -96,6 +97,28 @@ export async function POST(req: NextRequest) {
         if (inbound.action === "opt_out") {
           await db.from("leads").update({ do_not_contact: true }).eq("id", lead.id)
           await logEvent(lead.id, "opt_out", { text: inbound.text.slice(0, 500) })
+        } else if (inbound.action === "explain") {
+          // El tap abrió la ventana de 24h: a partir de aquí el texto libre sí
+          // se entrega, incluido el código de firma.
+          const { data: abiertos } = await db
+            .from("contracts")
+            .select("sign_token")
+            .eq("lead_id", lead.id)
+            .is("signed_at", null)
+            .gt("sign_token_expires_at", new Date().toISOString())
+            .order("created_at", { ascending: false })
+            .limit(1)
+          const token = abiertos?.[0]?.sign_token
+          const respuesta = token
+            ? `Con gusto te explico. Tu contrato de asesoría está aquí: ${config.siteUrl}/firmar/${token}\n\nCobramos ${config.commissionPct}% de lo que te deposite tu AFORE y solo después de que te depositen. Si prefieres que te lo explique por voz, dime a qué hora te marco.`
+            : "Con gusto te explico. Cuéntame tu duda por aquí y te respondo; si prefieres, dime a qué hora te marco."
+          const enviado = await sendWhatsAppText(lead.phone, respuesta)
+          await logEvent(lead.id, "inbound_explain", {
+            text: inbound.text.slice(0, 500),
+            replied: enviado.sent,
+            error: enviado.error,
+            sign_token: token ?? null,
+          })
         } else if (inbound.action === "media") {
           const media = await downloadWhatsAppMedia(
             inbound.mediaId,

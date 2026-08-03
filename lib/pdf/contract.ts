@@ -1,4 +1,4 @@
-import { PDFDocument, PDFFont, PDFPage, StandardFonts, rgb } from "pdf-lib"
+import { PDFDocument, PDFFont, StandardFonts, rgb } from "pdf-lib"
 import { CONTRACT_TITLE, contractClauses } from "./contract-text"
 
 export type ContractData = {
@@ -7,7 +7,7 @@ export type ContractData = {
   nss: string
   curp: string
   phone: string
-  commissionAmount: number
+  commissionPct: number
   estimatedMin: number
   estimatedMax: number
   signedAtISO: string

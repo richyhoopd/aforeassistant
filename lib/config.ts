@@ -21,4 +21,17 @@ export const config = {
     process.env.WHATSAPP_TEMPLATE_OTP ?? "codigo_pensionmas",
   whatsappTemplateContinua:
     process.env.WHATSAPP_TEMPLATE_CONTINUA ?? "continuar_pensionmas",
+  // revision_iniciada y no revisando_caso: la primera prometía "en menos de 1
+  // hora", plazo que no se cumple si el lead califica fuera del horario de
+  // envío. Esta compromete el horario real de atención.
+  whatsappTemplateRevisando:
+    process.env.WHATSAPP_TEMPLATE_REVISANDO ?? "revision_iniciada_pensionmas",
+  // contrato_listo_pensionmas y no caso_revisado_pensionmas: la primera versión
+  // mencionaba el precio y Meta la clasificó MARKETING, lo que la somete a los
+  // límites por usuario justo en el mensaje que entrega el contrato.
+  whatsappTemplateRevisado:
+    process.env.WHATSAPP_TEMPLATE_REVISADO ?? "contrato_listo_pensionmas",
+  advisorName: process.env.ADVISOR_NAME ?? "Ricardo",
+  commissionPct: Number(process.env.COMMISSION_PCT ?? 10),
+  reviewDelayMinutes: Number(process.env.REVIEW_DELAY_MINUTES ?? 60),
 }

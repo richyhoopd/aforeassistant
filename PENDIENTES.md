@@ -1,5 +1,33 @@
 # Pendientes que solo tú puedes resolver
 
+## ⏳ Rama `feat/revision-antes-de-firma` (3-ago-2026) — lista, sin mergear
+
+El funnel ahora revisa el caso antes de pedir la firma y los honorarios pasaron a **10% del
+depósito real** (antes $5,000 fijos). Diseño en
+`docs/superpowers/specs/2026-08-03-revision-antes-de-firma-design.md`.
+
+**No se mergeó a propósito:** el código depende de la migración `0006` y desplegarlo antes
+de aplicarla rompe producción. Orden obligatorio:
+
+1. **Aplicar `supabase/migrations/0006_revision_previa.sql`** en el SQL Editor de Supabase prod.
+2. **Correr `supabase/snippets/pipeline-cron.sql`** ahí mismo, sustituyendo el `CRON_SECRET`
+   real. Sin ese tick de 15 minutos el contrato nunca se envía solo.
+3. Mergear la rama y desplegar.
+4. Opcional en Vercel: `ADVISOR_NAME`, `COMMISSION_PCT`, `REVIEW_DELAY_MINUTES`,
+   `PIPELINE_HORA_INICIO`, `PIPELINE_HORA_FIN` (todas tienen default sano).
+
+**Esperando a Meta:** `revision_iniciada_pensionmas` y `contrato_listo_pensionmas` se
+enviaron a revisión el 3-ago y están en PENDING. Hasta que las aprueben, el aviso y el envío
+del contrato quedan registrados en el timeline pero no se entregan.
+
+**Borrar a mano en WhatsApp Manager** (mi token no tiene permiso de borrado):
+`caso_revisado_pensionmas` (quedó MARKETING por mencionar el precio) y
+`revisando_caso_pensionmas` (prometía "en menos de 1 hora", plazo incumplible de madrugada).
+Ninguna de las dos se usa en el código.
+
+**Decisión de negocio que quedó abierta:** el 10% se cobra sobre `contracts.dispersed_amount`,
+que hoy nadie captura — falta el campo en el panel al marcar DISPERSED.
+
 ## Legales / negocio (bloquean lanzamiento público)
 1. **Razón social ✅ y domicilio ✅** (28-jul: "Grupo Inmobiliario HeredaBienes", Av. López Mateos Norte 507, Col. Herrera y Cairo, C.P. 44680, Guadalajara, Jalisco — en términos, privacidad y cláusula "Partes" del contrato). **Falta:** `[CORREO DE CONTACTO]` (3 lugares en `/terminos` y `/privacidad`). ⚠️ Confirmar que la razón social coincida EXACTA con el acta constitutiva (¿lleva "S.A. de C.V." u otra forma societaria?).
 2. **Revisión por abogado** del contrato de asesoría y los términos — los redacté con criterios sanos (sin anticipos, cobro solo post-dispersión, sin promesas), pero necesitan ojos legales antes de firmar clientes reales.
@@ -18,7 +46,13 @@
 
 ## Técnicos menores
 0. ~~Docker no descargaba imágenes~~ **RESUELTO (27-jul mediodía):** era transitorio. Supabase local corre y el flujo completo quedó verificado end-to-end: pre-calificador → resultado ($12,000 Mod A / $8,719–$10,731 Mod B con datos de prueba) → firma con OTP → PDF en Storage (folio TLN-73904009, SHA-256 verificado contra la DB) → admin con timeline y transición a DISPERSED auditada. Entorno local: admin `admin@tulanaya.local` / `Tulanaya2026!`, Studio en http://127.0.0.1:54323.
-9. Twilio (fallback SMS del OTP) quedó especificado pero no implementado — **ahora sí relevante:** la plantilla Authentication `codigo_pensionmas` está bloqueada por Meta hasta que pase la verificación del negocio (error 2388185, política de Meta). Mientras: NO prender `WHATSAPP_ENABLED=true` (el OTP fallaría y bloquearía la firma; con false aplica el flujo manual). Al aprobarse la verificación: crear la plantilla y listo, el código ya la usa.
+9. **Verificación del negocio (bloquea el OTP).** Confirmado por API el 3-ago-2026: el WABA
+   `2828213904220650` tiene `business_verification_status: pending_submission` — la solicitud
+   ni siquiera está enviada, sigue en pausa por el documento faltante desde el 28-jul. Mientras
+   siga así, crear `codigo_pensionmas` devuelve error 2388185 y ningún cliente nuevo puede
+   recibir su código (el texto libre solo entrega si el cliente escribió en las últimas 24 h).
+   Mitigación parcial ya implementada: el quick reply "Quiero que me expliquen" de
+    `contrato_listo_pensionmas` abre la ventana con un tap. Twilio (fallback SMS del OTP) quedó especificado pero no implementado — **ahora sí relevante:** la plantilla Authentication `codigo_pensionmas` está bloqueada por Meta hasta que pase la verificación del negocio (error 2388185, política de Meta). Mientras: NO prender `WHATSAPP_ENABLED=true` (el OTP fallaría y bloquearía la firma; con false aplica el flujo manual). Al aprobarse la verificación: crear la plantilla y listo, el código ya la usa.
 10. La UMA está hardcodeada en `lib/eligibility/constants.ts` ($117.31, DOF 09/01/2026) — actualizar cada febrero.
 11. ~~Endurecimientos antes de `WHATSAPP_ENABLED=true`~~ **RESUELTO (29-jul, TDD, 85 tests):** hex guard en firma del webhook; dedupe de firma por ciclo (`sign_token` en eventos); tope de 3 reintentos por lead+kind; señal estructurada `requalify_by_days` (con fallback a texto para leads viejos); botones en plantillas (URL dinámica de firma como parámetro de botón); opt-out por tap de botón; imágenes/PDF entrantes → Storage (`inbound/`) + evento `inbound_media`; OTP migrado a plantilla Authentication `codigo_pensionmas`.
     - ⚠️ Falta aplicar en **Supabase prod** (SQL Editor): `ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS requalify_by_days boolean;` **y también** las migraciones `0004_content_items.sql` y `0005_content_metrics.sql` (tablas + bucket `content-media`) — sin ellas la máquina de contenido no puede escribir en prod (el admin `/admin/contenido` no truena, solo sale vacío).

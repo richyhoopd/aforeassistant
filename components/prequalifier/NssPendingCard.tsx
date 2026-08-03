@@ -69,7 +69,7 @@ export function NssPendingCard({
   return (
     <div className="mt-6 space-y-3 rounded-lg border p-4">
       <p className="text-sm font-medium">
-        Para generar tu contrato solo falta tu NSS
+        Para empezar a revisar tu caso solo falta tu NSS
       </p>
       <div className="space-y-1.5">
         <Label htmlFor="nss-pendiente">Número de Seguridad Social (NSS)</Label>
@@ -86,7 +86,7 @@ export function NssPendingCard({
       <NssHelperDialog curp={JSON.parse(solicitudRaw).curp ?? ""} />
       <Button className="w-full" onClick={enviar} disabled={sending}>
         {sending && <Loader2 className="size-4 animate-spin" />}
-        Generar mi contrato
+        Enviar mi NSS
       </Button>
       <p className="text-xs text-muted-foreground">
         Si no lo tienes ahora, no pasa nada: guardamos tu evaluación y te
