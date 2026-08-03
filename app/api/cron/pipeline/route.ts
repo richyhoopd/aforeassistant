@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { config } from "@/lib/config"
 import { sendContractToLead } from "@/lib/contracts/send"
-import { planPipeline, type PipelineLead } from "@/lib/pipeline/plan"
+import { MAX_FALLOS, planPipeline, type PipelineLead } from "@/lib/pipeline/plan"
 import { supabaseAdmin } from "@/lib/supabase/server"
 
 // Tick de 15 minutos: envía el contrato de los leads verdes cuya hora de
@@ -70,8 +70,19 @@ export async function GET(req: NextRequest) {
   let failed = 0
   for (const { leadId } of planned) {
     const r = await sendContractToLead(leadId, { auto: true, actor: "auto" })
-    if (r.ok) sent++
-    else failed++
+    if (r.ok) {
+      sent++
+      continue
+    }
+    failed++
+    // Al agotar los reintentos el lead sale del pipeline para siempre; si se
+    // queda en verde nadie lo vuelve a ver. En rojo entra al aviso del panel.
+    if (
+      r.reason === "send_failed" &&
+      (fallos.get(leadId) ?? 0) + 1 >= MAX_FALLOS
+    ) {
+      await db.from("leads").update({ review_level: "RED" }).eq("id", leadId)
+    }
   }
 
   return NextResponse.json({ processed: planned.length, sent, failed })

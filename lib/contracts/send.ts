@@ -47,10 +47,28 @@ export async function sendContractToLead(
       sign_token_expires_at: new Date(Date.now() + 72 * 3600_000).toISOString(),
       commission_pct: config.commissionPct,
     })
-    .select("id, sign_token")
+    .select("id, sign_token, created_at")
     .single()
   if (cErr || !contract) {
     return { ok: false, reason: "send_failed", error: String(cErr?.message) }
+  }
+
+  // El chequeo de arriba es un read-then-insert: si el cron y el botón del
+  // panel corren en el mismo minuto, ambos insertan. Releemos y el más antiguo
+  // gana; el perdedor se borra ANTES de mandar nada, para que el cliente nunca
+  // reciba dos ligas firmables del mismo contrato.
+  const { data: vigentes } = await db
+    .from("contracts")
+    .select("id, created_at")
+    .eq("lead_id", leadId)
+    .is("signed_at", null)
+    .gt("sign_token_expires_at", new Date().toISOString())
+    .order("created_at", { ascending: true })
+    .order("id", { ascending: true })
+  const ganador = vigentes?.[0]
+  if (ganador && ganador.id !== contract.id) {
+    await db.from("contracts").delete().eq("id", contract.id)
+    return { ok: false, reason: "already_pending" }
   }
 
   const nombre = lead.full_name?.trim().split(/\s+/)[0] || "hola"
@@ -73,7 +91,11 @@ export async function sendContractToLead(
     return { ok: false, reason: "send_failed", error: envio.error }
   }
 
-  await db
+  // Si este update falla el lead queda QUALIFIED con contrato abierto, que es
+  // el estado del que nadie lo saca: el pipeline lo excluye por tener contrato
+  // y el panel lo rechaza por already_pending. Se registra para que aparezca en
+  // el aviso de revisión del panel.
+  const { error: upErr } = await db
     .from("leads")
     .update({
       status: "CONTRACT_PENDING",
@@ -81,6 +103,13 @@ export async function sendContractToLead(
       reviewed_by: opts.actor,
     })
     .eq("id", leadId)
+  if (upErr) {
+    await logEvent(leadId, "contract_status_update_failed", {
+      auto: opts.auto,
+      error: upErr.message,
+      sign_token: contract.sign_token,
+    })
+  }
 
   await logEvent(leadId, "contract_sent", {
     auto: opts.auto,

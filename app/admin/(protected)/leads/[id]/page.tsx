@@ -149,10 +149,10 @@ export default async function LeadDetail({
           ))}
         </dl>
 
-        {lead.status === "QUALIFIED" && lead.review_level && (
+        {lead.status === "QUALIFIED" && (
           <ReviewSummary
             leadId={id}
-            level={lead.review_level}
+            level={lead.review_level ?? "AMBER"}
             flags={(lead.review_flags ?? []) as ReviewFlag[]}
             dueAt={lead.contract_due_at}
             advisor={lead.advisor_name}

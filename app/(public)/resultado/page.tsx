@@ -282,8 +282,9 @@ export default function Resultado() {
           <p className="mt-2 text-sm leading-relaxed text-foreground/80">
             Antes de pedirte que firmes nada, revisamos tus días sin empleo, que
             tus datos de identidad cuadren y qué modalidad te conviene. Te
-            escribimos por WhatsApp al número que registraste en menos de una
-            hora, con lo que encontremos y tu contrato listo.
+            escribimos por WhatsApp al número que registraste con lo que
+            encontremos y tu contrato listo, dentro de nuestro horario de 8 de la
+            mañana a 9 de la noche.
           </p>
           <p className="mt-3 text-sm text-muted-foreground">
             No tienes que hacer nada más por ahora.

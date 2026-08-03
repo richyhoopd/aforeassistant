@@ -25,8 +25,10 @@ no `vercel.json`: el plan Hobby solo permite un cron diario y ese lo ocupa el de
 | `bienvenida_pensionmas` | APPROVED | UTILITY |
 | `pendientes_datos_pensionmas` | APPROVED | MARKETING (aprobada pero sin cablear en el código) |
 | `contrato_firmado_pensionmas` | APPROVED | UTILITY (se traslapa con `bienvenida_pensionmas`) |
-| `revisando_caso_pensionmas` | PENDING (enviada 3-ago) | UTILITY |
-| `caso_revisado_pensionmas` | PENDING (enviada 3-ago) | UTILITY |
+| `revision_iniciada_pensionmas` | PENDING (enviada 3-ago) | UTILITY | ← **en uso** |
+| `contrato_listo_pensionmas` | PENDING (enviada 3-ago) | UTILITY | ← **en uso** |
+| `revisando_caso_pensionmas` | PENDING | UTILITY | descartada: prometía "1 hora", borrar |
+| `caso_revisado_pensionmas` | PENDING | MARKETING | descartada: mencionaba precio, borrar |
 | `codigo_pensionmas` | **NO EXISTE** | bloqueada por Meta (error 2388185) |
 
 `codigo_pensionmas` no se puede crear hasta que pase la verificación del negocio:
@@ -108,15 +110,19 @@ Ejemplos para la revisión de Meta: {{1}} = Carlos
 
 Nota: para leads capturados solo con teléfono (sin nombre), el sistema manda {{1}} = "amigo(a)" — el cuerpo debe leerse natural con ambos casos.
 
-### 7. `revisando_caso_pensionmas` — categoría **Utility** (creada 3-ago-2026)
+### 7. `revision_iniciada_pensionmas` — categoría **Utility** (creada 3-ago-2026)
 
 Sale al calificar, desde `/api/evaluate`. {{1}} = primer nombre, {{2}} = asesor.
 
 ```
-Hola {{1}}, soy {{2}} de Pensión+. Recibí tu evaluación y voy a revisar tu caso personalmente: tus días sin empleo, que tus datos de identidad cuadren y qué modalidad de retiro te conviene. Te escribo en menos de 1 hora con lo que encuentre.
+Hola {{1}}, soy {{2}} de Pensión+. Recibí tu evaluación y voy a revisar tu caso personalmente: tus días sin empleo, que tus datos de identidad cuadren y qué modalidad de retiro te conviene. Te escribo con el resultado en cuanto termine, dentro de nuestro horario de 8 de la mañana a 9 de la noche.
 ```
 
 Botones: **Respuesta rápida** `Tengo una duda` · `No enviar recordatorios`
+
+⚠️ Sustituye a `revisando_caso_pensionmas`, que prometía "en menos de 1 hora" — plazo que no
+se cumple si el cliente califica de madrugada, porque el envío respeta la ventana de
+8:00–21:00. **Bórrala a mano** en WhatsApp Manager junto con `caso_revisado_pensionmas`.
 
 ### 8. `contrato_listo_pensionmas` — categoría **Utility** (creada 3-ago-2026)
 

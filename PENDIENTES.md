@@ -16,9 +16,14 @@ de aplicarla rompe producción. Orden obligatorio:
 4. Opcional en Vercel: `ADVISOR_NAME`, `COMMISSION_PCT`, `REVIEW_DELAY_MINUTES`,
    `PIPELINE_HORA_INICIO`, `PIPELINE_HORA_FIN` (todas tienen default sano).
 
-**Esperando a Meta:** `revisando_caso_pensionmas` y  `contrato_listo_pensionmas` se enviaron a
-revisión el 3-ago y están en PENDING. Hasta que las aprueben, el aviso y el envío del
-contrato quedan registrados en el timeline pero no se entregan.
+**Esperando a Meta:** `revision_iniciada_pensionmas` y `contrato_listo_pensionmas` se
+enviaron a revisión el 3-ago y están en PENDING. Hasta que las aprueben, el aviso y el envío
+del contrato quedan registrados en el timeline pero no se entregan.
+
+**Borrar a mano en WhatsApp Manager** (mi token no tiene permiso de borrado):
+`caso_revisado_pensionmas` (quedó MARKETING por mencionar el precio) y
+`revisando_caso_pensionmas` (prometía "en menos de 1 hora", plazo incumplible de madrugada).
+Ninguna de las dos se usa en el código.
 
 **Decisión de negocio que quedó abierta:** el 10% se cobra sobre `contracts.dispersed_amount`,
 que hoy nadie captura — falta el campo en el panel al marcar DISPERSED.

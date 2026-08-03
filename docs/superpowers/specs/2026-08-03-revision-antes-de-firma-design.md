@@ -194,6 +194,33 @@ Unitarias (vitest, sin red ni base de datos):
 - `lib/followups/plan.test.ts` — caso nuevo: lead `QUALIFIED` **con** NSS no recibe `nss`.
 - `lib/pdf/contract.test.ts` y el texto del contrato — honorario como porcentaje.
 
+## Correcciones tras la revisión adversarial del diff
+
+Una revisión independiente del diff encontró siete defectos reales, todos corregidos antes
+de cerrar la rama:
+
+1. **Doble contrato firmable.** El chequeo de "ya tiene contrato" era un read-then-insert:
+   el cron y el botón del panel corriendo en el mismo minuto creaban dos contratos con dos
+   `sign_token` válidos, ambos firmables. Ahora, tras insertar, se relee y gana el más
+   antiguo; el perdedor se borra **antes** de enviar nada.
+2. **Lead atorado sin salida.** Si fallaba el `update` del estado, el lead quedaba
+   `QUALIFIED` con contrato abierto: el cron lo excluía, el panel devolvía `already_pending`
+   y los followups no aplicaban. Ahora se revisa ese error y el panel lista todo `QUALIFIED`
+   vencido, no solo ámbar y rojo.
+3. **Opt-out ignorado.** `doNotContact` iba hardcodeado a `false`, así que un lead que pidió
+   baja recibía el aviso (violando la política de Meta) y salía en verde. Ahora se lee del
+   lead y no se le escribe.
+4. **Regresión al re-evaluarse.** Un lead `CONTRACT_PENDING` que volvía al pre-calificador
+   bajaba a `QUALIFIED` y se quedaba mudo 72 horas. Ahora conserva su estado.
+5. **Leads previos sin camino.** Los `QUALIFIED` que ya existen en producción quedaban con
+   `review_level` nulo, invisibles para el cron y el panel, y además dejaron de recibir el
+   recordatorio de NSS. La migración los backfillea como `AMBER`.
+6. **Reintentos agotados en silencio.** Al tercer fallo el lead salía del pipeline sin
+   aparecer en ningún tablero; ahora se marca `RED` y entra al aviso.
+7. **La promesa de una hora.** `contract_due_at` se recorre al inicio de la ventana con
+   `proximoEnvio`, y la plantilla dejó de comprometer "1 hora" para comprometer el horario
+   real de atención.
+
 ## Decisiones tomadas sin consulta
 
 Ricardo delegó el cierre del diseño. Estas son las decisiones que no alcanzó a ver:

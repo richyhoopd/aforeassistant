@@ -18,3 +18,20 @@ CREATE INDEX leads_contract_due_idx ON leads (contract_due_at)
 ALTER TABLE contracts
   ADD COLUMN commission_pct NUMERIC(5,2) DEFAULT 10.00,
   ADD COLUMN dispersed_amount NUMERIC(10,2);
+
+-- Backfill: los leads QUALIFIED que ya existen quedarían con review_level NULL,
+-- y en ese estado nadie los toca — el cron exige GREEN, el panel no dibuja la
+-- tarjeta de revisión sin nivel, y el recordatorio de NSS dejó de aplicarles
+-- porque ya tienen NSS. Entran como AMBER para que aparezcan en el aviso de
+-- revisión humana; nunca se autoenvían, que es lo prudente con leads viejos.
+UPDATE leads
+SET review_level = 'AMBER',
+    review_flags = '[{"code":"lead_previo","label":"Lead anterior al flujo de revisión: confirma sus datos antes de enviar el contrato.","level":"AMBER"}]'::jsonb,
+    contract_due_at = NOW()
+WHERE status = 'QUALIFIED'
+  AND nss IS NOT NULL
+  AND review_level IS NULL
+  AND NOT EXISTS (
+    SELECT 1 FROM contracts c
+    WHERE c.lead_id = leads.id AND c.signed_at IS NULL
+  );

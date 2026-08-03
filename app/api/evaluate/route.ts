@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { config } from "@/lib/config"
 import { evaluateEligibility } from "@/lib/eligibility/evaluate"
 import { logEvent } from "@/lib/events"
+import { proximoEnvio } from "@/lib/pipeline/plan"
 import { reviewLead } from "@/lib/review/evaluate"
 import { supabaseAdmin } from "@/lib/supabase/server"
 import { preQualifierSchema } from "@/lib/validation/schemas"
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
     const findBy = async (column: "nss" | "curp" | "phone", value: string) => {
       const { data } = await db
         .from("leads")
-        .select("id, status")
+        .select("id, status, do_not_contact")
         .eq(column, value)
         .order("created_at", { ascending: false })
         .limit(1)
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
       monthlySalary: d.monthlySalary,
       yearsContributing: d.yearsContributing,
       lastWithdrawalWithin5y: d.lastWithdrawalWithin5y,
-      doNotContact: false,
+      doNotContact: Boolean(existing?.do_not_contact),
       duplicateSigned: otros.some((l) =>
         ["CONTRACT_SIGNED", "DISPERSED", "PAID"].includes(l.status)
       ),
@@ -89,10 +90,18 @@ export async function POST(req: NextRequest) {
       now: new Date(),
     })
 
-    // La espera antes de mandar el contrato: el caso se revisa primero.
+    // Un lead que ya recibió su contrato no se degrada a QUALIFIED: dejaría de
+    // recibir el recordatorio de firma y el pipeline lo ignoraría por tener
+    // contrato abierto, quedándose mudo hasta que el enlace expire.
+    const yaTieneContrato = existing?.status === "CONTRACT_PENDING"
+
+    // La espera antes de mandar el contrato, recorrida al horario en que sí
+    // escribimos: prometer "en una hora" a las 23:00 sería mentira.
     const dueAt =
-      result.eligible && d.nss
-        ? new Date(Date.now() + config.reviewDelayMinutes * 60_000).toISOString()
+      result.eligible && d.nss && !yaTieneContrato
+        ? proximoEnvio(
+            new Date(Date.now() + config.reviewDelayMinutes * 60_000)
+          ).toISOString()
         : null
 
     const leadRow = {
@@ -107,7 +116,11 @@ export async function POST(req: NextRequest) {
       last_withdrawal_within_5y: d.lastWithdrawalWithin5y,
       estimated_payout_min: result.payoutMin,
       estimated_payout_max: result.payoutMax,
-      status: result.eligible ? "QUALIFIED" : "REJECTED",
+      status: result.eligible
+        ? yaTieneContrato
+          ? "CONTRACT_PENDING"
+          : "QUALIFIED"
+        : "REJECTED",
       rejection_reason: result.eligible ? null : result.reasons.join(" "),
       requalify_by_days: result.requalifyByDays,
       privacy_consent_at: new Date().toISOString(),
@@ -159,11 +172,13 @@ export async function POST(req: NextRequest) {
 
     // El contrato ya no se crea aquí: primero se revisa el caso y el cron lo
     // envía al vencer contract_due_at (o el asesor lo manda desde el panel).
-    const aviso = await sendWhatsAppTemplate(
-      d.phone,
-      config.whatsappTemplateRevisando,
-      [d.fullName.trim().split(/\s+/)[0] ?? "hola", config.advisorName]
-    )
+    // A quien pidió baja no se le escribe, aunque vuelva a evaluarse.
+    const aviso = existing?.do_not_contact
+      ? { sent: false, error: "do_not_contact" }
+      : await sendWhatsAppTemplate(d.phone, config.whatsappTemplateRevisando, [
+          d.fullName.trim().split(/\s+/)[0] ?? "hola",
+          config.advisorName,
+        ])
     await logEvent(leadId, "review_scheduled", {
       level: review.level,
       flags: review.flags.map((f) => f.code),

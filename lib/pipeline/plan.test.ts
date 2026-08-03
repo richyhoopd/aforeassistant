@@ -3,6 +3,7 @@ import {
   dentroDeVentana,
   horaEnCdmx,
   planPipeline,
+  proximoEnvio,
   type PipelineLead,
 } from "./plan"
 
@@ -58,6 +59,26 @@ describe("planPipeline", () => {
   it("tope de 50 por corrida", () => {
     const muchos = Array.from({ length: 60 }, (_, i) => ({ ...lead, id: `l${i}` }))
     expect(planPipeline(muchos, mediodia)).toHaveLength(50)
+  })
+})
+
+describe("proximoEnvio", () => {
+  it("no mueve nada si ya estamos en ventana", () => {
+    const d = new Date("2026-08-03T19:00:00Z") // 13:00 CDMX
+    expect(proximoEnvio(d).toISOString()).toBe(d.toISOString())
+  })
+
+  it("recorre a la mañana siguiente lo que cae de madrugada", () => {
+    // 00:10 CDMX del 4-ago → primer envío posible ese mismo día por la mañana
+    const madrugada = new Date("2026-08-04T06:10:00Z")
+    const r = proximoEnvio(madrugada)
+    expect(horaEnCdmx(r)).toBe(8)
+    expect(r.getTime()).toBeGreaterThan(madrugada.getTime())
+  })
+
+  it("recorre lo que cae antes de abrir", () => {
+    const temprano = new Date("2026-08-03T12:00:00Z") // 06:00 CDMX
+    expect(horaEnCdmx(proximoEnvio(temprano))).toBe(8)
   })
 })
 

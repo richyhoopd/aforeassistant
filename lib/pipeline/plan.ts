@@ -37,6 +37,17 @@ export function dentroDeVentana(now: Date): boolean {
   return hora >= HORA_INICIO && hora < HORA_FIN
 }
 
+// Primer momento a partir de `desde` en que sí se puede escribir. Evita
+// prometer "en una hora" a quien califica a medianoche: la espera se recorre
+// al inicio de la ventana y el mensaje no compromete un plazo que no se cumple.
+export function proximoEnvio(desde: Date): Date {
+  let d = new Date(desde)
+  for (let i = 0; i < 48 && !dentroDeVentana(d); i++) {
+    d = new Date(d.getTime() + 3600_000)
+  }
+  return d
+}
+
 // Leads verdes cuya hora de espera ya venció y que siguen esperando contrato.
 export function planPipeline(
   leads: PipelineLead[],
