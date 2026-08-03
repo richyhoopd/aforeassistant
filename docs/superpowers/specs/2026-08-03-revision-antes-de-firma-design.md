@@ -99,9 +99,10 @@ planPipeline(leads, now) -> [{ leadId }]
 ```
 
 Selecciona leads `QUALIFIED` con NSS, `review_level = 'GREEN'`, `contract_due_at <= now`,
-sin contrato vigente, sin `do_not_contact` ni `human_takeover`, y con `now` dentro de
-8:00–21:00 hora de Ciudad de México. Fuera de la ventana no devuelve nada: el lead espera al
-siguiente tick diurno.
+sin contrato vigente, sin `do_not_contact` ni `human_takeover`, con menos de 3 envíos
+fallidos, y con `now` dentro de 8:00–21:00 hora de Ciudad de México (configurable con
+`PIPELINE_HORA_INICIO` / `PIPELINE_HORA_FIN`, porque es una decisión operativa). Fuera de la
+ventana no devuelve nada: el lead espera al siguiente tick diurno.
 
 El envío vive en `lib/contracts/send.ts`, compartido por el cron y el panel: crea el
 contrato, manda `caso_revisado_pensionmas` con el `sign_token` como parámetro del botón,
@@ -121,13 +122,18 @@ lo dispara `pg_cron` + `pg_net` desde Supabase. El SQL queda en
 
 Botones: `Tengo una duda` · `No enviar recordatorios` (quick reply).
 
-**`caso_revisado_pensionmas`** — {{1}} nombre, {{2}} asesor, {{3}} hallazgo.
-> Hola {{1}}, ya revisé tu caso. {{3}} Tu contrato de asesoría está listo: cobramos 10% de
-> lo que recibas y únicamente después de que la AFORE te deposite. Cualquier duda me
-> escribes por aquí, soy {{2}}.
+**`contrato_listo_pensionmas`** — {{1}} nombre, {{2}} hallazgo, {{3}} asesor.
+> Hola {{1}}, ya revisé tu caso. {{2}} Tu contrato de asesoría quedó listo para tu firma y
+> el enlace es válido por 72 horas. Soy {{3}}, tu asesor en Pensión+, y cualquier duda me
+> escribes por aquí.
 
 Botones: `Firmar mi contrato` (URL dinámica `https://www.pensionmas.com.mx/firmar/{{1}}`) ·
 `Quiero que me expliquen` (quick reply).
+
+Corregido durante la implementación: la primera versión (`caso_revisado_pensionmas`)
+mencionaba el precio y Meta la clasificó **MARKETING**, lo que la somete a límites por
+usuario justo en el mensaje que entrega el contrato. La versión sin precio quedó UTILITY.
+El precio sigue visible en la página de firma y en la cláusula tercera.
 
 El hallazgo {{3}} se arma de un catálogo cerrado de frases verificables sobre datos que sí
 tenemos (días de desempleo confirmados, checksums de NSS/CURP, modalidad aplicable). **Nunca
@@ -164,9 +170,12 @@ y la rama exige `nss == null`.
 
 ## Errores y casos borde
 
-- **Envío fallido del contrato**: se registra `contract_send_failed` y el lead **no** pasa a
-  `CONTRACT_PENDING`; el siguiente tick reintenta. Tres fallos consecutivos lo dejan para
-  revisión manual.
+- **Envío fallido del contrato**: se registra `contract_send_failed`, se borra el contrato
+  recién creado y el lead **no** pasa a `CONTRACT_PENDING`; el siguiente tick reintenta.
+  A los 3 fallos acumulados el pipeline lo excluye y queda para revisión manual.
+- **Ámbar o rojo que nadie revisa**: el cliente ya recibió "te escribo en menos de 1 hora" y
+  su contrato no sale solo. El panel muestra arriba un aviso con los casos vencidos que
+  esperan decisión humana, para que no se queden en silencio.
 - **Doble envío**: `lib/contracts/send.ts` verifica que no exista contrato vigente sin firmar
   antes de crear uno. El botón del panel y el cron pasan por la misma verificación.
 - **Lead que responde antes de la hora**: si escribe por WhatsApp, `human_takeover` puede
