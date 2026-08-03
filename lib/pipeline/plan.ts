@@ -9,8 +9,10 @@ export type PipelineLead = {
   has_open_contract: boolean
 }
 
-export const HORA_INICIO = 8
-export const HORA_FIN = 21
+// Horario de envío. Configurable porque el horario de atención es una decisión
+// operativa, no una constante del dominio.
+export const HORA_INICIO = Number(process.env.PIPELINE_HORA_INICIO ?? 8)
+export const HORA_FIN = Number(process.env.PIPELINE_HORA_FIN ?? 21)
 const MAX_POR_CORRIDA = 50
 
 // Hora local de CDMX sin dependencias: México no aplica horario de verano
