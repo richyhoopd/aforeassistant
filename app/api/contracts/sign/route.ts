@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     const { data: contract } = await db
       .from("contracts")
       .select(
-        "id, lead_id, signed_at, sign_token_expires_at, otp_code_hash, otp_expires_at, otp_attempts, otp_phone, commission_amount, leads(id, full_name, nss, curp, phone, estimated_payout_min, estimated_payout_max)"
+        "id, lead_id, signed_at, sign_token_expires_at, otp_code_hash, otp_expires_at, otp_attempts, otp_phone, commission_pct, leads(id, full_name, nss, curp, phone, estimated_payout_min, estimated_payout_max)"
       )
       .eq("sign_token", token)
       .single()
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
       nss: lead.nss,
       curp: lead.curp,
       phone: lead.phone,
-      commissionAmount: Number(contract.commission_amount ?? 5000),
+      commissionPct: Number(contract.commission_pct ?? config.commissionPct),
       estimatedMin: Number(lead.estimated_payout_min ?? 0),
       estimatedMax: Number(lead.estimated_payout_max ?? 0),
       signedAtISO: signedAt.toISOString(),

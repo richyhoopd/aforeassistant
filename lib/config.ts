@@ -21,4 +21,11 @@ export const config = {
     process.env.WHATSAPP_TEMPLATE_OTP ?? "codigo_pensionmas",
   whatsappTemplateContinua:
     process.env.WHATSAPP_TEMPLATE_CONTINUA ?? "continuar_pensionmas",
+  whatsappTemplateRevisando:
+    process.env.WHATSAPP_TEMPLATE_REVISANDO ?? "revisando_caso_pensionmas",
+  whatsappTemplateRevisado:
+    process.env.WHATSAPP_TEMPLATE_REVISADO ?? "caso_revisado_pensionmas",
+  advisorName: process.env.ADVISOR_NAME ?? "Ricardo",
+  commissionPct: Number(process.env.COMMISSION_PCT ?? 10),
+  reviewDelayMinutes: Number(process.env.REVIEW_DELAY_MINUTES ?? 60),
 }

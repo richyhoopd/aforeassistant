@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { EmailContractButton } from "@/components/sign/EmailContractButton"
+import { ReviewCard } from "@/components/sign/ReviewCard"
 import { SignFlow } from "@/components/sign/SignFlow"
 import { CONTRACT_TITLE, contractClauses } from "@/lib/pdf/contract-text"
 import { supabaseAdmin } from "@/lib/supabase/server"
@@ -22,7 +23,7 @@ export default async function Firmar({
   const { data: contract } = await supabaseAdmin()
     .from("contracts")
     .select(
-      "signed_at, sign_token_expires_at, commission_amount, folio, leads(full_name, nss, curp, phone, estimated_payout_min, estimated_payout_max)"
+      "signed_at, sign_token_expires_at, commission_pct, folio, leads(full_name, nss, curp, phone, estimated_payout_min, estimated_payout_max, advisor_name, reviewed_at, fecha_baja)"
     )
     .eq("sign_token", token)
     .single()
@@ -35,6 +36,9 @@ export default async function Firmar({
     phone: string
     estimated_payout_min: number
     estimated_payout_max: number
+    advisor_name: string | null
+    reviewed_at: string | null
+    fecha_baja: string | null
   }
 
   if (contract.signed_at) {
@@ -68,7 +72,7 @@ export default async function Firmar({
   }
 
   const clauses = contractClauses({
-    commissionAmount: Number(contract.commission_amount ?? 5000),
+    commissionPct: Number(contract.commission_pct ?? 10),
     estimatedMin: Number(lead.estimated_payout_min ?? 0),
     estimatedMax: Number(lead.estimated_payout_max ?? 0),
   })
@@ -88,6 +92,13 @@ export default async function Firmar({
           <EmailContractButton />
         </div>
 
+        <ReviewCard
+          advisor={lead.advisor_name}
+          reviewedAt={lead.reviewed_at}
+          fechaBaja={lead.fecha_baja}
+          commissionPct={Number(contract.commission_pct ?? 10)}
+        />
+
         <div className="mt-8 rounded-2xl bg-white shadow-[0_1px_2px_oklch(0.23_0.06_265/0.05),0_16px_40px_-24px_oklch(0.23_0.06_265/0.25)]">
           <div className="border-b border-border/60 px-6 py-4 sm:px-8">
             <h2 className="font-display text-xl font-semibold leading-snug">
@@ -105,8 +116,15 @@ export default async function Firmar({
             ))}
           </div>
           <div className="border-t border-border/60 px-6 py-4 text-sm text-muted-foreground sm:px-8">
-            Honorarios: <strong className="text-foreground">{mxn(Number(contract.commission_amount ?? 5000))}</strong>{" "}
-            — pagaderos solo después de recibir tu retiro. Este documento es
+            Honorarios:{" "}
+            <strong className="text-foreground">
+              {Number(contract.commission_pct ?? 10)}% de lo que te depositen
+            </strong>{" "}
+            — sobre tu estimado serían entre{" "}
+            {mxn((Number(lead.estimated_payout_min ?? 0) * Number(contract.commission_pct ?? 10)) / 100)}{" "}
+            y{" "}
+            {mxn((Number(lead.estimated_payout_max ?? 0) * Number(contract.commission_pct ?? 10)) / 100)}
+            , y solo se pagan después de que recibas tu retiro. Este documento es
             exactamente el que quedará firmado en PDF.
           </div>
         </div>

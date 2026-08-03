@@ -7,7 +7,7 @@ export type ContractData = {
   nss: string
   curp: string
   phone: string
-  commissionAmount: number
+  commissionPct: number
   estimatedMin: number
   estimatedMax: number
   signedAtISO: string
