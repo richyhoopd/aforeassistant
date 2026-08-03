@@ -38,9 +38,17 @@ export async function POST(req: NextRequest) {
       ["CONTRACT_SIGNED", "DISPERSED", "PAID"].includes(existing.status)
     ) {
       await logEvent(existing.id, "reevaluate_blocked", { status: existing.status })
+      const { data: signedContract } = await db
+        .from("contracts")
+        .select("folio")
+        .eq("lead_id", existing.id)
+        .not("signed_at", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(1)
       return NextResponse.json({
         eligible: true,
         alreadySigned: true,
+        folio: signedContract?.[0]?.folio ?? null,
         message:
           "Ya tienes un contrato activo con nosotros. Te contactamos por WhatsApp; si tienes dudas, escríbenos.",
       })

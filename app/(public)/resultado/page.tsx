@@ -11,6 +11,7 @@ type Modality = { eligible: boolean; min: number; max: number; reasons: string[]
 type Payload = {
   eligible: boolean
   alreadySigned?: boolean
+  folio?: string | null
   message?: string
   commission?: number
   signUrl?: string
@@ -80,11 +81,93 @@ export default function Resultado() {
   if (!data) return null
 
   if (data.alreadySigned) {
+    const pasos = [
+      {
+        title: "Espera nuestro mensaje por WhatsApp",
+        body: "Te escribimos en menos de 1 día hábil al número que registraste, para armar tu expediente paso a paso.",
+      },
+      ...(pendientes.length > 0
+        ? [
+            {
+              title: "Mientras tanto, adelanta tus pendientes",
+              body: "",
+            },
+          ]
+        : []),
+      {
+        title: "Presenta tu solicitud y recibe tu depósito",
+        body: "Con todo listo, presentas tu trámite ante tu AFORE con nuestra guía. Pagas únicamente después de recibir tu retiro.",
+      },
+    ]
     return (
-      <div className="mx-auto max-w-md px-4 py-16 text-center">
+      <div className="mx-auto max-w-lg px-4 py-12">
         <CheckCircle2 className="mx-auto size-10 text-primary" />
-        <h1 className="mt-4 text-2xl font-bold">Ya tienes un contrato activo</h1>
-        <p className="mt-3 text-sm text-muted-foreground">{data.message}</p>
+        <h1 className="mt-4 text-center font-display text-3xl font-semibold tracking-[-0.01em]">
+          Ya tienes un contrato activo
+        </h1>
+        <p className="mx-auto mt-3 max-w-sm text-center text-muted-foreground">
+          No necesitas evaluarte otra vez: tu trámite ya está en curso y lo
+          llevamos contigo.
+        </p>
+
+        {data.folio && (
+          <div className="mt-7 rounded-2xl bg-accent p-5 text-center">
+            <p className="text-sm font-medium text-muted-foreground">
+              Tu folio de trámite
+            </p>
+            <p className="mt-1 font-display text-3xl font-semibold tabular-nums">
+              {data.folio}
+            </p>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Guárdalo: con él puedes pedir seguimiento en cualquier momento.
+            </p>
+          </div>
+        )}
+
+        <h2 className="mt-8 font-display text-xl font-semibold">¿Qué sigue?</h2>
+        <ol className="mt-4 space-y-5">
+          {pasos.map((p, i) => (
+            <li key={p.title} className="flex gap-4">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary font-display text-base font-semibold text-white">
+                {i + 1}
+              </span>
+              <div className="min-w-0">
+                <p className="font-semibold">{p.title}</p>
+                {p.body ? (
+                  <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
+                    {p.body}
+                  </p>
+                ) : (
+                  <ul className="mt-1.5 space-y-2">
+                    {pendientes.map((pend) => (
+                      <li
+                        key={pend}
+                        className="flex items-start gap-2 rounded-lg bg-secondary/70 p-3 text-sm text-foreground/80"
+                      >
+                        <Info className="mt-0.5 size-4 shrink-0 text-primary" />
+                        {pend}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <a
+          href={`https://wa.me/523349687609?text=${encodeURIComponent(
+            `Hola, ya firmé mi contrato${data.folio ? ` (folio ${data.folio})` : ""} y quiero dar seguimiento a mi trámite.`
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-semibold text-white transition-colors duration-200 hover:bg-[oklch(0.44_0.21_262)]"
+        >
+          Escribirnos por WhatsApp
+        </a>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          ¿Algo cambió en tu situación? Escríbenos y lo revisamos contigo.
+        </p>
       </div>
     )
   }
