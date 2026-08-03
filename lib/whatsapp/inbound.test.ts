@@ -40,13 +40,13 @@ describe("classifyInbound", () => {
     }
   })
 
-  it("clasifica otros botones (Tengo una duda) como log con su texto", () => {
+  it("clasifica un botón desconocido como log con su texto", () => {
     const r = classifyInbound({
       from: "521331",
       type: "button",
-      button: { text: "Tengo una duda" },
+      button: { text: "Otra cosa" },
     })
-    expect(r).toEqual({ action: "log", text: "Tengo una duda" })
+    expect(r).toEqual({ action: "log", text: "Otra cosa" })
   })
 
   it("clasifica imágenes como media con id y mime", () => {
@@ -61,6 +61,33 @@ describe("classifyInbound", () => {
       mimeType: "image/jpeg",
       caption: "mi nss",
     })
+  })
+
+  it("el tap de 'Quiero que me expliquen' pide explicación, no es un log cualquiera", () => {
+    const r = classifyInbound({
+      from: "521331",
+      type: "button",
+      button: { text: "Quiero que me expliquen" },
+    })
+    expect(r).toEqual({ action: "explain", text: "Quiero que me expliquen" })
+  })
+
+  it("'Tengo una duda' también pide explicación", () => {
+    const r = classifyInbound({
+      from: "521331",
+      type: "button",
+      button: { text: "Tengo una duda" },
+    })
+    expect(r.action).toBe("explain")
+  })
+
+  it("el opt-out sigue ganando sobre cualquier otro botón", () => {
+    const r = classifyInbound({
+      from: "521331",
+      type: "button",
+      button: { text: "No enviar recordatorios" },
+    })
+    expect(r.action).toBe("opt_out")
   })
 
   it("clasifica documentos (PDF de constancia) como media", () => {

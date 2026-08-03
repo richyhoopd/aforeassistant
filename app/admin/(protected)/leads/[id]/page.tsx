@@ -1,8 +1,92 @@
 import { notFound } from "next/navigation"
 import { supabaseAdmin } from "@/lib/supabase/server"
 import { LeadActions } from "@/components/admin/LeadActions"
+import { SendContractButton } from "@/components/admin/SendContractButton"
+import type { ReviewFlag } from "@/lib/review/evaluate"
 
 export const dynamic = "force-dynamic"
+
+const SEMAFORO: Record<string, { label: string; className: string }> = {
+  GREEN: {
+    label: "Verde — el contrato sale solo al vencer la hora",
+    className: "border-emerald-300 bg-emerald-50",
+  },
+  AMBER: {
+    label: "Ámbar — necesita tu revisión antes de enviar",
+    className: "border-amber-300 bg-amber-50",
+  },
+  RED: {
+    label: "Rojo — no enviar sin resolver lo señalado",
+    className: "border-red-300 bg-red-50",
+  },
+}
+
+const RESPUESTA: Record<string, string> = {
+  si: "Sí",
+  no: "No",
+  nose: "No sabe",
+}
+
+function ReviewSummary({
+  leadId,
+  level,
+  flags,
+  dueAt,
+  advisor,
+  expediente,
+  cuenta,
+  hasNss,
+}: {
+  leadId: string
+  level: string
+  flags: ReviewFlag[]
+  dueAt: string | null
+  advisor: string | null
+  expediente: string | null
+  cuenta: string | null
+  hasNss: boolean
+}) {
+  const semaforo = SEMAFORO[level] ?? SEMAFORO.AMBER
+  const vence = dueAt ? new Date(dueAt) : null
+  const vencido = vence ? vence <= new Date() : false
+
+  return (
+    <div className={`mt-6 rounded-lg border p-4 text-sm ${semaforo.className}`}>
+      <p className="font-semibold">Revisión del caso</p>
+      <p className="mt-1">{semaforo.label}</p>
+      <p className="mt-1 text-muted-foreground">
+        Asesor: {advisor ?? "—"} ·{" "}
+        {vence
+          ? `${vencido ? "Venció" : "Vence"} ${vence.toLocaleString("es-MX")}`
+          : "Sin hora programada"}
+      </p>
+
+      {flags.length > 0 && (
+        <ul className="mt-3 space-y-1.5">
+          {flags.map((f) => (
+            <li key={f.code} className="flex gap-2">
+              <span aria-hidden>{f.level === "RED" ? "⛔" : "⚠️"}</span>
+              <span>{f.label}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <p className="mt-3 text-muted-foreground">
+        Expediente: {RESPUESTA[expediente ?? ""] ?? "—"} · Cuenta bancaria:{" "}
+        {RESPUESTA[cuenta ?? ""] ?? "—"}
+      </p>
+
+      {hasNss ? (
+        <SendContractButton leadId={leadId} />
+      ) : (
+        <p className="mt-3 font-medium">
+          Sin NSS todavía: no se puede generar el contrato.
+        </p>
+      )}
+    </div>
+  )
+}
 
 const mxn = (n: number | null) =>
   n == null
@@ -28,7 +112,7 @@ export default async function LeadDetail({
       .limit(100),
     db
       .from("contracts")
-      .select("folio, signed_at, pdf_path, sha256_hash, commission_amount")
+      .select("folio, signed_at, pdf_path, sha256_hash, commission_pct")
       .eq("lead_id", id)
       .not("signed_at", "is", null)
       .order("signed_at", { ascending: false })
@@ -51,7 +135,10 @@ export default async function LeadDetail({
             ["Salario mensual", mxn(lead.monthly_salary)],
             ["Años cotizando", lead.years_contributing],
             ["Estimado", `${mxn(lead.estimated_payout_min)} – ${mxn(lead.estimated_payout_max)}`],
-            ["Comisión", mxn(lead.commission_amount)],
+            [
+              "Honorarios",
+              `${Number(contract?.commission_pct ?? 10)}% de lo depositado`,
+            ],
             ["Fuente", `${lead.source}${lead.source_ref ? ` (${lead.source_ref})` : ""}`],
             ["Motivo de rechazo", lead.rejection_reason ?? "—"],
           ].map(([k, v]) => (
@@ -61,6 +148,19 @@ export default async function LeadDetail({
             </div>
           ))}
         </dl>
+
+        {lead.status === "QUALIFIED" && lead.review_level && (
+          <ReviewSummary
+            leadId={id}
+            level={lead.review_level}
+            flags={(lead.review_flags ?? []) as ReviewFlag[]}
+            dueAt={lead.contract_due_at}
+            advisor={lead.advisor_name}
+            expediente={lead.expediente_actualizado}
+            cuenta={lead.cuenta_bancaria}
+            hasNss={Boolean(lead.nss)}
+          />
+        )}
 
         {contract && (
           <div className="mt-6 rounded-lg border p-4 text-sm">

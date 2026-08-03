@@ -22,6 +22,7 @@ const baseLead: FollowupLead = {
   estimated_payout_max: 59020,
   do_not_contact: false,
   human_takeover: false,
+  nss: null,
 }
 
 const plan = (
@@ -35,6 +36,11 @@ describe("planFollowups — NSS pendiente", () => {
     const [r] = plan([baseLead])
     expect(r).toMatchObject({ leadId: "lead-1", kind: "nss", round: 1 })
     expect(r.params).toEqual(["Carlos", "$47,954 a $59,020"])
+  })
+
+  it("un QUALIFIED que ya dio su NSS no recibe el recordatorio: está esperando revisión", () => {
+    const conNss = { ...baseLead, nss: "24099812349" }
+    expect(plan([conNss]).filter((r) => r.kind === "nss")).toEqual([])
   })
 
   it("con ronda 1 ya enviada y 4 días transcurridos manda ronda 2", () => {

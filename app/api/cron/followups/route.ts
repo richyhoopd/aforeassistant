@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   const { data: leads, error: lErr } = await db
     .from("leads")
     .select(
-      "id, status, full_name, phone, updated_at, fecha_baja, rejection_reason, requalify_by_days, estimated_payout_min, estimated_payout_max, do_not_contact, human_takeover"
+      "id, status, full_name, phone, updated_at, fecha_baja, rejection_reason, requalify_by_days, estimated_payout_min, estimated_payout_max, do_not_contact, human_takeover, nss"
     )
     .in("status", ["NEW", "QUALIFIED", "CONTRACT_PENDING", "REJECTED"])
     .order("created_at", { ascending: true })

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowRight, CheckCircle2, Info, XCircle } from "lucide-react"
+import { CheckCircle2, Info, MessageCircle, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { NssPendingCard } from "@/components/prequalifier/NssPendingCard"
@@ -13,8 +13,9 @@ type Payload = {
   alreadySigned?: boolean
   folio?: string | null
   message?: string
-  commission?: number
-  signUrl?: string
+  commissionPct?: number
+  inReview?: boolean
+  advisor?: string
   nssPending?: boolean
   result: {
     daysUnemployed: number
@@ -255,23 +256,41 @@ export default function Resultado() {
         <p className="flex items-start gap-2">
           <Info className="mt-0.5 size-4 shrink-0 text-primary" />
           <span>
-            <strong>Costo del servicio de asesoría: {mxn(data.commission ?? 5000)}</strong>
-            , IVA incluido. Se paga una sola vez y únicamente cuando tu AFORE te
-            haya depositado. Sin anticipos. Si el trámite no procede, no pagas
-            nada. Recuerda: el trámite ante tu AFORE es gratuito y tú lo realizas;
-            nosotros te asesoramos y acompañamos.
+            <strong>
+              Costo del servicio de asesoría: {data.commissionPct ?? 10}% de lo
+              que te depositen
+            </strong>
+            , IVA incluido — sobre tu estimado serían entre{" "}
+            {mxn((data.result.payoutMin * (data.commissionPct ?? 10)) / 100)} y{" "}
+            {mxn((data.result.payoutMax * (data.commissionPct ?? 10)) / 100)}. Se
+            paga una sola vez y únicamente cuando tu AFORE te haya depositado. Sin
+            anticipos. Si el trámite no procede, no pagas nada. Recuerda: el
+            trámite ante tu AFORE es gratuito y tú lo realizas; nosotros te
+            asesoramos y acompañamos.
           </span>
         </p>
       </div>
 
-      {data.signUrl && (
-        <Button asChild size="lg" className="mt-6 w-full">
-          <Link href={data.signUrl}>
-            Firmar contrato de asesoría <ArrowRight className="size-4" />
-          </Link>
-        </Button>
+      {data.inReview && (
+        <div className="mt-6 rounded-2xl border border-primary/20 bg-accent/60 p-5">
+          <p className="flex items-start gap-2 font-display text-lg font-semibold">
+            <MessageCircle className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
+            <span>
+              {data.advisor ?? "Tu asesor"} está revisando tu caso
+            </span>
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-foreground/80">
+            Antes de pedirte que firmes nada, revisamos tus días sin empleo, que
+            tus datos de identidad cuadren y qué modalidad te conviene. Te
+            escribimos por WhatsApp al número que registraste en menos de una
+            hora, con lo que encontremos y tu contrato listo.
+          </p>
+          <p className="mt-3 text-sm text-muted-foreground">
+            No tienes que hacer nada más por ahora.
+          </p>
+        </div>
       )}
-      {data.nssPending && !data.signUrl && (
+      {data.nssPending && !data.inReview && (
         <NssPendingCard onUpdated={(body) => setData(body as Payload)} />
       )}
       <p className="mt-3 text-center text-xs text-muted-foreground">
