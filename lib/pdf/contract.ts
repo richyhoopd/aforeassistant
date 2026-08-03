@@ -1,4 +1,4 @@
-import { PDFDocument, PDFFont, PDFPage, StandardFonts, rgb } from "pdf-lib"
+import { PDFDocument, PDFFont, StandardFonts, rgb } from "pdf-lib"
 import { CONTRACT_TITLE, contractClauses } from "./contract-text"
 
 export type ContractData = {
