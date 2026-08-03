@@ -118,14 +118,21 @@ Hola {{1}}, soy {{2}} de Pensión+. Recibí tu evaluación y voy a revisar tu ca
 
 Botones: **Respuesta rápida** `Tengo una duda` · `No enviar recordatorios`
 
-### 8. `caso_revisado_pensionmas` — categoría **Utility** (creada 3-ago-2026)
+### 8. `contrato_listo_pensionmas` — categoría **Utility** (creada 3-ago-2026)
 
 Sale del cron o del botón del panel, vía `lib/contracts/send.ts`. {{1}} = primer nombre,
 {{2}} = hallazgo (catálogo cerrado en `lib/contracts/hallazgo.ts`), {{3}} = asesor.
 
 ```
-Hola {{1}}, ya revisé tu caso. {{2}} Tu contrato de asesoría ya está listo: cobramos 10% de lo que recibas y únicamente después de que la AFORE te deposite. Soy {{3}}, tu asesor en Pensión+, y cualquier duda me escribes por aquí.
+Hola {{1}}, ya revisé tu caso. {{2}} Tu contrato de asesoría quedó listo para tu firma y el enlace es válido por 72 horas. Soy {{3}}, tu asesor en Pensión+, y cualquier duda me escribes por aquí.
 ```
+
+⚠️ **Existe una versión anterior, `caso_revisado_pensionmas`, que quedó en MARKETING** porque
+mencionaba el precio ("cobramos 10% de lo que recibas"). Meta clasifica sola al crear, y una
+plantilla Marketing está sujeta a límites por usuario — inaceptable para el mensaje que
+entrega el contrato. No pude borrarla por API (el token no tiene permiso de borrado sobre la
+WABA): **bórrala a mano en WhatsApp Manager**. El código usa `contrato_listo_pensionmas`.
+El precio sigue visible donde importa: la página de firma y la cláusula tercera del contrato.
 
 Botones:
 - **Ir al sitio web** · `Firmar mi contrato` · URL dinámica `https://www.pensionmas.com.mx/firmar/{{1}}`

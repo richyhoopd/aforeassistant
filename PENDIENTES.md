@@ -16,7 +16,7 @@ de aplicarla rompe producción. Orden obligatorio:
 4. Opcional en Vercel: `ADVISOR_NAME`, `COMMISSION_PCT`, `REVIEW_DELAY_MINUTES`,
    `PIPELINE_HORA_INICIO`, `PIPELINE_HORA_FIN` (todas tienen default sano).
 
-**Esperando a Meta:** `revisando_caso_pensionmas` y `caso_revisado_pensionmas` se enviaron a
+**Esperando a Meta:** `revisando_caso_pensionmas` y  `contrato_listo_pensionmas` se enviaron a
 revisión el 3-ago y están en PENDING. Hasta que las aprueben, el aviso y el envío del
 contrato quedan registrados en el timeline pero no se entregan.
 
@@ -47,7 +47,7 @@ que hoy nadie captura — falta el campo en el panel al marcar DISPERSED.
    siga así, crear `codigo_pensionmas` devuelve error 2388185 y ningún cliente nuevo puede
    recibir su código (el texto libre solo entrega si el cliente escribió en las últimas 24 h).
    Mitigación parcial ya implementada: el quick reply "Quiero que me expliquen" de
-   `caso_revisado_pensionmas` abre la ventana con un tap. Twilio (fallback SMS del OTP) quedó especificado pero no implementado — **ahora sí relevante:** la plantilla Authentication `codigo_pensionmas` está bloqueada por Meta hasta que pase la verificación del negocio (error 2388185, política de Meta). Mientras: NO prender `WHATSAPP_ENABLED=true` (el OTP fallaría y bloquearía la firma; con false aplica el flujo manual). Al aprobarse la verificación: crear la plantilla y listo, el código ya la usa.
+    `contrato_listo_pensionmas` abre la ventana con un tap. Twilio (fallback SMS del OTP) quedó especificado pero no implementado — **ahora sí relevante:** la plantilla Authentication `codigo_pensionmas` está bloqueada por Meta hasta que pase la verificación del negocio (error 2388185, política de Meta). Mientras: NO prender `WHATSAPP_ENABLED=true` (el OTP fallaría y bloquearía la firma; con false aplica el flujo manual). Al aprobarse la verificación: crear la plantilla y listo, el código ya la usa.
 10. La UMA está hardcodeada en `lib/eligibility/constants.ts` ($117.31, DOF 09/01/2026) — actualizar cada febrero.
 11. ~~Endurecimientos antes de `WHATSAPP_ENABLED=true`~~ **RESUELTO (29-jul, TDD, 85 tests):** hex guard en firma del webhook; dedupe de firma por ciclo (`sign_token` en eventos); tope de 3 reintentos por lead+kind; señal estructurada `requalify_by_days` (con fallback a texto para leads viejos); botones en plantillas (URL dinámica de firma como parámetro de botón); opt-out por tap de botón; imágenes/PDF entrantes → Storage (`inbound/`) + evento `inbound_media`; OTP migrado a plantilla Authentication `codigo_pensionmas`.
     - ⚠️ Falta aplicar en **Supabase prod** (SQL Editor): `ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS requalify_by_days boolean;` **y también** las migraciones `0004_content_items.sql` y `0005_content_metrics.sql` (tablas + bucket `content-media`) — sin ellas la máquina de contenido no puede escribir en prod (el admin `/admin/contenido` no truena, solo sale vacío).
