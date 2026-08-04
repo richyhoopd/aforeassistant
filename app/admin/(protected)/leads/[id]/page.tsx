@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { config } from "@/lib/config"
+import { siteUrlFromRequest } from "@/lib/site-url"
 import { supabaseAdmin } from "@/lib/supabase/server"
 import { LeadActions } from "@/components/admin/LeadActions"
 import { LeadOps } from "@/components/admin/LeadOps"
@@ -86,7 +87,8 @@ export default async function LeadDetail({
     ])
 
   const vigente = abiertos?.[0]
-  const signUrl = vigente ? `${config.siteUrl}/firmar/${vigente.sign_token}` : null
+  const base = await siteUrlFromRequest()
+  const signUrl = vigente ? `${base}/firmar/${vigente.sign_token}` : null
   const flags = (lead.review_flags ?? []) as ReviewFlag[]
   const semaforo = lead.review_level ? SEMAFORO[lead.review_level] : null
   const diasSinEmpleo = lead.fecha_baja
