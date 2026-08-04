@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { sendContractToLead } from "@/lib/contracts/send"
 import { getAdminUser } from "@/lib/supabase/admin-auth"
+import { explicaErrorWhatsApp } from "@/lib/whatsapp/errores"
 
 const STATUS_POR_MOTIVO: Record<string, number> = {
   not_found: 404,
@@ -36,8 +37,12 @@ export async function POST(
   if (!result.ok) {
     return NextResponse.json(
       {
-        error: MENSAJE_POR_MOTIVO[result.reason] ?? "No se pudo enviar.",
-        detail: result.error,
+        error: [
+          MENSAJE_POR_MOTIVO[result.reason] ?? "No se pudo enviar.",
+          explicaErrorWhatsApp(result.error),
+        ]
+          .filter(Boolean)
+          .join(" "),
       },
       { status: STATUS_POR_MOTIVO[result.reason] ?? 500 }
     )

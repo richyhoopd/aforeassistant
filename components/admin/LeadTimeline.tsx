@@ -1,3 +1,5 @@
+import { META_CODIGOS, explicaErrorWhatsApp } from "@/lib/whatsapp/errores"
+
 type Evento = {
   id: string
   type: string
@@ -53,41 +55,10 @@ const PUNTO_CLASS: Record<Tono, string> = {
 const mxn = (n: number) =>
   n.toLocaleString("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 })
 
-// Códigos de Meta traducidos a lo que hay que hacer al respecto.
-const META_CODIGOS: Record<string, string> = {
-  "131047":
-    "La ventana de 24 h está cerrada: el cliente no ha escrito. Solo se le puede mandar una plantilla aprobada.",
-  "132001":
-    "La plantilla no existe o Meta todavía no la aprueba en es_MX.",
-  "132000":
-    "La plantilla se envió con un número de variables distinto al aprobado.",
-  "132005": "El texto de la plantilla cambió y hay que volver a aprobarla.",
-  "131026":
-    "El número no puede recibir mensajes: puede no tener WhatsApp o estar mal escrito.",
-  "131049":
-    "Meta limitó la entrega de mensajes de marketing a este usuario por su salud del ecosistema.",
-  "131031": "La cuenta de WhatsApp está restringida o suspendida.",
-  "2388185":
-    "La cuenta no puede crear plantillas de autenticación: falta la verificación del negocio.",
-  "130472": "El usuario quedó fuera por un experimento de Meta.",
-  "133010": "El número no está registrado en Cloud API.",
-  "80007": "Se alcanzó el límite de mensajes por hora de la cuenta.",
-}
-
 // Traduce el payload a una frase; el JSON completo queda disponible aparte.
 function resumen(type: string, p: Record<string, unknown>): string | null {
   const s = (k: string) => (p[k] == null ? null : String(p[k]))
-  const graphError = (raw: string | null) => {
-    if (!raw) return null
-    if (raw === "disabled") return "WhatsApp está apagado (WHATSAPP_ENABLED=false)"
-    if (raw === "do_not_contact") return "No se envió: el lead pidió baja"
-    const m = raw.match(/\(#(\d+)\)\s*([^"\\]+)/)
-    if (m) {
-      const explicacion = META_CODIGOS[m[1]]
-      return explicacion ?? `Meta ${m[1]}: ${m[2].trim()}`
-    }
-    return raw.slice(0, 160)
-  }
+  const graphError = (raw: string | null) => explicaErrorWhatsApp(raw)
 
   switch (type) {
     case "evaluated":
