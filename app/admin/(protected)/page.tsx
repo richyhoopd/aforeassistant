@@ -20,6 +20,18 @@ const STATUS_COLORS: Record<string, string> = {
   PAID: "bg-emerald-600 text-white",
 }
 
+const REVIEW_LABEL: Record<string, string> = {
+  GREEN: "Sale solo",
+  AMBER: "Revisar",
+  RED: "No enviar",
+}
+
+const REVIEW_CHIP: Record<string, string> = {
+  GREEN: "rounded-full bg-accent px-2 py-0.5 text-ink",
+  AMBER: "rounded-full bg-gold/25 px-2 py-0.5 font-medium text-ink",
+  RED: "rounded-full bg-destructive/8 px-2 py-0.5 font-medium text-destructive",
+}
+
 const mxn = (n: number | null) =>
   n == null
     ? "—"
@@ -116,9 +128,9 @@ export default async function AdminLeads({
             <TableHead>Nombre</TableHead>
             <TableHead>Teléfono</TableHead>
             <TableHead>Estatus</TableHead>
-            <TableHead>Fuente</TableHead>
-            <TableHead>Origen</TableHead>
+            <TableHead>Revisión</TableHead>
             <TableHead>Estimado</TableHead>
+            <TableHead>Origen</TableHead>
             <TableHead>Alta</TableHead>
           </TableRow>
         </TableHeader>
@@ -143,10 +155,20 @@ export default async function AdminLeads({
                   {l.status}
                 </span>
               </TableCell>
-              <TableCell className="text-xs text-muted-foreground">{l.source}</TableCell>
-              <TableCell className="text-xs text-muted-foreground">{l.source_ref ?? "—"}</TableCell>
               <TableCell className="text-xs">
+                {l.status === "QUALIFIED" && l.review_level ? (
+                  <span className={REVIEW_CHIP[l.review_level] ?? ""}>
+                    {REVIEW_LABEL[l.review_level] ?? l.review_level}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </TableCell>
+              <TableCell className="text-xs tabular-nums">
                 {mxn(l.estimated_payout_min)} – {mxn(l.estimated_payout_max)}
+              </TableCell>
+              <TableCell className="text-xs text-muted-foreground">
+                {l.source_ref ?? l.source}
               </TableCell>
               <TableCell className="text-xs text-muted-foreground">
                 {new Date(l.created_at).toLocaleString("es-MX")}

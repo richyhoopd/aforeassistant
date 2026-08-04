@@ -15,7 +15,7 @@ export type SendContractResult =
 
 export async function sendContractToLead(
   leadId: string,
-  opts: { auto: boolean; actor: string }
+  opts: { auto: boolean; actor: string; resend?: boolean }
 ): Promise<SendContractResult> {
   const db = supabaseAdmin()
 
@@ -33,12 +33,46 @@ export async function sendContractToLead(
 
   const { data: abiertos } = await db
     .from("contracts")
-    .select("id, sign_token_expires_at")
+    .select("id, sign_token, sign_token_expires_at")
     .eq("lead_id", leadId)
     .is("signed_at", null)
     .gt("sign_token_expires_at", new Date().toISOString())
+    .order("created_at", { ascending: false })
     .limit(1)
-  if (abiertos?.length) return { ok: false, reason: "already_pending" }
+
+  // Reenvío: el contrato ya existe y su enlace sigue vigente, así que se manda
+  // otra vez ese mismo token en vez de crear un contrato nuevo.
+  const vigente = abiertos?.[0]
+  if (vigente) {
+    if (!opts.resend) return { ok: false, reason: "already_pending" }
+    const reenvio = await sendWhatsAppTemplate(
+      lead.phone,
+      config.whatsappTemplateRevisado,
+      [
+        lead.full_name?.trim().split(/\s+/)[0] || "hola",
+        buildHallazgo(lead),
+        config.advisorName,
+      ],
+      { buttonUrlParam: vigente.sign_token }
+    )
+    const seco = !reenvio.sent && reenvio.error === "disabled"
+    if (!reenvio.sent && !seco) {
+      await logEvent(leadId, "contract_send_failed", {
+        auto: opts.auto,
+        resend: true,
+        error: reenvio.error,
+      })
+      return { ok: false, reason: "send_failed", error: reenvio.error }
+    }
+    await logEvent(leadId, "contract_sent", {
+      auto: opts.auto,
+      actor: opts.actor,
+      resend: true,
+      sign_token: vigente.sign_token,
+      dry_run: seco,
+    })
+    return { ok: true, signToken: vigente.sign_token, dryRun: seco }
+  }
 
   const { data: contract, error: cErr } = await db
     .from("contracts")

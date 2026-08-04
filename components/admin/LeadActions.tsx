@@ -54,7 +54,7 @@ export function LeadActions({
   }
 
   return (
-    <aside className="space-y-6 lg:border-l lg:pl-6">
+    <div className="space-y-6 border-t pt-6">
       <div>
         <Label className="mb-2 block">Cambiar estatus</Label>
         <div className="flex flex-wrap gap-2">
@@ -108,7 +108,11 @@ export function LeadActions({
         </Button>
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
-    </aside>
+      {error && (
+        <p className="rounded-lg bg-destructive/8 p-3 text-sm font-medium text-destructive">
+          {error}
+        </p>
+      )}
+    </div>
   )
 }

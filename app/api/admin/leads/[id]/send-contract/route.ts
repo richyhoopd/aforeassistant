@@ -19,16 +19,18 @@ const MENSAJE_POR_MOTIVO: Record<string, string> = {
 }
 
 export async function POST(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const admin = await getAdminUser()
   if (!admin) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
+  const body = await req.json().catch(() => ({}))
   const { id } = await params
   const result = await sendContractToLead(id, {
     auto: false,
     actor: admin.email ?? "admin",
+    resend: body?.mode === "resend",
   })
 
   if (!result.ok) {
