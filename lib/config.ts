@@ -1,5 +1,13 @@
 export const config = {
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  // El enlace de firma se le manda al cliente: si NEXT_PUBLIC_SITE_URL falta en
+  // Vercel, el dominio de producción sirve de red de seguridad antes de caer a
+  // localhost, que en un WhatsApp real no lleva a ningún lado.
+  siteUrl:
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "") ||
+    "http://localhost:3000",
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
   whatsappEnabled: process.env.WHATSAPP_ENABLED === "true",
