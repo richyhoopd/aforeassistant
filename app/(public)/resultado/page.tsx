@@ -2,9 +2,16 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { CheckCircle2, Info, MessageCircle, XCircle } from "lucide-react"
+import Image from "next/image"
+import {
+  Check,
+  CheckCircle2,
+  Clock,
+  Info,
+  MessageCircle,
+  XCircle,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { NssPendingCard } from "@/components/prequalifier/NssPendingCard"
 
 type Modality = { eligible: boolean; min: number; max: number; reasons: string[] }
@@ -16,6 +23,7 @@ type Payload = {
   commissionPct?: number
   inReview?: boolean
   advisor?: string
+  advisorPhoto?: string
   nssPending?: boolean
   result: {
     daysUnemployed: number
@@ -196,107 +204,265 @@ export default function Resultado() {
   }
 
   const { modalityA, modalityB } = data.result
+  const pct = data.commissionPct ?? 10
+  const asesor = data.advisor?.trim() || "Tu asesor"
+  const mejor = modalityB.eligible && modalityB.max >= modalityA.max ? "B" : "A"
+  const waContacto = `https://wa.me/523349687609?text=${encodeURIComponent(
+    "Hola, acabo de hacer mi evaluación de retiro AFORE en Pensión+ y tengo una duda."
+  )}`
+
   return (
-    <div className="mx-auto max-w-lg px-4 py-12">
-      <CheckCircle2 className="mx-auto size-10 text-primary" />
-      <h1 className="mt-4 text-center text-2xl font-bold">
-        ¡Podrías retirar entre {mxn(data.result.payoutMin)} y{" "}
-        {mxn(data.result.payoutMax)}!
-      </h1>
-      <p className="mt-2 text-center text-sm text-muted-foreground">
-        Monto estimado con tus datos declarados — el monto final lo determina tu
-        AFORE.
-      </p>
-
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        {[
-          { name: "Modalidad A", m: modalityA, desc: "30 días de tu salario (con tope de ley)" },
-          { name: "Modalidad B", m: modalityB, desc: "Hasta 90 días de tu salario base (tope: 11.5% de tu saldo)" },
-        ].map(({ name, m, desc }) => (
-          <Card key={name} className={m.eligible ? "" : "opacity-50"}>
-            <CardHeader>
-              <CardTitle className="text-base">{name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {m.eligible ? (
-                <p className="text-xl font-semibold">
-                  {m.min === m.max ? mxn(m.max) : `${mxn(m.min)} – ${mxn(m.max)}`}
-                  <span className="block text-xs font-normal text-muted-foreground">
-                    estimado
-                  </span>
-                </p>
-              ) : (
-                <p className="text-sm text-muted-foreground">{m.reasons[0]}</p>
-              )}
-              <p className="mt-2 text-xs text-muted-foreground">{desc}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {pendientes.length > 0 && (
-        <div className="mt-6 rounded-xl bg-secondary/70 p-4 text-sm">
-          <p className="font-semibold">Pendientes antes de tu solicitud:</p>
-          <ul className="mt-2 space-y-2 text-muted-foreground">
-            {pendientes.map((p) => (
-              <li key={p} className="flex items-start gap-2">
-                <Info className="mt-0.5 size-4 shrink-0 text-primary" />
-                {p}
-              </li>
-            ))}
-          </ul>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Ninguno te descalifica: son pasos que resolvemos contigo durante el
-            acompañamiento.
-          </p>
-        </div>
-      )}
-
-      <div className="mt-6 rounded-xl bg-secondary/70 p-4 text-sm">
-        <p className="flex items-start gap-2">
-          <Info className="mt-0.5 size-4 shrink-0 text-primary" />
-          <span>
-            <strong>
-              Costo del servicio de asesoría: {data.commissionPct ?? 10}% de lo
-              que te depositen
-            </strong>
-            , IVA incluido — sobre tu estimado serían entre{" "}
-            {mxn((data.result.payoutMin * (data.commissionPct ?? 10)) / 100)} y{" "}
-            {mxn((data.result.payoutMax * (data.commissionPct ?? 10)) / 100)}. Se
-            paga una sola vez y únicamente cuando tu AFORE te haya depositado. Sin
-            anticipos. Si el trámite no procede, no pagas nada. Recuerda: el
-            trámite ante tu AFORE es gratuito y tú lo realizas; nosotros te
-            asesoramos y acompañamos.
-          </span>
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:py-10">
+      <header className="text-center">
+        <CheckCircle2 className="mx-auto size-9 text-primary" aria-hidden />
+        <p className="mt-3 text-sm text-muted-foreground">
+          Con los datos que nos diste, podrías retirar
         </p>
-      </div>
+        <p className="mt-1 font-display text-[clamp(2.25rem,8vw,3.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-balance">
+          {mxn(data.result.payoutMin)}
+          <span className="text-muted-foreground"> a </span>
+          {mxn(data.result.payoutMax)}
+        </p>
+        <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-muted-foreground">
+          Es una estimación con tus datos declarados. El monto final lo determina
+          tu AFORE.
+        </p>
+      </header>
 
-      {data.inReview && (
-        <div className="mt-6 rounded-2xl border border-primary/20 bg-accent/60 p-5">
-          <p className="flex items-start gap-2 font-display text-lg font-semibold">
-            <MessageCircle className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
-            <span>
-              {data.advisor ?? "Tu asesor"} está revisando tu caso
-            </span>
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-foreground/80">
-            Antes de pedirte que firmes nada, revisamos tus días sin empleo, que
-            tus datos de identidad cuadren y qué modalidad te conviene. Te
-            escribimos por WhatsApp al número que registraste con lo que
-            encontremos y tu contrato listo, dentro de nuestro horario de 8 de la
-            mañana a 9 de la noche.
-          </p>
-          <p className="mt-3 text-sm text-muted-foreground">
-            No tienes que hacer nada más por ahora.
+      <div className="mt-7 grid gap-5 lg:mt-9 lg:grid-cols-[1fr_21rem] lg:items-start lg:gap-7">
+        <aside className="order-1 lg:order-2 lg:sticky lg:top-6">
+          <div className="rounded-2xl bg-white p-5 shadow-[0_1px_2px_oklch(0.23_0.06_265/0.05),0_16px_40px_-24px_oklch(0.23_0.06_265/0.25)]">
+            <div className="flex items-center gap-3">
+              <AdvisorAvatar name={asesor} src={data.advisorPhoto} />
+              <div className="min-w-0">
+                <p className="font-display text-lg font-semibold leading-tight text-balance">
+                  {data.inReview ? `${asesor} está revisando tu caso` : asesor}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Tu asesor en Pensión+
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-4 text-sm leading-relaxed text-foreground/80">
+              {data.inReview
+                ? "Antes de pedirte que firmes nada, reviso tus días sin empleo, que tus datos de identidad cuadren y qué modalidad te conviene. Te escribo por WhatsApp con lo que encuentre y tu contrato listo."
+                : "En cuanto tengamos tu NSS reviso tu caso y te escribo por WhatsApp con el resultado."}
+            </p>
+
+            {data.inReview && (
+              <p className="mt-3 flex items-start gap-2 rounded-lg bg-accent p-3 text-sm text-ink">
+                <Clock className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                <span>Te escribo hoy, entre 8 de la mañana y 9 de la noche.</span>
+              </p>
+            )}
+
+            <Button asChild size="lg" className="mt-4 h-12 w-full">
+              <a
+                href={waContacto}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle className="size-4" aria-hidden />
+                Contactarnos por WhatsApp
+              </a>
+            </Button>
+            <p className="mt-2 text-center text-xs text-muted-foreground">
+              ¿Dudas ahora mismo? Escríbenos y te contestamos.
+            </p>
+          </div>
+        </aside>
+
+        <div className="order-2 space-y-5 lg:order-1">
+          <section className="rounded-2xl bg-secondary/60 p-5 sm:p-6">
+            <h2 className="font-display text-xl font-semibold">
+              Esto es lo que hacemos por ti
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              El trámite ante tu AFORE es gratuito y lo presentas tú. Nosotros nos
+              encargamos de que llegues con todo en orden y no te rebote.
+            </p>
+            <ol className="mt-4 space-y-4">
+              {ACOMPANAMIENTO.map((paso, i) => (
+                <li key={paso.title} className="flex gap-3">
+                  <span
+                    className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white"
+                    aria-hidden
+                  >
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-semibold leading-snug">{paso.title}</p>
+                    <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
+                      {paso.body}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold">
+              Por qué modalidad te conviene
+            </h2>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  key: "A",
+                  name: "Modalidad A",
+                  m: modalityA,
+                  desc: "30 días de tu salario, con el tope que marca la ley.",
+                },
+                {
+                  key: "B",
+                  name: "Modalidad B",
+                  m: modalityB,
+                  desc: "Hasta 90 días de tu salario base, con tope de 11.5% de tu saldo.",
+                },
+              ].map(({ key, name, m, desc }) => (
+                <div
+                  key={name}
+                  className={`rounded-2xl p-4 ${
+                    m.eligible && key === mejor
+                      ? "bg-accent"
+                      : "bg-secondary/60"
+                  }`}
+                >
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="font-semibold">{name}</p>
+                    {m.eligible && key === mejor && (
+                      <span className="rounded-md bg-primary px-2 py-0.5 text-[11px] font-semibold text-white">
+                        La que más te deja
+                      </span>
+                    )}
+                  </div>
+                  {m.eligible ? (
+                    <p className="mt-2 font-display text-2xl font-semibold tabular-nums">
+                      {m.min === m.max
+                        ? mxn(m.max)
+                        : `${mxn(m.min)} a ${mxn(m.max)}`}
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {m.reasons[0]}
+                    </p>
+                  )}
+                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                    {desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {pendientes.length > 0 && (
+            <section className="rounded-2xl bg-secondary/60 p-5">
+              <h2 className="font-semibold">Lo que falta resolver</h2>
+              <ul className="mt-2.5 space-y-2 text-sm">
+                {pendientes.map((p) => (
+                  <li key={p} className="flex items-start gap-2 text-foreground/80">
+                    <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2.5 text-xs text-muted-foreground">
+                Nada de esto te descalifica: son pasos que resolvemos contigo
+                durante el acompañamiento.
+              </p>
+            </section>
+          )}
+
+          <section className="rounded-2xl bg-secondary/60 p-5">
+            <h2 className="font-semibold">Cuánto cuesta y cuándo se paga</h2>
+            <p className="mt-2 font-display text-2xl font-semibold tabular-nums">
+              {pct}% de lo que te depositen
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Sobre tu estimado serían entre{" "}
+              <strong className="text-foreground">
+                {mxn((data.result.payoutMin * pct) / 100)}
+              </strong>{" "}
+              y{" "}
+              <strong className="text-foreground">
+                {mxn((data.result.payoutMax * pct) / 100)}
+              </strong>
+              , IVA incluido.
+            </p>
+            <ul className="mt-3 space-y-1.5 text-sm text-foreground/80">
+              {[
+                "Se paga una sola vez, después de que tu AFORE te deposite.",
+                "Sin anticipos ni mensualidades.",
+                "Si tu trámite no procede, no pagas nada.",
+              ].map((t) => (
+                <li key={t} className="flex items-start gap-2">
+                  <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {data.nssPending && !data.inReview && (
+            <NssPendingCard onUpdated={(body) => setData(body as Payload)} />
+          )}
+
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            Retirar puede descontar semanas cotizadas y afectar tu pensión futura.
+            Pensión+ no es una AFORE ni tiene vínculo con el IMSS o la CONSAR.
           </p>
         </div>
-      )}
-      {data.nssPending && !data.inReview && (
-        <NssPendingCard onUpdated={(body) => setData(body as Payload)} />
-      )}
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        Retirar puede descontar semanas cotizadas y afectar tu pensión futura.
-      </p>
+      </div>
     </div>
+  )
+}
+
+const ACOMPANAMIENTO = [
+  {
+    title: "Revisamos tu caso",
+    body: "Tus días sin empleo, que tu NSS y tu CURP cuadren, y con qué modalidad te conviene solicitar.",
+  },
+  {
+    title: "Dejamos tus datos en orden",
+    body: "Si tu Expediente de Identificación o tu cuenta bancaria tienen algo pendiente, te decimos exactamente qué corregir y cómo.",
+  },
+  {
+    title: "Preparamos tu solicitud",
+    body: "Qué documentos llevar, en qué sucursal o app presentarla y qué responder, para que no te la rechacen por un detalle.",
+  },
+  {
+    title: "Te acompañamos hasta el depósito",
+    body: "Seguimiento por WhatsApp mientras tu AFORE resuelve. Si algo se atora, te decimos qué hacer.",
+  },
+]
+
+function AdvisorAvatar({ name, src }: { name: string; src?: string }) {
+  if (src) {
+    return (
+      <Image
+        src={src}
+        alt={`${name}, tu asesor en Pensión+`}
+        width={56}
+        height={56}
+        className="size-14 shrink-0 rounded-full object-cover"
+      />
+    )
+  }
+  // Sin foto todavía: iniciales sobre cobalto. Al definir ADVISOR_PHOTO_URL
+  // el retrato entra aquí sin tocar el layout.
+  const iniciales = name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join("")
+    .toUpperCase()
+  return (
+    <span
+      className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary font-display text-xl font-semibold text-white"
+      aria-hidden
+    >
+      {iniciales}
+    </span>
   )
 }

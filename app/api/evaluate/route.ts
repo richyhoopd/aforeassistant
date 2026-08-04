@@ -167,6 +167,8 @@ export async function POST(req: NextRequest) {
         result,
         commissionPct: config.commissionPct,
         nssPending: true,
+        advisor: config.advisorName,
+        advisorPhoto: config.advisorPhotoUrl || undefined,
       })
     }
 
@@ -194,6 +196,7 @@ export async function POST(req: NextRequest) {
       commissionPct: config.commissionPct,
       inReview: true,
       advisor: config.advisorName,
+      advisorPhoto: config.advisorPhotoUrl || undefined,
     })
   } catch (err) {
     console.error("evaluate failed", err)

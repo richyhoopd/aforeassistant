@@ -41,7 +41,7 @@ export function ReviewCard({
     : null
 
   return (
-    <section className="mt-8 rounded-2xl border border-primary/15 bg-accent/60 p-6 sm:p-7">
+    <section className="mt-8 rounded-2xl bg-accent p-6 sm:p-7">
       <div className="flex items-start gap-3">
         <BadgeCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
         <div className="min-w-0">
@@ -65,7 +65,7 @@ export function ReviewCard({
         ))}
       </ul>
 
-      <p className="mt-4 border-t border-primary/15 pt-4 text-sm text-foreground/80">
+      <p className="mt-4 border-t border-ink/10 pt-4 text-sm text-ink/80">
         A partir de aquí te acompaño en el trámite: qué papeles pedir, cómo dejar
         tu expediente en orden y qué presentar en tu AFORE. Cobramos{" "}
         <strong>{commissionPct}% de lo que recibas</strong> y únicamente después

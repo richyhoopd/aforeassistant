@@ -32,6 +32,9 @@ export const config = {
   whatsappTemplateRevisado:
     process.env.WHATSAPP_TEMPLATE_REVISADO ?? "contrato_listo_pensionmas",
   advisorName: process.env.ADVISOR_NAME ?? "Ricardo",
+  // Retrato del asesor. Vacío hasta que exista la foto: la interfaz cae en las
+  // iniciales sin que cambie el layout.
+  advisorPhotoUrl: process.env.ADVISOR_PHOTO_URL ?? "",
   commissionPct: Number(process.env.COMMISSION_PCT ?? 10),
   reviewDelayMinutes: Number(process.env.REVIEW_DELAY_MINUTES ?? 60),
 }

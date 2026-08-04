@@ -84,7 +84,7 @@ export default async function AdminLeads({
       </div>
 
       {atorados.length > 0 && (
-        <div className="mb-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm">
+        <div className="mb-5 rounded-xl bg-gold/25 p-4 text-sm text-ink">
           <p className="font-semibold">
             {atorados.length}{" "}
             {atorados.length === 1
@@ -100,7 +100,7 @@ export default async function AdminLeads({
               <li key={l.id}>
                 <Link
                   href={`/admin/leads/${l.id}`}
-                  className="rounded-full border border-amber-400 bg-white px-3 py-1 text-xs underline"
+                  className="rounded-md bg-white px-3 py-1 text-xs font-medium underline"
                 >
                   {l.full_name ?? "Sin nombre"} · {l.review_level}
                 </Link>
