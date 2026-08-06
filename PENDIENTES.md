@@ -1,6 +1,6 @@
 # Pendientes que solo tú puedes resolver
 
-## ⏳ Rama `feat/acompanamiento-post-firma` (6-ago-2026) — lista, sin mergear
+## ✅ Acompañamiento post-firma — EN PRODUCCIÓN (6-ago-2026)
 
 Acompañamiento completo de la firma al cobro (feedback del asesor de AFORE del 5-ago):
 checklist de preparación con recordatorios por WhatsApp, pregunta de contratación en el
@@ -8,17 +8,14 @@ formulario, carátula opcional, honorarios **30% con desglose 19+11**, y cierre 
 con montos reales en el panel. Diseño en
 `docs/superpowers/specs/2026-08-06-acompanamiento-post-firma-design.md`.
 
-**No se mergeó a propósito** (misma regla de siempre): depende de la migración `0007`.
-Orden obligatorio:
+Migración `0007` aplicada en Supabase prod por Management API (verificadas las 9 columnas),
+rama mergeada a `main` (merge `94da536`) y deploy Ready con smoke test OK (6-ago).
 
-1. **Aplicar `supabase/migrations/0007_acompanamiento.sql`** en el SQL Editor de Supabase
-   prod (solo `ADD COLUMN IF NOT EXISTS`, sin riesgo).
-2. **Env vars nuevas en Vercel:** `COBRO_BANCO`, `COBRO_CLABE`, `COBRO_TITULAR`
-   (obligatorias para que salga el mensaje de honorarios; sin CLABE el panel avisa y el
-   recordatorio de cobro no sale). Opcionales: `OFICINA_DOMICILIO` (default: el de
-   HeredaBienes en los legales), `COMMISSION_PCT` (default 30),
-   `COMMISSION_BREAKDOWN_TAX`/`_ADMIN` (default 19/11).
-3. Mergear la rama y desplegar.
+**FALTA una sola cosa tuya:** las env vars de cobro en Vercel — `COBRO_BANCO`,
+`COBRO_CLABE`, `COBRO_TITULAR` (tus datos bancarios reales). Sin ellas todo funciona,
+pero el mensaje de honorarios no sale al marcar DISPERSED (el panel lo avisa).
+Opcionales: `OFICINA_DOMICILIO` (default: el de HeredaBienes), `COMMISSION_PCT`
+(default 30), `COMMISSION_BREAKDOWN_TAX`/`_ADMIN` (default 19/11).
 
 **Esperando a Meta (enviadas 6-ago, todas UTILITY):** `siguientes_pasos_pensionmas`,
 `pendientes_tramite_pensionmas`, `prep_solicitud_pensionmas`, `cita_solicitud_pensionmas`,
