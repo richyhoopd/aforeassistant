@@ -139,12 +139,22 @@ export async function GET(req: NextRequest) {
   let failed = 0
 
   for (const r of planned) {
+    // El planner no conoce la config: los datos bancarios ({{4}} de la
+    // plantilla de honorarios) se agregan aquí.
+    const params =
+      r.kind === "cobro"
+        ? [
+            ...r.params,
+            `${config.cobro.banco}, CLABE ${config.cobro.clabe}, a nombre de ${config.cobro.titular}`,
+          ]
+        : r.params
+
     if (!config.whatsappEnabled) {
       await logEvent(r.leadId, "reminder_dry_run", {
         kind: r.kind,
         round: r.round,
         template: TEMPLATE_POR_KIND[r.kind](),
-        params: r.params,
+        params,
         ...(r.signToken ? { sign_token: r.signToken } : {}),
       })
       dryRun++
@@ -180,7 +190,7 @@ export async function GET(req: NextRequest) {
     const result = await sendWhatsAppTemplate(
       r.phone,
       TEMPLATE_POR_KIND[r.kind](),
-      r.params,
+      params,
       r.kind === "firma" && r.signToken ? { buttonUrlParam: r.signToken } : undefined
     )
     if (result.sent) {
