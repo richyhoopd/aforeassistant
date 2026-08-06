@@ -2,8 +2,14 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { config } from "@/lib/config"
+import {
+  checklistCompletadoEl,
+  fechaLista,
+  type ChecklistKey,
+} from "@/lib/checklist"
 import { siteUrlFromRequest } from "@/lib/site-url"
 import { supabaseAdmin } from "@/lib/supabase/server"
+import { ChecklistCard } from "@/components/admin/ChecklistCard"
 import { LeadActions } from "@/components/admin/LeadActions"
 import { LeadOps } from "@/components/admin/LeadOps"
 import { LeadTimeline } from "@/components/admin/LeadTimeline"
@@ -199,6 +205,29 @@ export default async function LeadDetail({
             </dl>
           </section>
 
+          {["CONTRACT_SIGNED", "DISPERSED", "PAID"].includes(lead.status) && (
+            <ChecklistCard
+              leadId={id}
+              status={lead.status}
+              checks={
+                {
+                  datos: lead.chk_datos_at,
+                  app: lead.chk_app_at,
+                  tarjeta: lead.chk_tarjeta_at,
+                  caratula: lead.chk_caratula_at,
+                } as Record<ChecklistKey, string | null>
+              }
+              caratulaPath={lead.caratula_path}
+              diasSinEmpleo={diasSinEmpleo}
+              fechaListaISO={
+                fechaLista(lead, checklistCompletadoEl(lead))?.toISOString() ??
+                null
+              }
+              solicitudHechaAt={lead.solicitud_hecha_at}
+              cobroConfigurado={Boolean(config.cobro.clabe)}
+            />
+          )}
+
           {firmado && (
             <section className="rounded-xl bg-accent p-4 text-sm">
               <h2 className="font-semibold">Contrato firmado</h2>
@@ -221,7 +250,7 @@ export default async function LeadDetail({
           <section className="min-w-0">
             <h2 className="font-semibold">Historial</h2>
             <div className="mt-3">
-              <LeadTimeline eventos={events ?? []} />
+              <LeadTimeline leadId={id} eventos={events ?? []} />
             </div>
           </section>
         </div>

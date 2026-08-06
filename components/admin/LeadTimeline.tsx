@@ -38,6 +38,15 @@ const ETIQUETAS: Record<string, { label: string; tono: Tono }> = {
   inbound_media_failed: { label: "No se pudo bajar su archivo", tono: "error" },
   opt_out: { label: "Pidió no recibir mensajes", tono: "warn" },
   reevaluate_blocked: { label: "Intentó evaluarse de nuevo", tono: "neutral" },
+  checklist_updated: { label: "Checklist actualizado", tono: "neutral" },
+  checklist_escalated: {
+    label: "Checklist vencido: toca llamarle",
+    tono: "warn",
+  },
+  solicitud_hecha: { label: "Solicitud presentada (acompañada)", tono: "ok" },
+  dispersed: { label: "Depósito de la AFORE registrado", tono: "ok" },
+  paid: { label: "Honorarios cobrados", tono: "ok" },
+  lead_edited: { label: "Datos capturados por el asesor", tono: "neutral" },
   error: { label: "Error del sistema", tono: "error" },
 }
 
@@ -120,6 +129,29 @@ function resumen(type: string, p: Record<string, unknown>): string | null {
       return s("text")
     case "inbound_media":
       return s("mime_type")
+    case "checklist_updated": {
+      const nombres: Record<string, string> = {
+        datos: "datos actualizados en la AFORE",
+        app: "app AforeMóvil",
+        tarjeta: "tarjeta sin límite",
+        caratula: "carátula",
+      }
+      return `${p.done ? "Validó" : "Desmarcó"}: ${nombres[s("key") ?? ""] ?? s("key")} (${s("by") ?? "admin"})`
+    }
+    case "solicitud_hecha":
+      return `Marcada por ${s("by") ?? "admin"}`
+    case "dispersed":
+      return p.amount != null
+        ? `Depósito real: ${mxn(Number(p.amount))} · honorarios ${mxn(Number(p.commission ?? 0))}`
+        : null
+    case "paid":
+      return p.amount != null ? `Cobrado: ${mxn(Number(p.amount))}` : null
+    case "lead_edited": {
+      const campos = Array.isArray(p.fields) ? (p.fields as string[]) : []
+      return campos.length
+        ? `Campos: ${campos.join(", ")} (${s("by") ?? "admin"})`
+        : null
+    }
     case "error":
       return s("message")?.slice(0, 200) ?? null
     default:
@@ -127,7 +159,13 @@ function resumen(type: string, p: Record<string, unknown>): string | null {
   }
 }
 
-export function LeadTimeline({ eventos }: { eventos: Evento[] }) {
+export function LeadTimeline({
+  leadId,
+  eventos,
+}: {
+  leadId?: string
+  eventos: Evento[]
+}) {
   if (eventos.length === 0) {
     return (
       <p className="rounded-xl bg-secondary/60 p-4 text-sm text-muted-foreground">
@@ -170,6 +208,16 @@ export function LeadTimeline({ eventos }: { eventos: Evento[] }) {
               <p className="mt-1 break-words pl-3.5 text-sm text-foreground/80">
                 {texto}
               </p>
+            )}
+            {leadId && typeof payload.path === "string" && (
+              <a
+                className="mt-1 inline-block pl-3.5 text-sm font-medium underline"
+                href={`/api/admin/leads/${leadId}/media?path=${encodeURIComponent(payload.path)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ver archivo
+              </a>
             )}
             {tieneDetalle && (
               <details className="mt-1.5 pl-3.5">
