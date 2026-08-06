@@ -23,6 +23,7 @@ const ETIQUETAS: Record<string, { label: string; tono: Tono }> = {
   },
   contract_signed: { label: "Contrato firmado", tono: "ok" },
   welcome_whatsapp: { label: "Mensaje de bienvenida", tono: "ok" },
+  next_steps_sent: { label: "Siguientes pasos enviados", tono: "ok" },
   otp_sent: { label: "Código de firma enviado", tono: "neutral" },
   otp_failed: { label: "Código incorrecto", tono: "warn" },
   reminder_sent: { label: "Recordatorio enviado", tono: "ok" },
@@ -104,6 +105,7 @@ function resumen(type: string, p: Record<string, unknown>): string | null {
     case "otp_sent":
       return p.sent ? "Entregado" : `No entregado (${graphError(s("error"))})`
     case "welcome_whatsapp":
+    case "next_steps_sent":
       return p.sent ? "Entregado" : `No entregado (${graphError(s("error"))})`
     case "reminder_sent":
     case "reminder_dry_run":

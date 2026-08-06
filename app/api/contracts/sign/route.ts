@@ -143,6 +143,19 @@ export async function POST(req: NextRequest) {
       error: welcome.error,
     })
 
+    // Arranque del acompañamiento: el aviso de no aceptar alta en el IMSS y
+    // los 3 encargos del checklist. Si la plantilla aún no está aprobada,
+    // queda el intento registrado y los recordatorios del cron lo cubren.
+    const pasos = await sendWhatsAppTemplate(
+      lead.phone,
+      config.whatsappTemplateSiguientesPasos,
+      [lead.full_name.split(" ")[0] ?? "hola"]
+    )
+    await logEvent(leadId, "next_steps_sent", {
+      sent: pasos.sent,
+      error: pasos.error,
+    })
+
     return NextResponse.json({ ok: true, folio })
   } catch (err) {
     console.error("sign failed", err)
