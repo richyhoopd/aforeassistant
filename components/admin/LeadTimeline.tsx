@@ -34,6 +34,7 @@ const ETIQUETAS: Record<string, { label: string; tono: Tono }> = {
   inbound_explain: { label: "Pidió que le expliquen", tono: "neutral" },
   inbound_confirm: { label: "El cliente reporta un avance", tono: "ok" },
   inbound_media: { label: "Envió una imagen o documento", tono: "neutral" },
+  caratula_subida: { label: "Subió su carátula de AFORE", tono: "ok" },
   inbound_media_failed: { label: "No se pudo bajar su archivo", tono: "error" },
   opt_out: { label: "Pidió no recibir mensajes", tono: "warn" },
   reevaluate_blocked: { label: "Intentó evaluarse de nuevo", tono: "neutral" },

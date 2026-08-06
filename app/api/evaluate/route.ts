@@ -80,6 +80,7 @@ export async function POST(req: NextRequest) {
       monthlySalary: d.monthlySalary,
       yearsContributing: d.yearsContributing,
       lastWithdrawalWithin5y: d.lastWithdrawalWithin5y,
+      hiringProcess: d.hiringProcess === "si",
       doNotContact: Boolean(existing?.do_not_contact),
       duplicateSigned: otros.some((l) =>
         ["CONTRACT_SIGNED", "DISPERSED", "PAID"].includes(l.status)
@@ -114,6 +115,8 @@ export async function POST(req: NextRequest) {
       monthly_salary: d.monthlySalary,
       years_contributing: d.yearsContributing,
       last_withdrawal_within_5y: d.lastWithdrawalWithin5y,
+      hiring_process:
+        d.hiringProcess == null ? null : d.hiringProcess === "si",
       estimated_payout_min: result.payoutMin,
       estimated_payout_max: result.payoutMax,
       status: result.eligible

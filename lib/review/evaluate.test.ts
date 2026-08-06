@@ -93,3 +93,16 @@ describe("birthDateFromCurp", () => {
     expect(birthDateFromCurp("NOPE")).toBeNull()
   })
 })
+
+describe("reviewLead — proceso de contratación", () => {
+  it("hiringProcess=true levanta ámbar en_contratacion", () => {
+    const r = reviewLead({ ...base, hiringProcess: true })
+    expect(r.level).toBe("AMBER")
+    expect(r.flags.map((f) => f.code)).toContain("en_contratacion")
+  })
+
+  it("false o ausente no marca nada", () => {
+    expect(reviewLead({ ...base, hiringProcess: false }).flags).toEqual([])
+    expect(reviewLead(base).flags).toEqual([])
+  })
+})
