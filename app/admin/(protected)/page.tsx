@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { checklistCompletadoEl, fechaLista } from "@/lib/checklist"
 import { supabaseAdmin } from "@/lib/supabase/server"
 
 const STATUS_COLORS: Record<string, string> = {
@@ -72,6 +73,26 @@ export default async function AdminLeads({
     .limit(50)
   const atorados = pendientesRevision ?? []
 
+  // Firmados con checklist completo y 46 días cumplidos que siguen sin
+  // presentar su solicitud: es el momento de agendar el acompañamiento.
+  const { data: firmadosListos } = await db
+    .from("leads")
+    .select(
+      "id, full_name, fecha_baja, chk_datos_at, chk_app_at, chk_tarjeta_at, chk_caratula_at, solicitud_hecha_at"
+    )
+    .eq("status", "CONTRACT_SIGNED")
+    .is("solicitud_hecha_at", null)
+    .not("chk_datos_at", "is", null)
+    .not("chk_app_at", "is", null)
+    .not("chk_tarjeta_at", "is", null)
+    .not("chk_caratula_at", "is", null)
+    .limit(50)
+  const ahora = new Date()
+  const listosParaSolicitar = (firmadosListos ?? []).filter((l) => {
+    const lista = fechaLista(l, checklistCompletadoEl(l))
+    return lista !== null && lista <= ahora
+  })
+
   const statuses = Object.keys(STATUS_COLORS)
 
   return (
@@ -115,6 +136,33 @@ export default async function AdminLeads({
                   className="rounded-md bg-white px-3 py-1 text-xs font-medium underline"
                 >
                   {l.full_name ?? "Sin nombre"} · {l.review_level}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {listosParaSolicitar.length > 0 && (
+        <div className="mb-5 rounded-xl bg-accent p-4 text-sm text-ink">
+          <p className="font-semibold">
+            {listosParaSolicitar.length}{" "}
+            {listosParaSolicitar.length === 1
+              ? "cliente ya puede solicitar su dinero"
+              : "clientes ya pueden solicitar su dinero"}
+          </p>
+          <p className="mt-1 text-muted-foreground">
+            Checklist completo y 46 días cumplidos. Agenda el acompañamiento
+            (oficina o videollamada) y marca la solicitud en su ficha.
+          </p>
+          <ul className="mt-2 flex flex-wrap gap-2">
+            {listosParaSolicitar.map((l) => (
+              <li key={l.id}>
+                <Link
+                  href={`/admin/leads/${l.id}`}
+                  className="rounded-md bg-white px-3 py-1 text-xs font-medium underline"
+                >
+                  {l.full_name ?? "Sin nombre"}
                 </Link>
               </li>
             ))}

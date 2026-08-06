@@ -17,6 +17,21 @@ const NEXT_STATUS: Record<string, string[]> = {
   PAID: [],
 }
 
+// Transiciones que exigen capturar un monto antes de guardarse: el depósito
+// real de la AFORE (base de los honorarios) y el pago del cliente.
+const MONTO_REQUERIDO: Record<string, { campo: string; label: string; hint: string }> = {
+  DISPERSED: {
+    campo: "dispersedAmount",
+    label: "¿Cuánto le depositó la AFORE?",
+    hint: "El monto real, no el estimado: sobre él se calculan los honorarios.",
+  },
+  PAID: {
+    campo: "paidAmount",
+    label: "¿Cuánto nos transfirió el cliente?",
+    hint: "Con esto se cierra el caso.",
+  },
+}
+
 export function LeadActions({
   leadId,
   status,
@@ -32,8 +47,10 @@ export function LeadActions({
   const [notes, setNotes] = useState(adminNotes)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
+  const [montoPara, setMontoPara] = useState<string | null>(null)
+  const [monto, setMonto] = useState("")
 
-  const patch = async (body: Record<string, unknown>) => {
+  const patch = async (body: Record<string, unknown>): Promise<boolean> => {
     setBusy(true)
     setError("")
     try {
@@ -45,9 +62,10 @@ export function LeadActions({
       if (!res.ok) {
         const b = await res.json().catch(() => ({}))
         setError(b.error ?? "Error al guardar")
-        return
+        return false
       }
       router.refresh()
+      return true
     } finally {
       setBusy(false)
     }
@@ -64,7 +82,14 @@ export function LeadActions({
               size="sm"
               variant={s === "REJECTED" ? "destructive" : "default"}
               disabled={busy}
-              onClick={() => patch({ status: s })}
+              onClick={() => {
+                if (MONTO_REQUERIDO[s]) {
+                  setMontoPara(montoPara === s ? null : s)
+                  setMonto("")
+                } else {
+                  void patch({ status: s })
+                }
+              }}
             >
               → {s}
             </Button>
@@ -73,6 +98,40 @@ export function LeadActions({
             <p className="text-sm text-muted-foreground">Sin transiciones</p>
           )}
         </div>
+        {montoPara && MONTO_REQUERIDO[montoPara] && (
+          <div className="mt-3 space-y-2 rounded-lg bg-secondary/60 p-3">
+            <Label htmlFor="monto">{MONTO_REQUERIDO[montoPara].label}</Label>
+            <p className="text-xs text-muted-foreground">
+              {MONTO_REQUERIDO[montoPara].hint}
+            </p>
+            <div className="relative">
+              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground">
+                $
+              </span>
+              <input
+                id="monto"
+                inputMode="numeric"
+                autoFocus
+                value={monto ? Number(monto).toLocaleString("es-MX") : ""}
+                onChange={(e) => setMonto(e.target.value.replace(/\D/g, "").slice(0, 7))}
+                className="h-10 w-full rounded-md border border-input bg-white pl-7 pr-3 text-sm tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              />
+            </div>
+            <Button
+              size="sm"
+              disabled={busy || !Number(monto)}
+              onClick={() => {
+                void patch({
+                  status: montoPara,
+                  [MONTO_REQUERIDO[montoPara].campo]: Number(monto),
+                }).then((ok) => ok && setMontoPara(null))
+              }}
+            >
+              {busy && <Loader2 className="size-4 animate-spin" />}
+              Confirmar → {montoPara}
+            </Button>
+          </div>
+        )}
       </div>
 
       <div>

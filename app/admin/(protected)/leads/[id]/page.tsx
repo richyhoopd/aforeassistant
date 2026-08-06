@@ -10,6 +10,7 @@ import {
 import { siteUrlFromRequest } from "@/lib/site-url"
 import { supabaseAdmin } from "@/lib/supabase/server"
 import { ChecklistCard } from "@/components/admin/ChecklistCard"
+import { EditLeadDialog } from "@/components/admin/EditLeadDialog"
 import { LeadActions } from "@/components/admin/LeadActions"
 import { LeadOps } from "@/components/admin/LeadOps"
 import { LeadTimeline } from "@/components/admin/LeadTimeline"
@@ -267,6 +268,19 @@ export default async function LeadDetail({
               signUrl={signUrl}
               doNotContact={Boolean(lead.do_not_contact)}
             />
+            <div className="mt-2.5">
+              <EditLeadDialog
+                leadId={id}
+                status={lead.status}
+                initial={{
+                  nss: lead.nss ?? "",
+                  curp: lead.curp ?? "",
+                  fechaBaja: lead.fecha_baja ?? "",
+                  monthlySalary: lead.monthly_salary?.toString() ?? "",
+                  yearsContributing: lead.years_contributing?.toString() ?? "",
+                }}
+              />
+            </div>
           </div>
 
           <LeadActions
