@@ -59,3 +59,28 @@ describe("contractClauses", () => {
     expect(honorarios.body).toContain("no deberá cantidad alguna")
   })
 })
+
+describe("contractClauses — desglose de honorarios", () => {
+  it("con breakdown, la cláusula tercera explica el 19% + 11%", () => {
+    const clauses = contractClauses({
+      commissionPct: 30,
+      estimatedMin: 10000,
+      estimatedMax: 12000,
+      breakdown: { tax: 19, admin: 11 },
+    })
+    const tercera = clauses.find((c) => c.heading.startsWith("Tercera"))!
+    expect(tercera.body).toContain("30%")
+    expect(tercera.body).toContain("19% de impuestos y uso de plataformas")
+    expect(tercera.body).toContain("11% de gastos administrativos")
+  })
+
+  it("sin breakdown la cláusula queda como antes", () => {
+    const clauses = contractClauses({
+      commissionPct: 10,
+      estimatedMin: 10000,
+      estimatedMax: 12000,
+    })
+    const tercera = clauses.find((c) => c.heading.startsWith("Tercera"))!
+    expect(tercera.body).not.toContain("se integra")
+  })
+})

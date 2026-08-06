@@ -21,6 +21,7 @@ type Payload = {
   folio?: string | null
   message?: string
   commissionPct?: number
+  commissionBreakdown?: { tax: number; admin: number }
   inReview?: boolean
   advisor?: string
   advisorPhoto?: string
@@ -204,7 +205,8 @@ export default function Resultado() {
   }
 
   const { modalityA, modalityB } = data.result
-  const pct = data.commissionPct ?? 10
+  const pct = data.commissionPct ?? 30
+  const desglose = data.commissionBreakdown
   const asesor = data.advisor?.trim() || "Tu asesor"
   const mejor = modalityB.eligible && modalityB.max >= modalityA.max ? "B" : "A"
   const waContacto = `https://wa.me/523349687609?text=${encodeURIComponent(
@@ -379,6 +381,12 @@ export default function Resultado() {
             <p className="mt-2 font-display text-2xl font-semibold tabular-nums">
               {pct}% de lo que te depositen
             </p>
+            {desglose && (
+              <p className="mt-1 text-sm text-muted-foreground">
+                Se integra así: {desglose.tax}% impuestos y uso de plataformas +{" "}
+                {desglose.admin}% gastos administrativos y pago de asesores.
+              </p>
+            )}
             <p className="mt-1 text-sm text-muted-foreground">
               Sobre tu estimado serían entre{" "}
               <strong className="text-foreground">
@@ -420,20 +428,20 @@ export default function Resultado() {
 
 const ACOMPANAMIENTO = [
   {
-    title: "Revisamos tu caso",
-    body: "Tus días sin empleo, que tu NSS y tu CURP cuadren, y con qué modalidad te conviene solicitar.",
+    title: "Revisamos tu caso y firmas tu contrato",
+    body: "Tus días sin empleo, que tu NSS y tu CURP cuadren y qué modalidad te deja más. Firmas desde tu celular o en nuestra oficina, como prefieras.",
   },
   {
-    title: "Dejamos tus datos en orden",
-    body: "Si tu Expediente de Identificación o tu cuenta bancaria tienen algo pendiente, te decimos exactamente qué corregir y cómo.",
+    title: "Dejamos todo listo para tu solicitud",
+    body: "Te guiamos para actualizar tus datos en tu AFORE, instalar la app AforeMóvil y tener una tarjeta sin límite de depósitos. Todo por WhatsApp, a tu ritmo.",
   },
   {
-    title: "Preparamos tu solicitud",
-    body: "Qué documentos llevar, en qué sucursal o app presentarla y qué responder, para que no te la rechacen por un detalle.",
+    title: "Presentas tu solicitud acompañado",
+    body: "El día que se puede solicitar, tú la haces desde tu app y nosotros te acompañamos en oficina o por videollamada para que no haya errores.",
   },
   {
-    title: "Te acompañamos hasta el depósito",
-    body: "Seguimiento por WhatsApp mientras tu AFORE resuelve. Si algo se atora, te decimos qué hacer.",
+    title: "Te acompañamos hasta tu depósito",
+    body: "Seguimiento por WhatsApp mientras tu AFORE deposita. Importante: en todo este tiempo no debes darte de alta en el IMSS, o el trámite se cae — también te lo vamos recordando.",
   },
 ]
 

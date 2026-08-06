@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
       commissionPct: Number(contract.commission_pct ?? config.commissionPct),
       estimatedMin: Number(lead.estimated_payout_min ?? 0),
       estimatedMax: Number(lead.estimated_payout_max ?? 0),
+      breakdown: config.commissionBreakdown,
       signedAtISO: signedAt.toISOString(),
       signaturePngBytes: signatureBytes,
       ip,

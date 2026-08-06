@@ -24,11 +24,13 @@ export function ReviewCard({
   reviewedAt,
   fechaBaja,
   commissionPct,
+  breakdown,
 }: {
   advisor: string | null
   reviewedAt: string | null
   fechaBaja: string | null
   commissionPct: number
+  breakdown?: { tax: number; admin: number }
 }) {
   const nombre = advisor?.trim() || "tu asesor de Pensión+"
   const fecha = reviewedAt
@@ -68,9 +70,12 @@ export function ReviewCard({
       <p className="mt-4 border-t border-ink/10 pt-4 text-sm text-ink/80">
         A partir de aquí te acompaño en el trámite: qué papeles pedir, cómo dejar
         tu expediente en orden y qué presentar en tu AFORE. Cobramos{" "}
-        <strong>{commissionPct}% de lo que recibas</strong> y únicamente después
-        de que te depositen. El trámite lo haces tú, que es como la ley lo pide,
-        pero no lo haces solo.
+        <strong>{commissionPct}% de lo que recibas</strong>
+        {breakdown
+          ? ` (${breakdown.tax}% de impuestos y uso de plataformas más ${breakdown.admin}% de gastos administrativos y asesores)`
+          : ""}{" "}
+        y únicamente después de que te depositen. El trámite lo haces tú, que es
+        como la ley lo pide, pero no lo haces solo.
       </p>
     </section>
   )
