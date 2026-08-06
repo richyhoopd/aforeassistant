@@ -39,10 +39,38 @@ export const config = {
   // límites por usuario justo en el mensaje que entrega el contrato.
   whatsappTemplateRevisado:
     process.env.WHATSAPP_TEMPLATE_REVISADO ?? "contrato_listo_pensionmas",
+  // Acompañamiento post-firma (spec 2026-08-06).
+  whatsappTemplateSiguientesPasos:
+    process.env.WHATSAPP_TEMPLATE_SIGUIENTES_PASOS ?? "siguientes_pasos_pensionmas",
+  whatsappTemplatePendientes:
+    process.env.WHATSAPP_TEMPLATE_PENDIENTES ?? "pendientes_tramite_pensionmas",
+  whatsappTemplatePrep46:
+    process.env.WHATSAPP_TEMPLATE_PREP46 ?? "prep_solicitud_pensionmas",
+  whatsappTemplateCita46:
+    process.env.WHATSAPP_TEMPLATE_CITA46 ?? "cita_solicitud_pensionmas",
+  whatsappTemplateEsperaDeposito:
+    process.env.WHATSAPP_TEMPLATE_ESPERA_DEPOSITO ?? "espera_deposito_pensionmas",
+  whatsappTemplateCobro:
+    process.env.WHATSAPP_TEMPLATE_COBRO ?? "honorarios_pensionmas",
   advisorName: process.env.ADVISOR_NAME ?? "Ricardo",
   // Retrato del asesor. Vacío hasta que exista la foto: la interfaz cae en las
   // iniciales sin que cambie el layout.
   advisorPhotoUrl: process.env.ADVISOR_PHOTO_URL ?? "",
-  commissionPct: Number(process.env.COMMISSION_PCT ?? 10),
+  commissionPct: Number(process.env.COMMISSION_PCT ?? 30),
+  // Desglose solo para copy (resultado, firma, contrato); debe sumar commissionPct.
+  commissionBreakdown: {
+    tax: Number(process.env.COMMISSION_BREAKDOWN_TAX ?? 19),
+    admin: Number(process.env.COMMISSION_BREAKDOWN_ADMIN ?? 11),
+  },
+  oficinaDomicilio:
+    process.env.OFICINA_DOMICILIO ??
+    "Av. López Mateos Norte 507, Col. Herrera y Cairo, C.P. 44680, Guadalajara, Jalisco",
+  // Datos para la transferencia de honorarios. Sin CLABE no sale la plantilla
+  // de cobro y el panel lo avisa al marcar DISPERSED.
+  cobro: {
+    banco: process.env.COBRO_BANCO ?? "",
+    clabe: process.env.COBRO_CLABE ?? "",
+    titular: process.env.COBRO_TITULAR ?? "",
+  },
   reviewDelayMinutes: Number(process.env.REVIEW_DELAY_MINUTES ?? 60),
 }
