@@ -4,12 +4,14 @@
 
 export type ChecklistKey = "datos" | "app" | "tarjeta" | "caratula"
 
+// Campos opcionales: los consumidores que aún no traen las columnas (queries
+// viejas, leads en tests) cuentan como "pendiente", nunca como validado.
 export type ChecklistLead = {
-  fecha_baja: string | null
-  chk_datos_at: string | null
-  chk_app_at: string | null
-  chk_tarjeta_at: string | null
-  chk_caratula_at: string | null
+  fecha_baja?: string | null
+  chk_datos_at?: string | null
+  chk_app_at?: string | null
+  chk_tarjeta_at?: string | null
+  chk_caratula_at?: string | null
 }
 
 export const DIAS_DESEMPLEO_MIN = 46

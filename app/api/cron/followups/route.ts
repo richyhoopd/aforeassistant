@@ -2,20 +2,27 @@ import { NextRequest, NextResponse } from "next/server"
 import { config } from "@/lib/config"
 import { logEvent } from "@/lib/events"
 import {
+  planEscalations,
   planFollowups,
   type FollowupContract,
   type FollowupEvent,
+  type FollowupKind,
   type FollowupLead,
 } from "@/lib/followups/plan"
 import { supabaseAdmin } from "@/lib/supabase/server"
 import { sendWhatsAppTemplate } from "@/lib/whatsapp/client"
 
-const TEMPLATE_POR_KIND = {
+const TEMPLATE_POR_KIND: Record<FollowupKind, () => string> = {
   nss: () => config.whatsappTemplateNss,
   firma: () => config.whatsappTemplateFirma,
   califica: () => config.whatsappTemplateCalificas,
   continua: () => config.whatsappTemplateContinua,
-} as const
+  pendientes: () => config.whatsappTemplatePendientes,
+  prep46: () => config.whatsappTemplatePrep46,
+  cita46: () => config.whatsappTemplateCita46,
+  espera_deposito: () => config.whatsappTemplateEsperaDeposito,
+  cobro: () => config.whatsappTemplateCobro,
+}
 
 // Vercel: hasta 50 envíos secuenciales pueden tardar más que el timeout por defecto.
 export const maxDuration = 60
@@ -32,9 +39,16 @@ export async function GET(req: NextRequest) {
   const { data: leads, error: lErr } = await db
     .from("leads")
     .select(
-      "id, status, full_name, phone, updated_at, fecha_baja, rejection_reason, requalify_by_days, estimated_payout_min, estimated_payout_max, do_not_contact, human_takeover, nss"
+      "id, status, full_name, phone, updated_at, fecha_baja, rejection_reason, requalify_by_days, estimated_payout_min, estimated_payout_max, do_not_contact, human_takeover, nss, chk_datos_at, chk_app_at, chk_tarjeta_at, chk_caratula_at, solicitud_hecha_at, review_flags"
     )
-    .in("status", ["NEW", "QUALIFIED", "CONTRACT_PENDING", "REJECTED"])
+    .in("status", [
+      "NEW",
+      "QUALIFIED",
+      "CONTRACT_PENDING",
+      "REJECTED",
+      "CONTRACT_SIGNED",
+      "DISPERSED",
+    ])
     .order("created_at", { ascending: true })
     .limit(1000)
   if (lErr) {
@@ -53,25 +67,72 @@ export async function GET(req: NextRequest) {
   ] = await Promise.all([
     db
       .from("contracts")
-      .select("lead_id, created_at, signed_at, sign_token")
+      .select(
+        "lead_id, created_at, signed_at, sign_token, dispersed_amount, commission_pct, folio"
+      )
       .in("lead_id", ids),
     db
       .from("lead_events")
-      .select("lead_id, type, payload")
+      .select("lead_id, type, payload, created_at")
       .in("lead_id", ids)
-      .in("type", ["reminder_sent", "reminder_dry_run", "reminder_failed"]),
+      .in("type", [
+        "reminder_sent",
+        "reminder_dry_run",
+        "reminder_failed",
+        "dispersed",
+        "checklist_escalated",
+      ]),
   ])
   if (cErr || eErr) {
     console.error("followups fetch failed", cErr ?? eErr)
     return NextResponse.json({ error: "Error de datos" }, { status: 500 })
   }
 
+  const now = new Date()
   const planned = planFollowups(
     (leads ?? []) as FollowupLead[],
     (contracts ?? []) as FollowupContract[],
     (events ?? []) as FollowupEvent[],
-    new Date()
+    now,
+    { cobroConfigurado: Boolean(config.cobro.clabe) }
   )
+
+  // Firmó hace 2+ semanas sin actualizar datos: sube a ámbar para que el
+  // asesor lo llame. Una sola vez por lead (evento checklist_escalated).
+  const escalations = planEscalations(
+    (leads ?? []) as FollowupLead[],
+    (contracts ?? []) as FollowupContract[],
+    (events ?? []) as FollowupEvent[],
+    now
+  )
+  for (const esc of escalations) {
+    const lead = (leads ?? []).find((l) => l.id === esc.leadId)
+    const flags = Array.isArray(
+      (lead as { review_flags?: unknown })?.review_flags
+    )
+      ? ((lead as { review_flags: unknown[] }).review_flags as {
+          code?: string
+        }[])
+      : []
+    const { error: escErr } = await db
+      .from("leads")
+      .update({
+        review_level: "AMBER",
+        review_flags: [
+          ...flags.filter((f) => f.code !== "checklist_vencido"),
+          {
+            code: "checklist_vencido",
+            level: "AMBER",
+            label:
+              "Firmó hace más de 2 semanas y sigue sin actualizar sus datos en la AFORE: toca llamarle.",
+          },
+        ],
+      })
+      .eq("id", esc.leadId)
+    if (!escErr) {
+      await logEvent(esc.leadId, "checklist_escalated", {})
+    }
+  }
 
   let sent = 0
   let dryRun = 0
