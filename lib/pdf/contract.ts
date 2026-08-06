@@ -10,6 +10,7 @@ export type ContractData = {
   commissionPct: number
   estimatedMin: number
   estimatedMax: number
+  breakdown?: { tax: number; admin: number }
   signedAtISO: string
   signaturePngBytes: Uint8Array
   ip: string

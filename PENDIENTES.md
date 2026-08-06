@@ -1,32 +1,40 @@
 # Pendientes que solo tú puedes resolver
 
-## ⏳ Rama `feat/revision-antes-de-firma` (3-ago-2026) — lista, sin mergear
+## ⏳ Rama `feat/acompanamiento-post-firma` (6-ago-2026) — lista, sin mergear
 
-El funnel ahora revisa el caso antes de pedir la firma y los honorarios pasaron a **10% del
-depósito real** (antes $5,000 fijos). Diseño en
-`docs/superpowers/specs/2026-08-03-revision-antes-de-firma-design.md`.
+Acompañamiento completo de la firma al cobro (feedback del asesor de AFORE del 5-ago):
+checklist de preparación con recordatorios por WhatsApp, pregunta de contratación en el
+formulario, carátula opcional, honorarios **30% con desglose 19+11**, y cierre del cobro
+con montos reales en el panel. Diseño en
+`docs/superpowers/specs/2026-08-06-acompanamiento-post-firma-design.md`.
 
-**No se mergeó a propósito:** el código depende de la migración `0006` y desplegarlo antes
-de aplicarla rompe producción. Orden obligatorio:
+**No se mergeó a propósito** (misma regla de siempre): depende de la migración `0007`.
+Orden obligatorio:
 
-1. **Aplicar `supabase/migrations/0006_revision_previa.sql`** en el SQL Editor de Supabase prod.
-2. **Correr `supabase/snippets/pipeline-cron.sql`** ahí mismo, sustituyendo el `CRON_SECRET`
-   real. Sin ese tick de 15 minutos el contrato nunca se envía solo.
+1. **Aplicar `supabase/migrations/0007_acompanamiento.sql`** en el SQL Editor de Supabase
+   prod (solo `ADD COLUMN IF NOT EXISTS`, sin riesgo).
+2. **Env vars nuevas en Vercel:** `COBRO_BANCO`, `COBRO_CLABE`, `COBRO_TITULAR`
+   (obligatorias para que salga el mensaje de honorarios; sin CLABE el panel avisa y el
+   recordatorio de cobro no sale). Opcionales: `OFICINA_DOMICILIO` (default: el de
+   HeredaBienes en los legales), `COMMISSION_PCT` (default 30),
+   `COMMISSION_BREAKDOWN_TAX`/`_ADMIN` (default 19/11).
 3. Mergear la rama y desplegar.
-4. Opcional en Vercel: `ADVISOR_NAME`, `COMMISSION_PCT`, `REVIEW_DELAY_MINUTES`,
-   `PIPELINE_HORA_INICIO`, `PIPELINE_HORA_FIN` (todas tienen default sano).
 
-**Esperando a Meta:** `revision_iniciada_pensionmas` y `contrato_listo_pensionmas` se
-enviaron a revisión el 3-ago y están en PENDING. Hasta que las aprueben, el aviso y el envío
-del contrato quedan registrados en el timeline pero no se entregan.
+**Esperando a Meta (enviadas 6-ago, todas UTILITY):** `siguientes_pasos_pensionmas`,
+`pendientes_tramite_pensionmas`, `prep_solicitud_pensionmas`, `cita_solicitud_pensionmas`,
+`espera_deposito_pensionmas`, `honorarios_pensionmas`. Hasta que las aprueben, los envíos
+quedan como `reminder_failed`/dry-run en el timeline sin romper nada. Verificar estado:
+`npx tsx scripts/create-templates.ts` (idempotente, solo reporta las existentes).
 
-**Borrar a mano en WhatsApp Manager** (mi token no tiene permiso de borrado):
-`caso_revisado_pensionmas` (quedó MARKETING por mencionar el precio) y
-`revisando_caso_pensionmas` (prometía "en menos de 1 hora", plazo incumplible de madrugada).
-Ninguna de las dos se usa en el código.
+**Ya aprobadas (6-ago):** `revision_iniciada_pensionmas` y `contrato_listo_pensionmas` —
+el flujo de revisión previa ya entrega completo.
 
-**Decisión de negocio que quedó abierta:** el 10% se cobra sobre `contracts.dispersed_amount`,
-que hoy nadie captura — falta el campo en el panel al marcar DISPERSED.
+**Sigue pendiente borrar a mano en WhatsApp Manager**: `caso_revisado_pensionmas` y
+`revisando_caso_pensionmas` (descartadas, sin uso en código; mi token no puede borrar).
+
+~~Decisión de negocio abierta: nadie captura `dispersed_amount`~~ **RESUELTO (6-ago):** al
+pasar a DISPERSED el panel exige el monto real (calcula los honorarios) y a PAID el monto
+cobrado (`contracts.paid_at/paid_amount`).
 
 ## Legales / negocio (bloquean lanzamiento público)
 1. **Razón social ✅ y domicilio ✅** (28-jul: "Grupo Inmobiliario HeredaBienes", Av. López Mateos Norte 507, Col. Herrera y Cairo, C.P. 44680, Guadalajara, Jalisco — en términos, privacidad y cláusula "Partes" del contrato). **Falta:** `[CORREO DE CONTACTO]` (3 lugares en `/terminos` y `/privacidad`). ⚠️ Confirmar que la razón social coincida EXACTA con el acta constitutiva (¿lleva "S.A. de C.V." u otra forma societaria?).

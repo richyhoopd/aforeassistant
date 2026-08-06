@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { EmailContractButton } from "@/components/sign/EmailContractButton"
 import { ReviewCard } from "@/components/sign/ReviewCard"
 import { SignFlow } from "@/components/sign/SignFlow"
+import { config } from "@/lib/config"
 import { CONTRACT_TITLE, contractClauses } from "@/lib/pdf/contract-text"
 import { supabaseAdmin } from "@/lib/supabase/server"
 
@@ -71,10 +72,12 @@ export default async function Firmar({
     )
   }
 
+  const pct = Number(contract.commission_pct ?? config.commissionPct)
   const clauses = contractClauses({
-    commissionPct: Number(contract.commission_pct ?? 10),
+    commissionPct: pct,
     estimatedMin: Number(lead.estimated_payout_min ?? 0),
     estimatedMax: Number(lead.estimated_payout_max ?? 0),
+    breakdown: config.commissionBreakdown,
   })
 
   return (
@@ -96,7 +99,8 @@ export default async function Firmar({
           advisor={lead.advisor_name}
           reviewedAt={lead.reviewed_at}
           fechaBaja={lead.fecha_baja}
-          commissionPct={Number(contract.commission_pct ?? 10)}
+          commissionPct={pct}
+          breakdown={config.commissionBreakdown}
         />
 
         <div className="mt-8 rounded-2xl bg-white shadow-[0_1px_2px_oklch(0.23_0.06_265/0.05),0_16px_40px_-24px_oklch(0.23_0.06_265/0.25)]">
@@ -118,15 +122,26 @@ export default async function Firmar({
           <div className="border-t border-border/60 px-6 py-4 text-sm text-muted-foreground sm:px-8">
             Honorarios:{" "}
             <strong className="text-foreground">
-              {Number(contract.commission_pct ?? 10)}% de lo que te depositen
+              {pct}% de lo que te depositen
             </strong>{" "}
-            — sobre tu estimado serían entre{" "}
-            {mxn((Number(lead.estimated_payout_min ?? 0) * Number(contract.commission_pct ?? 10)) / 100)}{" "}
-            y{" "}
-            {mxn((Number(lead.estimated_payout_max ?? 0) * Number(contract.commission_pct ?? 10)) / 100)}
-            , y solo se pagan después de que recibas tu retiro. Este documento es
+            ({config.commissionBreakdown.tax}% impuestos y uso de plataformas +{" "}
+            {config.commissionBreakdown.admin}% gastos administrativos y
+            asesores) — sobre tu estimado serían entre{" "}
+            {mxn((Number(lead.estimated_payout_min ?? 0) * pct) / 100)} y{" "}
+            {mxn((Number(lead.estimated_payout_max ?? 0) * pct) / 100)}, y solo
+            se pagan después de que recibas tu retiro. Este documento es
             exactamente el que quedará firmado en PDF.
           </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl bg-secondary/60 p-5 text-sm leading-relaxed">
+          <p className="font-semibold">
+            ¿Prefieres firmar en persona o aclarar tus dudas cara a cara?
+          </p>
+          <p className="mt-1 text-muted-foreground">
+            Visítanos en {config.oficinaDomicilio}. Ahí mismo puedes firmar y
+            resolver cualquier pregunta con tu asesor, sin costo y sin cita.
+          </p>
         </div>
 
         <div className="mt-8">

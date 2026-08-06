@@ -3,7 +3,7 @@
 import { useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Loader2 } from "lucide-react"
+import { CheckCircle2, Loader2, Paperclip } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
@@ -13,6 +13,7 @@ import {
   validateCURP,
   validateNSS,
 } from "@/lib/validation/identifiers"
+import { CaratulaHelperDialog } from "./CaratulaHelperDialog"
 import { CurpHelperDialog } from "./CurpHelperDialog"
 import { NssHelperDialog } from "./NssHelperDialog"
 
@@ -26,6 +27,7 @@ type FormData = {
   monthlySalary: string
   yearsContributing: string
   lastWithdrawalWithin5y: string
+  hiringProcess: string
   expedienteActualizado: string
   cuentaBancaria: string
   privacyConsent: boolean
@@ -41,6 +43,7 @@ const empty: FormData = {
   monthlySalary: "",
   yearsContributing: "",
   lastWithdrawalWithin5y: "",
+  hiringProcess: "",
   expedienteActualizado: "",
   cuentaBancaria: "",
   privacyConsent: false,
@@ -134,6 +137,7 @@ export function PreQualifierForm() {
         e.yearsContributing = "Indica tus años cotizando aproximados"
       if (data.lastWithdrawalWithin5y === "")
         e.lastWithdrawalWithin5y = "Selecciona una opción"
+      if (data.hiringProcess === "") e.hiringProcess = "Selecciona una opción"
       if (data.expedienteActualizado === "")
         e.expedienteActualizado = "Selecciona una opción"
       if (data.cuentaBancaria === "") e.cuentaBancaria = "Selecciona una opción"
@@ -171,6 +175,32 @@ export function PreQualifierForm() {
     }).catch(() => {})
   }
 
+  // Carátula del estado de cuenta: opcional, pero con ella el asesor revisa
+  // el caso de inmediato. Requiere el teléfono ya capturado (paso 0).
+  const [caratula, setCaratula] = useState<"" | "subiendo" | "lista" | "error">("")
+  const [caratulaMsg, setCaratulaMsg] = useState("")
+  const subirCaratula = async (file: File | undefined) => {
+    if (!file || !normalizePhoneMX(data.phone)) return
+    setCaratula("subiendo")
+    setCaratulaMsg("")
+    try {
+      const body = new FormData()
+      body.append("phone", data.phone)
+      body.append("file", file)
+      const res = await fetch("/api/lead/caratula", { method: "POST", body })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setCaratula("error")
+        setCaratulaMsg(json.error ?? "No se pudo subir. Mándala después por WhatsApp.")
+        return
+      }
+      setCaratula("lista")
+    } catch {
+      setCaratula("error")
+      setCaratulaMsg("Sin conexión. Mándala después por WhatsApp, sin problema.")
+    }
+  }
+
   // Estimado del paso 0: solo cuando hay un salario real capturado.
   const salarioNum = Number(data.monthlySalary)
   const estimado =
@@ -199,6 +229,7 @@ export function PreQualifierForm() {
         monthlySalary: Number(data.monthlySalary),
         yearsContributing: Number(data.yearsContributing),
         lastWithdrawalWithin5y: data.lastWithdrawalWithin5y === "si",
+        hiringProcess: data.hiringProcess || undefined,
         expedienteActualizado: data.expedienteActualizado,
         cuentaBancaria: data.cuentaBancaria,
         privacyConsent: data.privacyConsent,
@@ -371,6 +402,47 @@ export function PreQualifierForm() {
                 maxLength: 11,
               })}
               <NssHelperDialog curp={data.curp} />
+              <div className="space-y-1.5 rounded-2xl bg-accent/60 p-4">
+                <Label htmlFor="caratula" className="text-[15px]">
+                  ¿Tienes la carátula de tu estado de cuenta AFORE?
+                </Label>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Es opcional, pero con ella revisamos tu caso de inmediato.
+                  Sirve una foto clara o el PDF.
+                </p>
+                {caratula === "lista" ? (
+                  <p className="flex items-center gap-2 rounded-lg bg-white p-3 text-sm font-medium text-ink">
+                    <CheckCircle2 className="size-4 shrink-0 text-primary" aria-hidden />
+                    ¡Recibida! Tu asesor la revisa con tu evaluación.
+                  </p>
+                ) : (
+                  <label
+                    htmlFor="caratula"
+                    className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-primary/40 bg-white px-4 py-3 text-sm font-medium text-primary"
+                  >
+                    {caratula === "subiendo" ? (
+                      <Loader2 className="size-4 shrink-0 animate-spin" aria-hidden />
+                    ) : (
+                      <Paperclip className="size-4 shrink-0" aria-hidden />
+                    )}
+                    {caratula === "subiendo"
+                      ? "Subiendo tu archivo…"
+                      : "Subir foto o PDF de mi carátula"}
+                    <input
+                      id="caratula"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,application/pdf"
+                      className="sr-only"
+                      disabled={caratula === "subiendo"}
+                      onChange={(ev) => void subirCaratula(ev.target.files?.[0])}
+                    />
+                  </label>
+                )}
+                {caratula === "error" && caratulaMsg && (
+                  <p className="text-sm text-amber-600">{caratulaMsg}</p>
+                )}
+                <CaratulaHelperDialog />
+              </div>
               <p className="text-xs text-muted-foreground">
                 Tus datos viajan cifrados y solo se usan para tu evaluación.
               </p>
@@ -412,6 +484,36 @@ export function PreQualifierForm() {
                   </p>
                 )}
               </div>
+              <div className="space-y-1.5">
+                <Label>¿Estás en un proceso de contratación o por entrar a un trabajo?</Label>
+                <div className="flex gap-2">
+                  {[
+                    ["no", "No"],
+                    ["si", "Sí"],
+                  ].map(([v, l]) => (
+                    <Button
+                      key={v}
+                      type="button"
+                      variant={data.hiringProcess === v ? "default" : "outline"}
+                      className="flex-1"
+                      onClick={() => set("hiringProcess", v)}
+                    >
+                      {l}
+                    </Button>
+                  ))}
+                </div>
+                {data.hiringProcess === "si" && (
+                  <p className="rounded-lg bg-gold/25 p-3 text-sm leading-relaxed text-ink">
+                    Importante: este retiro es solo para personas desempleadas.
+                    Si te dan de alta en el IMSS antes de recibir tu depósito,
+                    el trámite se cae y no sirve de nada. Puedes evaluarte hoy,
+                    pero cuéntaselo a tu asesor para elegir bien el momento.
+                  </p>
+                )}
+                {errors.hiringProcess && (
+                  <p className="text-sm text-destructive">{errors.hiringProcess}</p>
+                )}
+              </div>
               {(
                 [
                   [
@@ -422,7 +524,7 @@ export function PreQualifierForm() {
                   [
                     "cuentaBancaria",
                     "¿Tienes una cuenta bancaria a tu nombre (con CLABE)?",
-                    "Ahí te depositará tu AFORE. Debe estar a tu nombre.",
+                    "Ahí te depositará tu AFORE. Debe estar a tu nombre y sin límite de depósitos: con límite, el banco rebota montos mayores a $25,000.",
                   ],
                 ] as const
               ).map(([k, label, hint]) => (

@@ -53,6 +53,7 @@ export const preQualifierSchema = z.object({
     .min(0)
     .max(60),
   lastWithdrawalWithin5y: z.coerce.boolean(),
+  hiringProcess: z.enum(["si", "no"]).optional(),
   expedienteActualizado: z.enum(["si", "no", "nose"]).optional(),
   cuentaBancaria: z.enum(["si", "no", "nose"]).optional(),
   privacyConsent: z.literal(true, {

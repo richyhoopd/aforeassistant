@@ -10,6 +10,8 @@ export function contractClauses(d: {
   commissionPct: number
   estimatedMin: number
   estimatedMax: number
+  // Desglose informativo de los honorarios; debe sumar commissionPct.
+  breakdown?: { tax: number; admin: number }
 }): Clause[] {
   const mxn = (n: number) =>
     n.toLocaleString("es-MX", { style: "currency", currency: "MXN" })
@@ -34,7 +36,11 @@ export function contractClauses(d: {
     },
     {
       heading: "Tercera. Honorarios",
-      body: `El Cliente pagará al Prestador honorarios equivalentes al ${d.commissionPct}% (IVA incluido) del monto que la AFORE le deposite efectivamente por concepto de retiro parcial por desempleo, exigibles ÚNICAMENTE después de que ese depósito se haya realizado. Sobre el rango estimado de ${mxn(
+      body: `El Cliente pagará al Prestador honorarios equivalentes al ${d.commissionPct}% (IVA incluido) del monto que la AFORE le deposite efectivamente por concepto de retiro parcial por desempleo, exigibles ÚNICAMENTE después de que ese depósito se haya realizado.${
+        d.breakdown
+          ? ` Ese porcentaje se integra por ${d.breakdown.tax}% de impuestos y uso de plataformas y ${d.breakdown.admin}% de gastos administrativos y honorarios de asesores.`
+          : ""
+      } Sobre el rango estimado de ${mxn(
         d.estimatedMin
       )} a ${mxn(d.estimatedMax)}, los honorarios equivaldrían aproximadamente a ${mxn(
         (d.estimatedMin * d.commissionPct) / 100

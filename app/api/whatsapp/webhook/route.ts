@@ -119,6 +119,19 @@ export async function POST(req: NextRequest) {
             error: enviado.error,
             sign_token: token ?? null,
           })
+        } else if (inbound.action === "confirm") {
+          // Reporte de avance ("Ya lo hice", "Ya me depositaron"...). El check
+          // lo valida el asesor en el panel; aquí solo acusamos recibo para
+          // que el cliente sepa que alguien lo vio.
+          const enviado = await sendWhatsAppText(
+            lead.phone,
+            "¡Gracias por avisarnos! Tu asesor lo revisa y te confirma por aquí. Si tienes alguna duda mientras tanto, escríbenos."
+          )
+          await logEvent(lead.id, "inbound_confirm", {
+            text: inbound.text.slice(0, 500),
+            replied: enviado.sent,
+            error: enviado.error,
+          })
         } else if (inbound.action === "media") {
           const media = await downloadWhatsAppMedia(
             inbound.mediaId,

@@ -14,7 +14,7 @@ El contrato ya **no** se crea al calificar. La secuencia es:
 El tick de 15 minutos lo dispara `pg_cron` de Supabase (`supabase/snippets/pipeline-cron.sql`),
 no `vercel.json`: el plan Hobby solo permite un cron diario y ese lo ocupa el de followups.
 
-## Estado real en la WABA (2828213904220650, verificado 3-ago-2026)
+## Estado real en la WABA (2828213904220650, verificado 6-ago-2026)
 
 | Plantilla | Estado | Categoría |
 |---|---|---|
@@ -25,11 +25,43 @@ no `vercel.json`: el plan Hobby solo permite un cron diario y ese lo ocupa el de
 | `bienvenida_pensionmas` | APPROVED | UTILITY |
 | `pendientes_datos_pensionmas` | APPROVED | MARKETING (aprobada pero sin cablear en el código) |
 | `contrato_firmado_pensionmas` | APPROVED | UTILITY (se traslapa con `bienvenida_pensionmas`) |
-| `revision_iniciada_pensionmas` | PENDING (enviada 3-ago) | UTILITY | ← **en uso** |
-| `contrato_listo_pensionmas` | PENDING (enviada 3-ago) | UTILITY | ← **en uso** |
-| `revisando_caso_pensionmas` | PENDING | UTILITY | descartada: prometía "1 hora", borrar |
-| `caso_revisado_pensionmas` | PENDING | MARKETING | descartada: mencionaba precio, borrar |
+| `revision_iniciada_pensionmas` | **APPROVED** (6-ago) | UTILITY | ← **en uso** |
+| `contrato_listo_pensionmas` | **APPROVED** (6-ago) | UTILITY | ← **en uso** |
+| `revisando_caso_pensionmas` | APPROVED | UTILITY | descartada: prometía "1 hora", borrar a mano |
+| `caso_revisado_pensionmas` | APPROVED | MARKETING | descartada: mencionaba precio, borrar a mano |
 | `codigo_pensionmas` | **NO EXISTE** | bloqueada por Meta (error 2388185) |
+| `siguientes_pasos_pensionmas` | PENDING (enviada 6-ago) | UTILITY | acompañamiento post-firma |
+| `pendientes_tramite_pensionmas` | PENDING (enviada 6-ago) | UTILITY | acompañamiento post-firma |
+| `prep_solicitud_pensionmas` | PENDING (enviada 6-ago) | UTILITY | acompañamiento post-firma |
+| `cita_solicitud_pensionmas` | PENDING (enviada 6-ago) | UTILITY | acompañamiento post-firma |
+| `espera_deposito_pensionmas` | PENDING (enviada 6-ago) | UTILITY | acompañamiento post-firma |
+| `honorarios_pensionmas` | PENDING (enviada 6-ago) | UTILITY | acompañamiento post-firma |
+
+Las 6 del acompañamiento post-firma se registraron por API con
+`scripts/create-templates.ts` (idempotente: volverlo a correr solo reporta).
+Los cuerpos exactos viven en ese script; parámetros:
+
+- `siguientes_pasos_pensionmas` — {{1}} nombre. Sale al firmar, después de la
+  bienvenida. Aviso clave: no aceptar trabajo ni alta en el IMSS hasta el
+  depósito.
+- `pendientes_tramite_pensionmas` — {{1}} nombre, {{2}} lista de faltantes
+  (la arma `listaFaltantes()` de `lib/checklist.ts`). Cadencia 2/5/8/11/14
+  días desde la firma.
+- `prep_solicitud_pensionmas` — {{1}} nombre. Una vez, cuando faltan ≤5 días
+  para la fecha lista: revisar opciones A y B sin darle clic a nada.
+- `cita_solicitud_pensionmas` — {{1}} nombre. Cadencia 0/2/5 desde la fecha
+  lista (nunca el mismo día que el prep): agendar el acompañamiento.
+- `espera_deposito_pensionmas` — {{1}} nombre. Cadencia 3/8 desde que el
+  asesor marca la solicitud hecha.
+- `honorarios_pensionmas` — {{1}} nombre, {{2}} monto de honorarios, {{3}}
+  folio, {{4}} datos bancarios (`COBRO_BANCO/CLABE/TITULAR`). Cadencia
+  0/2/5/8 desde que se registra la dispersión. Recordatorio de pago =
+  UTILITY legítimo; Meta la aceptó así.
+
+Los taps nuevos ("Ya lo hice", "Ya me aparecen", "Ya me depositaron", "Ya
+pagué", "Agendar mi cita") se clasifican como `confirm` en
+`lib/whatsapp/inbound.ts`: acuse automático + evento `inbound_confirm` en el
+timeline. Nada se palomea solo: el asesor valida en el panel.
 
 `codigo_pensionmas` no se puede crear hasta que pase la verificación del negocio:
 `business_verification_status` del WABA sigue en `pending_submission`, o sea que la

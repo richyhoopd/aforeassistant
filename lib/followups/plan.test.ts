@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest"
 import {
+  planEscalations,
   planFollowups,
   type FollowupContract,
   type FollowupEvent,
   type FollowupLead,
+  type PlanOptions,
 } from "./plan"
 
 const NOW = new Date("2026-07-27T15:00:00Z")
@@ -28,8 +30,9 @@ const baseLead: FollowupLead = {
 const plan = (
   leads: FollowupLead[],
   contracts: FollowupContract[] = [],
-  events: FollowupEvent[] = []
-) => planFollowups(leads, contracts, events, NOW)
+  events: FollowupEvent[] = [],
+  opts?: PlanOptions
+) => planFollowups(leads, contracts, events, NOW, opts)
 
 describe("planFollowups — NSS pendiente", () => {
   it("QUALIFIED sin contrato a 2 días manda ronda 1 con nombre y rango (la liga va en botón estático)", () => {
@@ -312,5 +315,258 @@ describe("planFollowups — continúa (lead sin terminar)", () => {
       payload: { kind: "continua", round },
     }))
     expect(plan([nuevo], [], events)).toHaveLength(0)
+  })
+})
+
+// ————— Acompañamiento post-firma (spec 2026-08-06) —————
+
+const firmado: FollowupContract = {
+  lead_id: "lead-9",
+  created_at: daysAgo(10),
+  signed_at: daysAgo(8),
+  sign_token: "tok-firmado",
+}
+
+const signedLead: FollowupLead = {
+  ...baseLead,
+  id: "lead-9",
+  status: "CONTRACT_SIGNED",
+  nss: "24099812349",
+  fecha_baja: daysAgo(100).slice(0, 10),
+  chk_datos_at: null,
+  chk_app_at: null,
+  chk_tarjeta_at: null,
+  chk_caratula_at: null,
+  solicitud_hecha_at: null,
+}
+
+const checksListos = {
+  chk_datos_at: daysAgo(6),
+  chk_app_at: daysAgo(6),
+  chk_tarjeta_at: daysAgo(6),
+  chk_caratula_at: daysAgo(6),
+}
+
+describe("planFollowups — pendientes del checklist", () => {
+  it("firmado con checklist incompleto a 2 días manda ronda 1 con la lista de faltantes", () => {
+    const lead = { ...signedLead, chk_datos_at: daysAgo(1) }
+    const contrato = { ...firmado, signed_at: daysAgo(2) }
+    const [r] = plan([lead], [contrato])
+    expect(r).toMatchObject({ leadId: "lead-9", kind: "pendientes", round: 1 })
+    expect(r.params[0]).toBe("Carlos")
+    expect(r.params[1]).toContain("AforeMóvil")
+    expect(r.params[1]).toContain("tarjeta sin límite")
+    expect(r.params[1]).not.toContain("actualizar tus datos")
+  })
+
+  it("checklist completo ⇒ no manda pendientes", () => {
+    const lead = { ...signedLead, ...checksListos }
+    const rs = plan([lead], [firmado])
+    expect(rs.filter((r) => r.kind === "pendientes")).toHaveLength(0)
+  })
+
+  it("cadencia 2/5/8/11/14 desde la firma con dedupe por ronda", () => {
+    const events: FollowupEvent[] = [1, 2].map((round) => ({
+      lead_id: "lead-9",
+      type: "reminder_sent",
+      payload: { kind: "pendientes", round },
+    }))
+    const [r] = plan([signedLead], [firmado], events)
+    expect(r).toMatchObject({ kind: "pendientes", round: 3 })
+  })
+
+  it("sin contrato firmado o menos de 2 días ⇒ nada", () => {
+    expect(plan([signedLead], [])).toHaveLength(0)
+    expect(
+      plan([signedLead], [{ ...firmado, signed_at: daysAgo(1) }])
+    ).toHaveLength(0)
+  })
+})
+
+describe("planFollowups — prep46 y cita46", () => {
+  it("checklist completo y fecha lista ya pasada: prep46 sale una sola vez", () => {
+    const lead = { ...signedLead, ...checksListos }
+    const [r] = plan([lead], [firmado])
+    expect(r).toMatchObject({ kind: "prep46", round: 1 })
+    expect(r.params).toEqual(["Carlos"])
+  })
+
+  it("prep46 no sale si faltan más de 5 días para la fecha lista", () => {
+    // Baja hace 20 días: los 46 se cumplen en 26 días más.
+    const lead = {
+      ...signedLead,
+      ...checksListos,
+      fecha_baja: daysAgo(20).slice(0, 10),
+    }
+    expect(plan([lead], [firmado])).toHaveLength(0)
+  })
+
+  it("prep46 sale cuando faltan ≤5 días", () => {
+    const lead = {
+      ...signedLead,
+      ...checksListos,
+      fecha_baja: daysAgo(43).slice(0, 10),
+    }
+    const [r] = plan([lead], [firmado])
+    expect(r).toMatchObject({ kind: "prep46" })
+  })
+
+  it("cita46 espera al día siguiente del prep46 y luego cadencia 0/2/5", () => {
+    const lead = { ...signedLead, ...checksListos }
+    const prepHoy: FollowupEvent[] = [
+      {
+        lead_id: "lead-9",
+        type: "reminder_sent",
+        payload: { kind: "prep46", round: 1 },
+        created_at: daysAgo(0.2),
+      },
+    ]
+    expect(plan([lead], [firmado], prepHoy)).toHaveLength(0)
+
+    const prepAyer: FollowupEvent[] = [
+      {
+        lead_id: "lead-9",
+        type: "reminder_sent",
+        payload: { kind: "prep46", round: 1 },
+        created_at: daysAgo(1.5),
+      },
+    ]
+    const [r] = plan([lead], [firmado], prepAyer)
+    expect(r).toMatchObject({ kind: "cita46", round: 1 })
+  })
+
+  it("cita46 se apaga con solicitud_hecha_at", () => {
+    const lead = {
+      ...signedLead,
+      ...checksListos,
+      solicitud_hecha_at: daysAgo(1),
+    }
+    const rs = plan([lead], [firmado])
+    expect(rs.filter((r) => r.kind === "cita46" || r.kind === "prep46")).toHaveLength(0)
+  })
+
+  it("sin fecha_baja no corre nada del bloque 46 días", () => {
+    const lead = { ...signedLead, ...checksListos, fecha_baja: null }
+    expect(plan([lead], [firmado])).toHaveLength(0)
+  })
+})
+
+describe("planFollowups — espera del depósito", () => {
+  it("con solicitud hecha a 3 días manda ronda 1", () => {
+    const lead = {
+      ...signedLead,
+      ...checksListos,
+      solicitud_hecha_at: daysAgo(3),
+    }
+    const [r] = plan([lead], [firmado])
+    expect(r).toMatchObject({ kind: "espera_deposito", round: 1 })
+    expect(r.params).toEqual(["Carlos"])
+  })
+
+  it("antes de 3 días ⇒ nada", () => {
+    const lead = {
+      ...signedLead,
+      ...checksListos,
+      solicitud_hecha_at: daysAgo(1),
+    }
+    expect(plan([lead], [firmado])).toHaveLength(0)
+  })
+})
+
+describe("planFollowups — cobro de honorarios", () => {
+  const dispersedLead: FollowupLead = {
+    ...signedLead,
+    id: "lead-10",
+    status: "DISPERSED",
+    ...checksListos,
+    solicitud_hecha_at: daysAgo(10),
+  }
+  const contratoCobrado: FollowupContract = {
+    ...firmado,
+    lead_id: "lead-10",
+    dispersed_amount: 20000,
+    commission_pct: 30,
+    folio: "TLN-12345678",
+  }
+  const eventoDispersion: FollowupEvent[] = [
+    {
+      lead_id: "lead-10",
+      type: "dispersed",
+      payload: {},
+      created_at: daysAgo(0.5),
+    },
+  ]
+
+  it("DISPERSED con monto manda cobro día 0 con monto y folio", () => {
+    const [r] = plan(
+      [dispersedLead],
+      [contratoCobrado],
+      eventoDispersion,
+      { cobroConfigurado: true }
+    )
+    expect(r).toMatchObject({ kind: "cobro", round: 1 })
+    expect(r.params).toEqual(["Carlos", "$6,000", "TLN-12345678"])
+  })
+
+  it("sin datos de cobro configurados no sale", () => {
+    expect(
+      plan([dispersedLead], [contratoCobrado], eventoDispersion, {
+        cobroConfigurado: false,
+      })
+    ).toHaveLength(0)
+  })
+
+  it("sin dispersed_amount no sale", () => {
+    expect(
+      plan(
+        [dispersedLead],
+        [{ ...contratoCobrado, dispersed_amount: null }],
+        eventoDispersion,
+        { cobroConfigurado: true }
+      )
+    ).toHaveLength(0)
+  })
+
+  it("cadencia 0/2/5/8 desde el evento dispersed", () => {
+    const eventos: FollowupEvent[] = [
+      ...eventoDispersion.map((e) => ({ ...e, created_at: daysAgo(2.5) })),
+      {
+        lead_id: "lead-10",
+        type: "reminder_sent",
+        payload: { kind: "cobro", round: 1 },
+      },
+    ]
+    const [r] = plan([dispersedLead], [contratoCobrado], eventos, {
+      cobroConfigurado: true,
+    })
+    expect(r).toMatchObject({ kind: "cobro", round: 2 })
+  })
+})
+
+describe("planEscalations — checklist vencido", () => {
+  it("firmado hace 15 días sin datos actualizados escala una sola vez", () => {
+    const contrato = { ...firmado, signed_at: daysAgo(15) }
+    expect(planEscalations([signedLead], [contrato], [], NOW)).toEqual([
+      { leadId: "lead-9" },
+    ])
+    const yaEscalado: FollowupEvent[] = [
+      { lead_id: "lead-9", type: "checklist_escalated", payload: {} },
+    ]
+    expect(planEscalations([signedLead], [contrato], yaEscalado, NOW)).toEqual([])
+  })
+
+  it("con datos validados o antes de 14 días no escala", () => {
+    const contrato = { ...firmado, signed_at: daysAgo(15) }
+    expect(
+      planEscalations(
+        [{ ...signedLead, chk_datos_at: daysAgo(1) }],
+        [contrato],
+        [],
+        NOW
+      )
+    ).toEqual([])
+    expect(
+      planEscalations([signedLead], [{ ...firmado, signed_at: daysAgo(10) }], [], NOW)
+    ).toEqual([])
   })
 })

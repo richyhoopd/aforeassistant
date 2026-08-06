@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
       commissionPct: Number(contract.commission_pct ?? config.commissionPct),
       estimatedMin: Number(lead.estimated_payout_min ?? 0),
       estimatedMax: Number(lead.estimated_payout_max ?? 0),
+      breakdown: config.commissionBreakdown,
       signedAtISO: signedAt.toISOString(),
       signaturePngBytes: signatureBytes,
       ip,
@@ -141,6 +142,19 @@ export async function POST(req: NextRequest) {
     await logEvent(leadId, "welcome_whatsapp", {
       sent: welcome.sent,
       error: welcome.error,
+    })
+
+    // Arranque del acompañamiento: el aviso de no aceptar alta en el IMSS y
+    // los 3 encargos del checklist. Si la plantilla aún no está aprobada,
+    // queda el intento registrado y los recordatorios del cron lo cubren.
+    const pasos = await sendWhatsAppTemplate(
+      lead.phone,
+      config.whatsappTemplateSiguientesPasos,
+      [lead.full_name.split(" ")[0] ?? "hola"]
+    )
+    await logEvent(leadId, "next_steps_sent", {
+      sent: pasos.sent,
+      error: pasos.error,
     })
 
     return NextResponse.json({ ok: true, folio })

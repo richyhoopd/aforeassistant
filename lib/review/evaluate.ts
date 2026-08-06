@@ -11,6 +11,9 @@ export type ReviewInput = {
   monthlySalary: number | null
   yearsContributing: number | null
   lastWithdrawalWithin5y: boolean | null
+  // Declaró estar en un proceso de contratación: un alta en el IMSS antes
+  // del depósito tira el trámite; el asesor debe hablarlo antes de firmar.
+  hiringProcess?: boolean | null
   doNotContact: boolean | null
   // Otro lead con el mismo NSS/CURP/teléfono que ya firmó, cobró o dispersó.
   duplicateSigned: boolean
@@ -123,6 +126,13 @@ export function reviewLead(i: ReviewInput): {
     ambar(
       "salario_atipico",
       "El salario declarado está fuera del rango habitual; el estimado puede no ser realista."
+    )
+  }
+
+  if (i.hiringProcess) {
+    ambar(
+      "en_contratacion",
+      "Está en un proceso de contratación: si lo dan de alta en el IMSS antes del depósito, el trámite se cae. Confírmalo antes de enviar el contrato."
     )
   }
 
