@@ -11,11 +11,11 @@ con montos reales en el panel. Diseño en
 Migración `0007` aplicada en Supabase prod por Management API (verificadas las 9 columnas),
 rama mergeada a `main` (merge `94da536`) y deploy Ready con smoke test OK (6-ago).
 
-**FALTA una sola cosa tuya:** las env vars de cobro en Vercel — `COBRO_BANCO`,
-`COBRO_CLABE`, `COBRO_TITULAR` (tus datos bancarios reales). Sin ellas todo funciona,
-pero el mensaje de honorarios no sale al marcar DISPERSED (el panel lo avisa).
-Opcionales: `OFICINA_DOMICILIO` (default: el de HeredaBienes), `COMMISSION_PCT`
-(default 30), `COMMISSION_BREAKDOWN_TAX`/`_ADMIN` (default 19/11).
+**Datos de cobro configurados (6-ago):** `COBRO_BANCO` (Revolut STP), `COBRO_CLABE`
+(646…072, dígito verificador validado) y `COBRO_TITULAR` en Vercel prod; redeploy Ready.
+Con esto el mensaje de honorarios sale solo cuando marques DISPERSED con el monto.
+Opcionales sin setear (defaults sanos): `OFICINA_DOMICILIO`, `COMMISSION_PCT` (30),
+`COMMISSION_BREAKDOWN_TAX`/`_ADMIN` (19/11).
 
 **Esperando a Meta (enviadas 6-ago, todas UTILITY):** `siguientes_pasos_pensionmas`,
 `pendientes_tramite_pensionmas`, `prep_solicitud_pensionmas`, `cita_solicitud_pensionmas`,
