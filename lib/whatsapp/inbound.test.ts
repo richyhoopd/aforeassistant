@@ -104,3 +104,44 @@ describe("classifyInbound", () => {
     })
   })
 })
+
+describe("taps de confirmación del acompañamiento", () => {
+  const taps = [
+    "Ya lo hice",
+    "Ya me aparecen",
+    "Ya me depositaron",
+    "Ya pagué",
+    "Agendar mi cita",
+  ]
+
+  it("clasifica los taps de botón como confirm", () => {
+    for (const text of taps) {
+      expect(
+        classifyInbound({ from: "5215511223344", type: "button", button: { text } })
+      ).toEqual({ action: "confirm", text })
+    }
+  })
+
+  it("también los reconoce escritos a mano, con acentos de menos", () => {
+    expect(
+      classifyInbound({
+        from: "5215511223344",
+        type: "text",
+        text: { body: "ya me depositaron" },
+      })
+    ).toEqual({ action: "confirm", text: "ya me depositaron" })
+    expect(
+      classifyInbound({
+        from: "5215511223344",
+        type: "text",
+        text: { body: "Ya pague" },
+      })
+    ).toEqual({ action: "confirm", text: "Ya pague" })
+  })
+
+  it("no confunde un 'no' escrito con confirmación", () => {
+    expect(
+      classifyInbound({ from: "5215511223344", type: "text", text: { body: "NO" } })
+    ).toEqual({ action: "opt_out", text: "NO" })
+  })
+})

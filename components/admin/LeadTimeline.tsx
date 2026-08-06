@@ -31,6 +31,7 @@ const ETIQUETAS: Record<string, { label: string; tono: Tono }> = {
   whatsapp_delivery_failed: { label: "WhatsApp no se entregó", tono: "error" },
   inbound_whatsapp: { label: "Mensaje del cliente", tono: "neutral" },
   inbound_explain: { label: "Pidió que le expliquen", tono: "neutral" },
+  inbound_confirm: { label: "El cliente reporta un avance", tono: "ok" },
   inbound_media: { label: "Envió una imagen o documento", tono: "neutral" },
   inbound_media_failed: { label: "No se pudo bajar su archivo", tono: "error" },
   opt_out: { label: "Pidió no recibir mensajes", tono: "warn" },
@@ -111,6 +112,7 @@ function resumen(type: string, p: Record<string, unknown>): string | null {
         .join(" · ")
     case "inbound_whatsapp":
     case "inbound_explain":
+    case "inbound_confirm":
     case "opt_out":
       return s("text")
     case "inbound_media":
