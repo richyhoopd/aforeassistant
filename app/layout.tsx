@@ -27,6 +27,11 @@ export const metadata: Metadata = {
   title: "Pensión+ — Asesoría para tu retiro AFORE por desempleo",
   description:
     "Averigua en 2 minutos si calificas para el retiro parcial por desempleo de tu AFORE y cuánto podrías recibir. Asesoría honesta: sin anticipos y sin promesas falsas.",
+  verification: {
+    other: {
+      "facebook-domain-verification": "78mts3ejeipm4nd0wxya20riaazdlj",
+    },
+  },
 };
 
 export default function RootLayout({
