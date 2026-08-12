@@ -17,14 +17,30 @@ Con esto el mensaje de honorarios sale solo cuando marques DISPERSED con el mont
 Opcionales sin setear (defaults sanos): `OFICINA_DOMICILIO`, `COMMISSION_PCT` (30),
 `COMMISSION_BREAKDOWN_TAX`/`_ADMIN` (19/11).
 
-**Esperando a Meta (enviadas 6-ago, todas UTILITY):** `siguientes_pasos_pensionmas`,
-`pendientes_tramite_pensionmas`, `prep_solicitud_pensionmas`, `cita_solicitud_pensionmas`,
-`espera_deposito_pensionmas`, `honorarios_pensionmas`. Hasta que las aprueben, los envíos
-quedan como `reminder_failed`/dry-run en el timeline sin romper nada. Verificar estado:
-`npx tsx scripts/create-templates.ts` (idempotente, solo reporta las existentes).
+**Plantillas: las 8 APROBADAS (verificado 11-ago).** Las 6 UTILITY del acompañamiento
+(`siguientes_pasos_pensionmas`, `pendientes_tramite_pensionmas`, `prep_solicitud_pensionmas`,
+`cita_solicitud_pensionmas`, `espera_deposito_pensionmas`, `honorarios_pensionmas`) más
+`revision_iniciada_pensionmas` y `contrato_listo_pensionmas`. El flujo completo ya entrega
+WhatsApp en producción. Verificar estado: `npx tsx scripts/create-templates.ts`
+(idempotente, solo reporta las existentes).
 
-**Ya aprobadas (6-ago):** `revision_iniciada_pensionmas` y `contrato_listo_pensionmas` —
-el flujo de revisión previa ya entrega completo.
+**Verificación de dominio en Meta (11-ago):** metaetiqueta publicada en ambos sitios —
+`h76gliptuljmxgit6aicr71tmqujv8` en `pensionmas.com.mx` (`app/layout.tsx`, commit
+`fb95ccd`) y `78mts3ejeipm4nd0wxya20riaazdlj` en `heredabienes.com.mx`
+(`~/Work/inmobiliaria/lidfi/heredabienes`, commit `d181e77`). Cada dominio lleva su propio
+código; no son intercambiables.
+
+**Verificación del negocio (en curso, 11-ago):** enviada en
+`business.facebook.com/settings/security` con la Constancia de Situación Fiscal de
+**JOSE IVAN PARRA PARRA** (RFC PAPI811018IT4, persona física / "sociedad unipersonal"),
+domicilio fiscal Rogelio Vaca 64, San Pedro Tlaquepaque, C.P. 45606. ⚠️ Ese nombre NO
+coincide con "Grupo Inmobiliario HeredaBienes" que aparece como responsable en
+`/terminos`, `/privacidad` y el contrato — hay que decidir cuál es la entidad real y
+alinear ambos (si es la empresa, se necesita la CSF de la persona moral).
+
+**App de Meta "Afore Assistant" (`1071681545514592`) sigue en modo desarrollo**
+(`is_live: false`), sin violaciones ni acciones requeridas. Pasarla a Live requiere el
+negocio verificado.
 
 **Sigue pendiente borrar a mano en WhatsApp Manager**: `caso_revisado_pensionmas` y
 `revisando_caso_pensionmas` (descartadas, sin uso en código; mi token no puede borrar).
