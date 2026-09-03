@@ -11,30 +11,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-
-const mxn = new Intl.NumberFormat("es-MX", {
-  style: "currency",
-  currency: "MXN",
-  maximumFractionDigits: 0,
-})
-
-type Ley73Result = {
-  normal: number
-  optimized: number
-  basePercentage: number
-  ageFactor: number
-  hasRights: boolean
-  underAge: boolean
-  fewWeeks: boolean
-}
-
-type Ley97Result = {
-  pensionEstimada: number
-  saldoProyectado: number
-  modalidad: string
-  añosParaRetiro: number
-  cumpleSemanas: boolean
-}
+import { calcLey73, calcLey97, mxn, parseLey73, parseLey97, type Ley73Result, type Ley97Result } from "@/lib/pension/calc"
 
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null
@@ -57,58 +34,11 @@ export function PensionCalculator() {
   const [r73, setR73] = useState<Ley73Result | null>(null)
   const [e73, setE73] = useState<Record<string, string>>({})
 
-  const calcLey73 = () => {
-    const salary = parseFloat(l73.monthlySalary)
-    const weeks = parseInt(l73.weeks)
-    const age = parseInt(l73.age)
-    const lastYear = parseInt(l73.lastJobYear)
-    const lastMonth = parseInt(l73.lastJobMonth)
-
-    const errs: Record<string, string> = {}
-    if (!salary || salary <= 0) errs.monthlySalary = "Ingresa tu salario mensual promedio"
-    if (!weeks || weeks < 0) errs.weeks = "Ingresa tus semanas cotizadas"
-    if (!age || age < 18 || age > 100) errs.age = "Ingresa una edad válida"
-    if (!l73.currentlyWorking && (!lastMonth || lastMonth < 1 || lastMonth > 12))
-      errs.lastJobMonth = "Mes de 1 a 12"
-    if (!l73.currentlyWorking && (!lastYear || lastYear < 1970))
-      errs.lastJobYear = "Ingresa el año de tu baja"
-    setE73(errs)
-    if (Object.keys(errs).length > 0) return
-
-    let hasRights = true
-    if (!l73.currentlyWorking && lastYear && lastMonth) {
-      const diffYears =
-        (Date.now() - new Date(lastYear, lastMonth - 1, 1).getTime()) /
-        (1000 * 60 * 60 * 24 * 365)
-      if (diffYears > 5) hasRights = false
-    }
-
-    const underAge = age < 60
-    const fewWeeks = weeks < 500
-
-    if (fewWeeks || !hasRights) {
-      setR73({ normal: 0, optimized: 0, basePercentage: 0, ageFactor: 0, hasRights, underAge, fewWeeks })
-      return
-    }
-
-    let basePercentage = 35
-    if (weeks > 500) basePercentage += Math.floor((weeks - 500) / 52) * 1.25
-    basePercentage = Math.min(basePercentage, 100)
-
-    const factors: Record<number, number> = { 60: 0.75, 61: 0.8, 62: 0.85, 63: 0.9, 64: 0.95 }
-    const effAge = underAge ? 60 : age
-    const ageFactor = effAge >= 65 ? 1 : factors[effAge]
-
-    const normal = ((salary * basePercentage) / 100) * ageFactor
-    setR73({
-      normal,
-      optimized: normal * 2.5,
-      basePercentage,
-      ageFactor,
-      hasRights,
-      underAge,
-      fewWeeks,
-    })
+  const onCalcLey73 = () => {
+    const parsed = parseLey73(l73)
+    if (!parsed.ok) { setE73(parsed.errors); return }
+    setE73({})
+    setR73(calcLey73(parsed.input))
   }
 
   // Ley 97
@@ -123,49 +53,11 @@ export function PensionCalculator() {
   const [r97, setR97] = useState<Ley97Result | null>(null)
   const [e97, setE97] = useState<Record<string, string>>({})
 
-  const calcLey97 = () => {
-    const edad = parseInt(l97.edad)
-    const saldo = parseFloat(l97.saldoAfore)
-    const salario = parseFloat(l97.salarioMensual)
-    const semanas = parseInt(l97.semanas)
-    const voluntarias = parseFloat(l97.aportaciones) || 0
-    const rendimiento = parseFloat(l97.rendimiento) / 100
-
-    const errs: Record<string, string> = {}
-    if (!edad || edad < 18 || edad > 100) errs.edad = "Ingresa una edad válida"
-    if (!saldo || saldo <= 0) errs.saldoAfore = "Ingresa tu saldo actual de AFORE"
-    if (!salario || salario <= 0) errs.salarioMensual = "Ingresa un salario válido"
-    if (Number.isNaN(semanas) || l97.semanas === "") errs.semanas = "Ingresa tus semanas cotizadas"
-    setE97(errs)
-    if (Object.keys(errs).length > 0) return
-
-    const añosParaRetiro = Math.max(65 - edad, 0)
-    const aportacionAnual = (salario * 0.0625 + voluntarias) * 12
-
-    let saldoProyectado = saldo
-    for (let i = 0; i < añosParaRetiro; i++) {
-      saldoProyectado = (saldoProyectado + aportacionAnual) * (1 + rendimiento)
-    }
-
-    const retiroProgramado = saldoProyectado / 240
-    const rentaVitalicia = retiroProgramado * 0.75
-
-    let modalidad = "Retiro programado"
-    let pension = retiroProgramado
-    if (saldoProyectado > 1_500_000) {
-      modalidad = "Renta vitalicia"
-      pension = rentaVitalicia
-    }
-
-    const cumpleSemanas = semanas + añosParaRetiro * 52 >= 850
-
-    setR97({
-      pensionEstimada: Math.round(pension),
-      saldoProyectado: Math.round(saldoProyectado),
-      modalidad,
-      añosParaRetiro,
-      cumpleSemanas,
-    })
+  const onCalcLey97 = () => {
+    const parsed = parseLey97(l97)
+    if (!parsed.ok) { setE97(parsed.errors); return }
+    setE97({})
+    setR97(calcLey97(parsed.input))
   }
 
   const inputCls = "mt-1.5 h-11 rounded-lg bg-white"
@@ -305,7 +197,7 @@ export function PensionCalculator() {
               </div>
 
               <button
-                onClick={calcLey73}
+                onClick={onCalcLey73}
                 className="flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-semibold text-white shadow-[0_8px_20px_-8px_oklch(0.49_0.21_262/0.7)] transition-colors duration-200 hover:bg-[oklch(0.44_0.21_262)]"
               >
                 Calcular mi pensión estimada
@@ -408,7 +300,7 @@ export function PensionCalculator() {
               </div>
 
               <button
-                onClick={calcLey97}
+                onClick={onCalcLey97}
                 className="flex h-12 w-full items-center justify-center rounded-full bg-primary text-base font-semibold text-white shadow-[0_8px_20px_-8px_oklch(0.49_0.21_262/0.7)] transition-colors duration-200 hover:bg-[oklch(0.44_0.21_262)]"
               >
                 Proyectar mi pensión
