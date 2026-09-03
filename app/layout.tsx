@@ -1,51 +1,52 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import localFont from "next/font/local";
-import "./globals.css";
+import type { Metadata, Viewport } from "next"
+import { Nunito_Sans, Outfit } from "next/font/google"
+import "./globals.css"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-});
+  weight: ["500", "600", "700"],
+  display: "swap",
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const nunito = Nunito_Sans({
+  variable: "--font-nunito",
   subsets: ["latin"],
-});
+  weight: ["400", "600", "700"],
+  display: "swap",
+})
 
-const displaySerif = localFont({
-  variable: "--font-display-serif",
-  src: [
-    { path: "../public/fonts/erode-400.woff2", weight: "400", style: "normal" },
-    { path: "../public/fonts/erode-500.woff2", weight: "500", style: "normal" },
-    { path: "../public/fonts/erode-600.woff2", weight: "600", style: "normal" },
-    { path: "../public/fonts/erode-700.woff2", weight: "700", style: "normal" },
-  ],
-});
+const SITE = "https://www.pensionmas.com.mx"
 
 export const metadata: Metadata = {
-  title: "Pensión+ — Asesoría para tu retiro AFORE por desempleo",
+  metadataBase: new URL(SITE),
+  title: "Pensión+ — Calcula y mejora tu pensión del IMSS",
   description:
-    "Averigua en 2 minutos si calificas para el retiro parcial por desempleo de tu AFORE y cuánto podrías recibir. Asesoría honesta: sin anticipos y sin promesas falsas.",
+    "Calcula tu pensión estimada bajo Ley 73 o Ley 97 del IMSS y descubre estrategias reales (Modalidad 40, asignaciones familiares, ahorro voluntario) para mejorarla.",
+  openGraph: {
+    title: "Pensión+ — Calcula y mejora tu pensión del IMSS",
+    description: "Calculadora Ley 73 / Ley 97 y estrategias para mejorar tu pensión. Asesoría clara, sin promesas.",
+    url: SITE,
+    siteName: "Pensión+",
+    locale: "es_MX",
+    type: "website",
+  },
+  twitter: { card: "summary_large_image", site: "@pensionmasmx" },
   verification: {
     other: {
       "facebook-domain-verification": "h76gliptuljmxgit6aicr71tmqujv8",
     },
   },
-};
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  themeColor: "#10213A",
+}
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es-MX">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${displaySerif.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body className={`${outfit.variable} ${nunito.variable} font-sans antialiased`}>{children}</body>
     </html>
-  );
+  )
 }

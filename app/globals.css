@@ -1,66 +1,32 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 :root {
-  --radius: 0.5rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.18 0.03 262);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.03 262);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.03 262);
-  --primary: oklch(0.49 0.21 262);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.965 0.01 250);
-  --secondary-foreground: oklch(0.22 0.04 262);
-  --muted: oklch(0.965 0.01 250);
-  --muted-foreground: oklch(0.43 0.03 260);
-  --accent: oklch(0.93 0.04 252);
-  --accent-foreground: oklch(0.22 0.04 262);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.91 0.015 252);
-  --input: oklch(0.91 0.015 252);
-  --ring: oklch(0.49 0.21 262);
-  --ink: oklch(0.23 0.06 265);
-  --hero-glow: oklch(0.84 0.1 248);
-  --gold: oklch(0.84 0.12 88);
-  --gold-deep: oklch(0.62 0.12 75);
-  --card-teal: oklch(0.44 0.1 215);
-  --card-periwinkle: oklch(0.78 0.09 272);
-  --card-sky: oklch(0.76 0.11 240);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-}
+  --radius: 0.75rem;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.68 0.12 245);
-  --primary-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.68 0.12 245);
-  --ink: oklch(0.92 0.01 250);
-  --hero-glow: oklch(0.35 0.06 240);
-  --card-teal: oklch(0.45 0.08 220);
-  --card-periwinkle: oklch(0.4 0.05 268);
-  --card-sky: oklch(0.42 0.07 230);
+  --background: oklch(0.964 0.007 89);
+  --foreground: oklch(0.247 0.053 258);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.247 0.053 258);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.247 0.053 258);
+  --primary: oklch(0.662 0.113 195);
+  --primary-foreground: oklch(0.247 0.053 258);
+  --primary-text: oklch(0.489 0.08 195);
+  --secondary: oklch(0.93 0.012 89);
+  --secondary-foreground: oklch(0.247 0.053 258);
+  --muted: oklch(0.93 0.012 89);
+  --muted-foreground: oklch(0.459 0.029 262);
+  --muted-on-navy: oklch(0.802 0.02 260);
+  --accent: oklch(0.728 0.099 82);
+  --accent-foreground: oklch(0.247 0.053 258);
+  --accent-deep: oklch(0.544 0.087 81);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.901 0.014 89);
+  --input: oklch(0.93 0.012 89);
+  --ring: oklch(0.525 0.09 195);
+  --ink: oklch(0.247 0.053 258);
+  --navy-2: oklch(0.293 0.061 258);
 }
 
 @theme inline {
@@ -76,65 +42,50 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-text: var(--primary-text);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-muted-on-navy: var(--muted-on-navy);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-deep: var(--accent-deep);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-display-serif);
   --color-ink: var(--ink);
-  --color-hero-glow: var(--hero-glow);
-  --color-gold: var(--gold);
-  --color-gold-deep: var(--gold-deep);
-  --color-card-teal: var(--card-teal);
-  --color-card-periwinkle: var(--card-periwinkle);
-  --color-card-sky: var(--card-sky);
+  --color-navy-2: var(--navy-2);
+  --font-sans: var(--font-nunito);
+  --font-display: var(--font-outfit);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
   }
 }
 
-.hero-grid {
-  background-image:
-    linear-gradient(to right, oklch(0.23 0.06 265 / 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(0.23 0.06 265 / 0.06) 1px, transparent 1px);
-  background-size: 38px 38px;
-  mask-image: radial-gradient(ellipse 75% 70% at 50% 40%, black 40%, transparent 78%);
+/* Sombra única de card: nunca borde gris. */
+.card-shadow {
+  box-shadow:
+    0 1px 2px oklch(0.247 0.053 258 / 0.05),
+    0 16px 40px -24px oklch(0.247 0.053 258 / 0.22);
 }
 
-.money-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='white' stroke-width='1.5'%3E%3Cg transform='rotate(-8 60 45)'%3E%3Crect x='15' y='22' width='90' height='46' rx='6'/%3E%3Ccircle cx='60' cy='45' r='13'/%3E%3C/g%3E%3Ccircle cx='168' cy='62' r='17'/%3E%3Cg transform='rotate(7 150 160)'%3E%3Crect x='105' y='137' width='90' height='46' rx='6'/%3E%3Ccircle cx='150' cy='160' r='13'/%3E%3C/g%3E%3Ccircle cx='45' cy='158' r='11'/%3E%3C/g%3E%3Cg fill='white' font-family='Georgia, serif' font-size='17' text-anchor='middle'%3E%3Ctext x='168' y='68'%3E$%3C/text%3E%3Ctext x='60' y='51'%3E$%3C/text%3E%3Ctext x='150' y='166'%3E$%3C/text%3E%3Ctext x='45' y='163' font-size='12'%3E$%3C/text%3E%3C/g%3E%3C/svg%3E");
-  background-size: 230px 230px;
-  opacity: 0.05;
-  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.group\/cta:hover .money-pattern {
-  opacity: 0.11;
-}
-@media (prefers-reduced-motion: reduce) {
-  .money-pattern {
-    transition: none;
-  }
-}
-
+/* Reveal de scroll: visible por defecto, solo anima con JS. */
 .reveal {
   transition:
     opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
@@ -144,57 +95,39 @@
   opacity: 0;
   transform: translateY(16px);
 }
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    transition: none;
-  }
-}
 
 @keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
 }
 .anim-rise {
   animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--rise-delay, 0s);
 }
-@media (prefers-reduced-motion: reduce) {
-  .anim-rise {
-    animation: none;
-  }
+
+/* Las curvas del logo se dibujan una vez. */
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
 }
-/* Patrón de billetes y monedas en tinta, para fondos claros (el .money-pattern
-   original es de trazo blanco y solo sirve sobre navy). */
-.money-ink {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%2316233d' stroke-width='1.5'%3E%3Cg transform='rotate(-8 60 45)'%3E%3Crect x='15' y='22' width='90' height='46' rx='6'/%3E%3Ccircle cx='60' cy='45' r='13'/%3E%3C/g%3E%3Ccircle cx='168' cy='62' r='17'/%3E%3Cg transform='rotate(7 150 160)'%3E%3Crect x='105' y='137' width='90' height='46' rx='6'/%3E%3Ccircle cx='150' cy='160' r='13'/%3E%3C/g%3E%3Ccircle cx='45' cy='158' r='11'/%3E%3C/g%3E%3Cg fill='%2316233d' font-family='Georgia, serif' font-size='17' text-anchor='middle'%3E%3Ctext x='168' y='68'%3E$%3C/text%3E%3Ctext x='60' y='51'%3E$%3C/text%3E%3Ctext x='150' y='166'%3E$%3C/text%3E%3Ctext x='45' y='163' font-size='12'%3E$%3C/text%3E%3C/g%3E%3C/svg%3E");
-  background-size: 230px 230px;
+.draw-curve {
+  stroke-dasharray: 1600;
+  stroke-dashoffset: 1600;
+  animation: draw 0.9s ease-out forwards;
+  animation-delay: var(--draw-delay, 0.2s);
 }
 
-/* Capa de realce: la máscara la limita a un círculo chico bajo el cursor, así
-   que solo se avivan los billetes y monedas por los que pasa el mouse. */
-.money-spot {
-  -webkit-mask-image: radial-gradient(
-    circle 100px at var(--mx, -400px) var(--my, -400px),
-    #000 0%,
-    rgba(0, 0, 0, 0.45) 55%,
-    transparent 80%
-  );
-  mask-image: radial-gradient(
-    circle 100px at var(--mx, -400px) var(--my, -400px),
-    #000 0%,
-    rgba(0, 0, 0, 0.45) 55%,
-    transparent 80%
-  );
-  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+/* Entrada del resultado de la calculadora, sin framer-motion. */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
 }
+.anim-fade-up {
+  animation: fade-up 0.2s ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .money-spot {
-    display: none;
-  }
+  html { scroll-behavior: auto; }
+  .reveal { transition: none; }
+  .anim-rise, .anim-fade-up { animation: none; }
+  .draw-curve { animation: none; stroke-dashoffset: 0; }
 }
