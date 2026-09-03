@@ -1,24 +1,16 @@
-import type { Metadata } from "next"
-import { PensionCalculator } from "@/components/pension/PensionCalculator"
+import { MessageCircle, Plus } from "lucide-react"
+import { Curvas } from "@/components/brand/Curvas"
 import { Reveal } from "@/components/landing/Reveal"
-
-export const metadata: Metadata = {
-  title: "Pensión+ — Calcula y mejora tu pensión del IMSS",
-  description:
-    "Calcula tu pensión estimada bajo Ley 73 o Ley 97 del IMSS y descubre estrategias reales (Modalidad 40, asignaciones familiares, ahorro voluntario) para mejorarla.",
-}
-
-const WA_LINK =
-  "https://wa.me/523349687609?text=Hola%2C%20us%C3%A9%20la%20calculadora%20de%20pensi%C3%B3n%20y%20quiero%20mejorar%20mi%20pensi%C3%B3n"
+import { PensionCalculator } from "@/components/pension/PensionCalculator"
+import { WA_LINK } from "@/lib/site"
 
 const leyes = [
   {
     nombre: "Ley 73",
     lema: "La oportunidad dorada",
-    aplica: "Aplica si comenzaste a cotizar antes del 1 de julio de 1997",
-    card: "bg-card-teal text-white",
-    chip: "border-white/30 text-white/90",
-    body: "text-white/85",
+    chip: "Antes de julio de 1997",
+    aplica: "Aplica si comenzaste a cotizar antes del 1 de julio de 1997.",
+    navy: true,
     puntos: [
       "Pensión vitalicia garantizada por el Estado",
       "Solo 500 semanas cotizadas requeridas",
@@ -29,10 +21,9 @@ const leyes = [
   {
     nombre: "Ley 97",
     lema: "Tu esfuerzo, tu recompensa",
-    aplica: "Aplica si comenzaste a cotizar después del 1 de julio de 1997",
-    card: "bg-card-periwinkle text-foreground",
-    chip: "border-foreground/20 text-foreground/80",
-    body: "text-foreground/75",
+    chip: "Después de julio de 1997",
+    aplica: "Aplica si comenzaste a cotizar después del 1 de julio de 1997.",
+    navy: false,
     puntos: [
       "Pensión basada en el saldo de tu AFORE",
       "850 semanas requeridas en 2025 (aumenta cada año)",
@@ -67,184 +58,226 @@ const estrategias = [
   },
 ]
 
-export default function PensionPage() {
+const faqs = [
+  {
+    q: "¿La calculadora es exacta?",
+    a: "No. Es una estimación con las reglas generales del IMSS. El monto real depende de tu historial exacto, la vigencia de tus derechos y el dictamen oficial.",
+  },
+  {
+    q: "¿Cómo sé si soy Ley 73 o Ley 97?",
+    a: "Por la fecha en que empezaste a cotizar al IMSS: antes del 1 de julio de 1997 eres Ley 73; después, Ley 97. Lo confirmas en tu constancia de semanas cotizadas.",
+  },
+  {
+    q: "¿Qué es la Modalidad 40?",
+    a: "Un esquema del IMSS para seguir cotizando por tu cuenta después de dejar un empleo, con el salario que elijas dentro de los topes. Sirve para subir el promedio salarial y sumar semanas.",
+  },
+  {
+    q: "¿Cobran por la asesoría inicial?",
+    a: "No. Platicar tu caso por WhatsApp no tiene costo. Si hay una estrategia que aplique para ti, te explicamos en qué consiste y qué implica antes de que decidas nada.",
+  },
+  {
+    q: "¿Ustedes son el IMSS o una AFORE?",
+    a: "No. Somos un servicio privado de asesoría. No tenemos vínculo con el IMSS, CONSAR ni ninguna AFORE.",
+  },
+]
+
+const h2 = "font-display text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-[1.12] tracking-[-0.01em] text-ink"
+
+export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[linear-gradient(175deg,oklch(1_0_0)_0%,oklch(0.96_0.025_250)_40%,var(--hero-glow)_100%)] pb-24 pt-14 sm:pt-20">
-        <div className="relative mx-auto w-full max-w-6xl px-4 text-center">
-          <div className="anim-rise">
-            <h1 className="mx-auto max-w-3xl text-balance font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.08] tracking-[-0.02em]">
+      <section className="relative overflow-hidden bg-ink pb-28 pt-16 text-white sm:pb-36 sm:pt-24">
+        <Curvas animate className="pointer-events-none absolute -bottom-4 right-0 w-[70%] max-w-4xl" />
+        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6">
+          <div className="anim-rise max-w-3xl">
+            <h1 className="font-display text-[clamp(2.25rem,6vw,3.5rem)] font-semibold leading-[1.08] tracking-[-0.02em]">
               Tu pensión puede ser más grande de lo que crees.
             </h1>
           </div>
-          <div className="anim-rise" style={{ "--rise-delay": "0.08s" } as React.CSSProperties}>
-            <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
-              El 70% de los adultos mayores en México no recibe pensión, casi
-              siempre por desinformación, trámites complejos o pérdida de
-              derechos. Calcula la tuya y descubre cuánto margen tienes para
-              mejorarla.
+          <div className="anim-rise max-w-xl" style={{ "--rise-delay": "0.08s" } as React.CSSProperties}>
+            <p className="mt-6 text-lg text-muted-on-navy">
+              El 70% de los adultos mayores en México no recibe pensión, casi siempre por desinformación,
+              trámites complejos o pérdida de derechos. Calcula la tuya y descubre cuánto margen tienes
+              para mejorarla.
             </p>
           </div>
-          <div className="anim-rise" style={{ "--rise-delay": "0.16s" } as React.CSSProperties}>
+          <div className="anim-rise mt-8 flex flex-wrap items-center gap-4" style={{ "--rise-delay": "0.16s" } as React.CSSProperties}>
             <a
               href="#calculadora"
-              className="mt-8 inline-flex h-12 items-center rounded-full bg-primary px-7 text-base font-semibold text-white transition-colors duration-200 hover:bg-[oklch(0.44_0.21_262)]"
+              className="inline-flex h-12 items-center rounded-lg bg-primary px-6 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
             >
               Calcular mi pensión
+            </a>
+            <a
+              href={WA_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-12 items-center gap-2 text-base font-semibold text-white underline decoration-primary decoration-2 underline-offset-4 hover:decoration-white"
+            >
+              <MessageCircle className="size-5 text-primary" aria-hidden />
+              Platicar mi caso
             </a>
           </div>
         </div>
       </section>
 
-      {/* Ley 73 vs Ley 97 */}
-      <section className="relative -mt-10 rounded-t-3xl bg-background pt-16 sm:pt-24">
-        <div className="mx-auto w-full max-w-6xl px-4">
-          <Reveal>
-            <h2 className="mx-auto max-w-3xl text-balance text-center font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-tight tracking-[-0.01em]">
-              ¿Ley 73 o Ley 97? Tu futuro depende de conocer la diferencia.
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-              La regla es una fecha: cuándo empezaste a cotizar al IMSS.
-            </p>
-          </Reveal>
-          <div className="mt-12 grid gap-5 lg:grid-cols-2">
-            {leyes.map((ley, i) => (
-              <Reveal key={ley.nombre} delay={i * 0.08} className="h-full">
-                <article className={`flex h-full flex-col rounded-2xl p-7 sm:p-9 ${ley.card}`}>
-                  <span
-                    className={`inline-flex w-fit rounded-md border px-2.5 py-1 text-[11px] font-semibold tracking-wide ${ley.chip}`}
-                  >
-                    {ley.aplica.toUpperCase().includes("ANTES") ? "ANTES DE JUL 1997" : "DESPUÉS DE JUL 1997"}
-                  </span>
-                  <h3 className="mt-5 font-display text-3xl font-semibold">
-                    {ley.nombre}
-                    <span className={`block text-lg font-normal ${ley.body}`}>{ley.lema}</span>
-                  </h3>
-                  <ul className={`mt-5 space-y-3 text-sm leading-relaxed ${ley.body}`}>
-                    {ley.puntos.map((p) => (
-                      <li key={p} className="flex items-start gap-2.5">
-                        <span
-                          aria-hidden
-                          className="mt-1.5 size-1.5 shrink-0 rounded-full bg-current"
-                        />
-                        {p}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-auto pt-6 text-sm font-semibold">{ley.aplica}</p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Calculadora */}
-      <section className="mx-auto w-full max-w-6xl scroll-mt-24 px-4 pt-24 sm:pt-32" id="calculadora">
-        <Reveal>
-          <h2 className="mx-auto max-w-3xl text-balance text-center font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-tight tracking-[-0.01em]">
-            Descubre tu potencial de pensión.
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-            Con solo 4 datos sabrás cuánto podrías estar recibiendo cada mes.
-          </p>
-        </Reveal>
-        <div className="mt-10">
+      {/* Calculadora (muerde el hero) */}
+      <section id="calculadora" className="relative -mt-16 scroll-mt-24 sm:-mt-20">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <PensionCalculator />
         </div>
       </section>
 
+      {/* Ley 73 vs Ley 97 */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
+        <Reveal>
+          <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>
+            ¿Ley 73 o Ley 97? Tu futuro depende de conocer la diferencia.
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+            La regla es una fecha: cuándo empezaste a cotizar al IMSS.
+          </p>
+        </Reveal>
+        <div className="mt-12 grid gap-5 lg:grid-cols-2">
+          {leyes.map((ley, i) => (
+            <Reveal key={ley.nombre} delay={i * 0.08} className="h-full">
+              <article
+                className={`flex h-full flex-col rounded-2xl p-7 sm:p-9 ${
+                  ley.navy ? "bg-ink text-white" : "card-shadow bg-card text-ink"
+                }`}
+              >
+                <span
+                  className={`inline-flex w-fit rounded-md px-2.5 py-1 text-[13px] font-bold uppercase tracking-wide ${
+                    ley.navy ? "bg-navy-2 text-muted-on-navy" : "bg-secondary text-primary-text"
+                  }`}
+                >
+                  {ley.chip}
+                </span>
+                <h3 className="mt-5 font-display text-3xl font-semibold">
+                  {ley.nombre}
+                  <span className={`block text-lg font-normal ${ley.navy ? "text-muted-on-navy" : "text-muted-foreground"}`}>
+                    {ley.lema}
+                  </span>
+                </h3>
+                <ul className={`mt-5 space-y-3 leading-relaxed ${ley.navy ? "text-muted-on-navy" : "text-foreground/85"}`}>
+                  {ley.puntos.map((p) => (
+                    <li key={p} className="flex items-start gap-2.5">
+                      <Plus aria-hidden className={`mt-1.5 size-4 shrink-0 ${ley.navy ? "text-primary" : "text-primary-text"}`} />
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-auto pt-6 text-[15px] font-bold">{ley.aplica}</p>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* Pensión garantizada */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:pt-32">
-        <div className="rounded-2xl bg-secondary px-6 py-14 sm:px-12 sm:py-16">
+      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
+        <div className="rounded-3xl bg-secondary px-6 py-14 sm:px-12 sm:py-16">
           <Reveal>
-            <h2 className="mx-auto max-w-3xl text-balance text-center font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-semibold leading-tight tracking-[-0.01em]">
-              ¿Sabes cuánto es la pensión garantizada en 2025?
+            <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>
+              ¿Sabes cuánto es la pensión garantizada?
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-              Si cotizas bajo la Ley 97 y tu ahorro no alcanza, el gobierno
-              garantiza una pensión mínima. La pregunta es si alcanza para vivir
-              con tranquilidad.
+              Si cotizas bajo la Ley 97 y tu ahorro no alcanza, el gobierno garantiza una pensión mínima.
+              La pregunta es si alcanza para vivir con tranquilidad.
             </p>
           </Reveal>
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="mt-10 grid gap-8 sm:grid-cols-3 sm:gap-4">
             {garantizada.map((g, i) => (
               <Reveal key={g.etiqueta} delay={i * 0.08}>
-                <div
-                  className={`rounded-xl p-6 text-center ${i === 1 ? "bg-ink text-white shadow-lg" : "border border-border bg-white"}`}
-                >
-                  <p className="font-display text-4xl font-semibold tracking-[-0.02em]">
+                <div className="text-center">
+                  <p className="inline-block border-b-[3px] border-accent pb-1 font-display text-4xl font-semibold tracking-[-0.02em] text-ink tabular-nums">
                     {g.monto}
                   </p>
-                  <p className={`mt-2 text-sm font-medium ${i === 1 ? "text-white/80" : "text-foreground/70"}`}>
-                    {g.etiqueta}
-                  </p>
-                  <p className={`text-xs ${i === 1 ? "text-white/60" : "text-muted-foreground"}`}>
-                    al mes
-                  </p>
+                  <p className="mt-3 text-[15px] font-bold text-ink">{g.etiqueta}</p>
+                  <p className="text-[15px] text-muted-foreground">al mes</p>
                 </div>
               </Reveal>
             ))}
           </div>
           <Reveal delay={0.2}>
-            <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-muted-foreground">
-              La mayoría de los trabajadores recibe alrededor de $6,000 al mes:
-              una cantidad difícil para cubrir vivienda, salud y alimentación.
-              Si aún no te pensionas, estás a tiempo de cambiar ese
-              número.
+            <p className="mx-auto mt-8 max-w-2xl text-center text-[15px] leading-relaxed text-muted-foreground">
+              La mayoría de los trabajadores recibe alrededor de $6,000 al mes: una cantidad difícil para
+              cubrir vivienda, salud y alimentación. Si aún no te pensionas, estás a tiempo de cambiar ese
+              número. Montos de referencia 2025; verifica el vigente con el IMSS.
             </p>
           </Reveal>
         </div>
       </section>
 
       {/* Estrategias */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:pt-32">
+      <section id="estrategias" className="mx-auto w-full max-w-6xl scroll-mt-24 px-4 pt-24 sm:px-6 sm:pt-32">
         <Reveal>
-          <h2 className="mx-auto max-w-3xl text-balance text-center font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-tight tracking-[-0.01em]">
-            Las estrategias que cambian el resultado.
-          </h2>
+          <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>Las estrategias que cambian el resultado.</h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-            Una pensión optimizada casi siempre se explica por lo mismo:
-            planeación con años de anticipación.
+            Una pensión optimizada casi siempre se explica por lo mismo: planeación con años de anticipación.
           </p>
         </Reveal>
         <div className="mx-auto mt-12 grid max-w-4xl gap-x-14 sm:grid-cols-2">
           {estrategias.map((e, i) => (
             <Reveal key={e.title} delay={i * 0.05}>
-              <div className="border-t border-border py-7">
-                <h3 className="font-display text-xl font-semibold">{e.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{e.body}</p>
+              <div className="flex gap-4 border-t border-border py-7">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary/12 font-display text-lg font-semibold text-primary-text">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="font-display text-xl font-semibold text-ink">{e.title}</h3>
+                  <p className="mt-2 leading-relaxed text-muted-foreground">{e.body}</p>
+                </div>
               </div>
             </Reveal>
           ))}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-24 sm:py-32">
+      {/* FAQ */}
+      <section id="preguntas" className="mx-auto w-full max-w-3xl scroll-mt-24 px-4 pt-24 sm:px-6 sm:pt-32">
         <Reveal>
-          <div className="group/cta relative overflow-hidden rounded-2xl bg-ink px-6 py-14 text-center sm:px-12 sm:py-18">
-            <div aria-hidden className="money-pattern absolute inset-0" />
+          <h2 className={`text-center ${h2}`}>Preguntas frecuentes</h2>
+        </Reveal>
+        <div className="mt-10 border-t border-border">
+          {faqs.map((f) => (
+            <details key={f.q} className="group border-b border-border">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg font-bold text-ink [&::-webkit-details-marker]:hidden">
+                {f.q}
+                <Plus aria-hidden className="size-5 shrink-0 text-primary-text transition-transform duration-150 group-open:rotate-45" />
+              </summary>
+              <p className="pb-6 leading-relaxed text-muted-foreground">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
+        <Reveal>
+          <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-14 text-center sm:px-12 sm:py-20">
+            <Curvas className="pointer-events-none absolute -bottom-3 right-0 w-[60%] max-w-2xl opacity-80" />
             <div className="relative">
-              <h2 className="mx-auto max-w-2xl text-balance font-display text-[clamp(2rem,4.5vw,3.1rem)] font-semibold leading-tight tracking-[-0.02em] text-white">
+              <h2 className="mx-auto max-w-2xl font-display text-[clamp(2rem,4.5vw,3.1rem)] font-semibold leading-tight tracking-[-0.02em] text-white">
                 Cada año cuenta. Empieza hoy.
               </h2>
-              <p className="mx-auto mt-4 max-w-md text-white/70">
-                Cuéntanos tu caso por WhatsApp y te decimos, sin costo, qué
-                estrategia aplica para ti y qué tan lejos puede llegar tu pensión.
+              <p className="mx-auto mt-4 max-w-md text-muted-on-navy">
+                Cuéntanos tu caso por WhatsApp y te decimos, sin costo, qué estrategia aplica para ti y qué
+                tan lejos puede llegar tu pensión.
               </p>
               <a
                 href={WA_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-8 inline-flex h-12 items-center rounded-full bg-white px-8 text-base font-semibold text-ink transition-colors duration-200 hover:bg-gold"
+                className="mt-8 inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-8 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
               >
+                <MessageCircle className="size-5" aria-hidden />
                 Platicar mi caso por WhatsApp
               </a>
-              <p className="mx-auto mt-6 max-w-md text-xs text-white/50">
-                Asesoría informativa. Los montos de esta página son estimaciones;
-                el dictamen final siempre lo emite el IMSS.
+              <p className="mx-auto mt-6 max-w-md text-[15px] text-white/60">
+                Asesoría informativa. Los montos de esta página son estimaciones; el dictamen final siempre
+                lo emite el IMSS.
               </p>
             </div>
           </div>
