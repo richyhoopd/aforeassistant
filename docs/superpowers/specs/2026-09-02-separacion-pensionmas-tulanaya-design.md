@@ -220,3 +220,13 @@ Botones: `transition-colors 150ms`. Todo bajo `prefers-reduced-motion: no-prefer
 - Cualquier cambio de marca, dominio o WhatsApp de tulanaya.
 - Captura de leads, analytics o pixel en la landing de Pensión+.
 - Rediseñar el contenido de la calculadora (fórmulas, tablas): se mueve, no se cambia.
+
+## Addendum 2026-09-03 — copy original y fotos
+
+Decisión de Ricardo durante la ejecución: la landing usa el copy LITERAL del Pensión+ original
+(`~/Work/inmobiliaria/lidfi/LIDFI-WEB`, extraído a `lidfi-copy.md` en el workspace de la sesión) en vez
+del copy condensado de `/pension`, y recupera las fotos de la última landing del repo
+(`persona-hero.png`, `asesoria-*.jpg`, `exito-whatsapp.jpg`, `avatar-1/2/3.jpg`, commit `21160b0`). El
+sitio original no tenía fotos propias (usaba Unsplash y Dreamstime); su único asset local era el logo PNG,
+que se sustituye por el logo tipográfico nuevo. Se agrega la tabla de pensión garantizada como
+`components/landing/TablaGarantizada.tsx`. Sección 2.3 queda superseded por el mapeo de Task 10b del plan.
