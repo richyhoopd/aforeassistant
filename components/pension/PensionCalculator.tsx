@@ -92,6 +92,15 @@ export function PensionCalculator() {
         </p>
       </noscript>
 
+      <div className="mb-8 text-center">
+        <h2 className="font-display text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-[1.12] tracking-[-0.01em] text-ink">
+          Descubre Tu Potencial de Pensión
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+          Con solo 4 datos, conoce cuánto podrías estar recibiendo de pensión
+        </p>
+      </div>
+
       <div className="flex justify-center">
         <div className="inline-flex w-full max-w-sm rounded-lg bg-secondary p-1" role="tablist" aria-label="Ley aplicable">
           {(
@@ -121,16 +130,16 @@ export function PensionCalculator() {
 
       <div className="mt-8 grid items-start gap-6 lg:grid-cols-2">
         {/* Formulario */}
-        <div role="tabpanel" id={f(`panel-${tab}`)} aria-labelledby={f(`tab-${tab}`)}>
-          {tab === "ley73" ? (
-            <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onCalcLey73() }} noValidate>
+        <div role="tabpanel" id={f("panel-ley73")} aria-labelledby={f("tab-ley73")} hidden={tab !== "ley73"}>
+          <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onCalcLey73() }} noValidate>
               <div>
-                <h3 className="font-display text-2xl font-semibold text-ink">Calculadora Ley 73</h3>
-                <p className={hintCls}>Con solo 4 datos sabrás cuánto podrías recibir cada mes.</p>
+                <h3 className="font-display text-2xl font-semibold text-ink">
+                  Calcula cuánto puede mejorar tu pensión
+                </h3>
               </div>
 
               <fieldset>
-                <legend className={labelCls}>Fecha de baja de tu último trabajo</legend>
+                <legend className={labelCls}>1) Fecha de baja de mi último trabajo</legend>
                 <div className="mt-1.5 flex gap-3">
                   <div className="flex-1">
                     <Label htmlFor={f("l73-mes")} className="text-[15px] text-muted-foreground">Mes</Label>
@@ -142,7 +151,7 @@ export function PensionCalculator() {
                   </div>
                   <div className="flex-1">
                     <Label htmlFor={f("l73-ano")} className="text-[15px] text-muted-foreground">Año</Label>
-                    <Input id={f("l73-ano")} type="number" inputMode="numeric" min={1970} max={2026} placeholder="AAAA"
+                    <Input id={f("l73-ano")} type="number" inputMode="numeric" min={1970} max={2026} placeholder="YYYY"
                       disabled={l73.currentlyWorking} value={l73.lastJobYear}
                       aria-invalid={!!e73.lastJobYear} aria-describedby={e73.lastJobYear ? f("e-l73-ano") : undefined}
                       onChange={(e) => setL73({ ...l73, lastJobYear: e.target.value })} className={inputCls} />
@@ -160,7 +169,7 @@ export function PensionCalculator() {
               </fieldset>
 
               <div>
-                <Label htmlFor={f("l73-salario")} className={labelCls}>Salario mensual (promedio de últimos 5 años)</Label>
+                <Label htmlFor={f("l73-salario")} className={labelCls}>2) Salario mensual (promedio de últimos 5 años)</Label>
                 <Input id={f("l73-salario")} type="number" inputMode="numeric" placeholder="$25,000" value={l73.monthlySalary}
                   aria-invalid={!!e73.monthlySalary} aria-describedby={e73.monthlySalary ? f("e-l73-salario") : undefined}
                   onChange={(e) => setL73({ ...l73, monthlySalary: e.target.value })} className={inputCls} />
@@ -168,16 +177,16 @@ export function PensionCalculator() {
               </div>
 
               <div>
-                <Label htmlFor={f("l73-semanas")} className={labelCls}>Semanas cotizadas</Label>
+                <Label htmlFor={f("l73-semanas")} className={labelCls}>3) Semanas cotizadas (52 semanas por año trabajado)</Label>
                 <Input id={f("l73-semanas")} type="number" inputMode="numeric" placeholder="1,300" value={l73.weeks}
                   aria-invalid={!!e73.weeks} aria-describedby={e73.weeks ? f("e-l73-semanas") : f("h-l73-semanas")}
                   onChange={(e) => setL73({ ...l73, weeks: e.target.value })} className={inputCls} />
-                <p id={f("h-l73-semanas")} className={hintCls}>Referencia: 25 años trabajados ≈ 1,300 semanas.</p>
+                <p id={f("h-l73-semanas")} className={hintCls}>Ejemplo: 25 años trabajados = 1,300 semanas</p>
                 <FieldError id={f("e-l73-semanas")} msg={e73.weeks} />
               </div>
 
               <div>
-                <Label htmlFor={f("l73-edad")} className={labelCls}>Edad actual</Label>
+                <Label htmlFor={f("l73-edad")} className={labelCls}>4) Edad actual</Label>
                 <Input id={f("l73-edad")} type="number" inputMode="numeric" placeholder="60" value={l73.age}
                   aria-invalid={!!e73.age} aria-describedby={e73.age ? f("e-l73-edad") : undefined}
                   onChange={(e) => setL73({ ...l73, age: e.target.value })} className={inputCls} />
@@ -185,17 +194,23 @@ export function PensionCalculator() {
               </div>
 
               <button type="submit" className={btnCls}>Calcular mi pensión estimada</button>
-            </form>
-          ) : (
-            <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onCalcLey97() }} noValidate>
+          </form>
+        </div>
+
+        <div role="tabpanel" id={f("panel-ley97")} aria-labelledby={f("tab-ley97")} hidden={tab !== "ley97"}>
+          <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onCalcLey97() }} noValidate>
               <div>
                 <h3 className="font-display text-2xl font-semibold text-ink">Calculadora Ley 97</h3>
-                <p className={hintCls}>Tu pensión depende del saldo que acumules en tu AFORE.</p>
+                <p className={hintCls}>Sistema de cuentas individuales AFORE</p>
+                <p className={hintCls}>
+                  Con la Ley 97, tu pensión depende del saldo acumulado en tu AFORE. A mayor ahorro y
+                  mejores rendimientos, mayor será tu pensión.
+                </p>
               </div>
 
               <div>
-                <Label htmlFor={f("l97-edad")} className={labelCls}>Edad actual</Label>
-                <Input id={f("l97-edad")} type="number" inputMode="numeric" placeholder="45" value={l97.edad}
+                <Label htmlFor={f("l97-edad")} className={labelCls}>¿Cuál es tu edad actual?</Label>
+                <Input id={f("l97-edad")} type="number" inputMode="numeric" placeholder="Ej: 45" value={l97.edad}
                   aria-invalid={!!e97.edad} aria-describedby={e97.edad ? f("e-l97-edad") : undefined}
                   onChange={(e) => setL97({ ...l97, edad: e.target.value })} className={inputCls} />
                 <FieldError id={f("e-l97-edad")} msg={e97.edad} />
@@ -203,7 +218,7 @@ export function PensionCalculator() {
 
               <div>
                 <Label htmlFor={f("l97-saldo")} className={labelCls}>Saldo actual en tu AFORE</Label>
-                <Input id={f("l97-saldo")} type="number" inputMode="numeric" placeholder="$350,000" value={l97.saldoAfore}
+                <Input id={f("l97-saldo")} type="number" inputMode="numeric" placeholder="Ej: 250000" value={l97.saldoAfore}
                   aria-invalid={!!e97.saldoAfore} aria-describedby={e97.saldoAfore ? f("e-l97-saldo") : f("h-l97-saldo")}
                   onChange={(e) => setL97({ ...l97, saldoAfore: e.target.value })} className={inputCls} />
                 <p id={f("h-l97-saldo")} className={hintCls}>Viene en tu estado de cuenta de AFORE.</p>
@@ -212,15 +227,15 @@ export function PensionCalculator() {
 
               <div>
                 <Label htmlFor={f("l97-salario")} className={labelCls}>Salario mensual actual</Label>
-                <Input id={f("l97-salario")} type="number" inputMode="numeric" placeholder="$25,000" value={l97.salarioMensual}
+                <Input id={f("l97-salario")} type="number" inputMode="numeric" placeholder="Ej: 15000" value={l97.salarioMensual}
                   aria-invalid={!!e97.salarioMensual} aria-describedby={e97.salarioMensual ? f("e-l97-salario") : undefined}
                   onChange={(e) => setL97({ ...l97, salarioMensual: e.target.value })} className={inputCls} />
                 <FieldError id={f("e-l97-salario")} msg={e97.salarioMensual} />
               </div>
 
               <div>
-                <Label htmlFor={f("l97-semanas")} className={labelCls}>Semanas cotizadas</Label>
-                <Input id={f("l97-semanas")} type="number" inputMode="numeric" placeholder="800" value={l97.semanas}
+                <Label htmlFor={f("l97-semanas")} className={labelCls}>Semanas cotizadas hasta hoy</Label>
+                <Input id={f("l97-semanas")} type="number" inputMode="numeric" placeholder="Ej: 520" value={l97.semanas}
                   aria-invalid={!!e97.semanas} aria-describedby={e97.semanas ? f("e-l97-semanas") : undefined}
                   onChange={(e) => setL97({ ...l97, semanas: e.target.value })} className={inputCls} />
                 <FieldError id={f("e-l97-semanas")} msg={e97.semanas} />
@@ -228,35 +243,37 @@ export function PensionCalculator() {
 
               <div className="flex flex-col gap-3 sm:flex-row">
                 <div className="flex-1">
-                  <Label htmlFor={f("l97-voluntarias")} className={labelCls}>Aportación voluntaria mensual</Label>
-                  <Input id={f("l97-voluntarias")} type="number" inputMode="numeric" placeholder="$0" value={l97.aportaciones}
+                  <Label htmlFor={f("l97-voluntarias")} className={labelCls}>Aportaciones voluntarias mensuales (opcional)</Label>
+                  <Input id={f("l97-voluntarias")} type="number" inputMode="numeric" placeholder="Ej: 1000" value={l97.aportaciones}
                     onChange={(e) => setL97({ ...l97, aportaciones: e.target.value })} className={inputCls} />
                 </div>
                 <div className="sm:w-48">
-                  <Label htmlFor={f("l97-rendimiento")} className={labelCls}>Rendimiento anual</Label>
+                  <Label htmlFor={f("l97-rendimiento")} className={labelCls}>Rendimiento anual esperado (%)</Label>
                   <select
                     id={f("l97-rendimiento")}
                     value={l97.rendimiento}
                     onChange={(e) => setL97({ ...l97, rendimiento: e.target.value })}
                     className="mt-1.5 h-12 w-full rounded-lg border-0 bg-secondary px-3 text-base text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
-                    <option value="3">3% conservador</option>
-                    <option value="5">5% moderado</option>
-                    <option value="7">7% optimista</option>
+                    <option value="3">3% - Conservador</option>
+                    <option value="5">5% - Moderado (Recomendado)</option>
+                    <option value="7">7% - Agresivo</option>
                   </select>
                 </div>
               </div>
 
-              <button type="submit" className={btnCls}>Proyectar mi pensión</button>
-            </form>
-          )}
+              <button type="submit" className={btnCls}>Calcular Mi Pensión Ley 97</button>
+          </form>
         </div>
 
         {/* Resultado */}
         <div className="lg:sticky lg:top-24" aria-live="polite">
           {tab === "ley73" ? (
             r73 === null ? (
-              <ResultPlaceholder text="Llena tus datos y calcula: aquí verás tu pensión mensual estimada bajo la Ley 73." />
+              <ResultPlaceholder
+                title="Resultados"
+                text="Completa el formulario para descubrir tu potencial de pensión"
+              />
             ) : (
               <ResultPanel key={JSON.stringify(r73)}>
                 {!r73.hasRights || r73.fewWeeks ? (
@@ -276,28 +293,34 @@ export function PensionCalculator() {
                   </div>
                 ) : (
                   <div>
-                    <p className="text-[15px] font-semibold text-muted-on-navy">Pensión mensual estimada (Ley 73)</p>
+                    <h4 className="font-display text-2xl font-semibold text-white">Resultados de tu cálculo</h4>
+                    <p className="mt-4 text-[15px] font-semibold text-muted-on-navy">➡️ Pensión calculada</p>
                     <p className="mt-2 font-display text-[clamp(2.5rem,8vw,3.5rem)] font-semibold leading-none tracking-[-0.02em] text-accent tabular-nums">
                       {mxn.format(r73.normal)}
                     </p>
+                    <p className="mt-2 text-[15px] text-muted-on-navy">mensuales</p>
                     {r73.underAge && (
                       <p className="mt-3 text-[15px] text-muted-on-navy">
                         Calculada como si te pensionaras a los 60 años (la edad mínima para solicitarla).
                       </p>
                     )}
                     <p className="mt-4 leading-relaxed text-muted-on-navy">
-                      Se calculó con un <strong className="text-white">{r73.basePercentage.toFixed(2)}%</strong> sobre tu
-                      salario promedio y un factor por edad de retiro del{" "}
-                      <strong className="text-white">{(r73.ageFactor * 100).toFixed(0)}%</strong>.
+                      ✅ Porcentaje base por semanas:{" "}
+                      <strong className="text-white">{r73.basePercentage.toFixed(2)}%</strong>
+                    </p>
+                    <p className="mt-1 leading-relaxed text-muted-on-navy">
+                      ✅ Factor aplicado por edad:{" "}
+                      <strong className="text-white">{(r73.ageFactor * 100).toFixed(0)}%</strong>
                     </p>
                     <div className="mt-5 rounded-xl bg-navy-2 p-4">
                       <p className="flex items-center gap-2 text-[15px] font-bold text-white">
                         <TrendingUp className="size-4 text-primary" aria-hidden />
-                        Con estrategias de optimización podría llegar hasta
+                        Con asesoría de PENSION+ podrías pensionarte con:
                       </p>
                       <p className="mt-1 font-display text-3xl font-semibold text-white tabular-nums">
                         {mxn.format(r73.optimized)}
                       </p>
+                      <p className="mt-1 text-[15px] text-muted-on-navy">mensuales de por vida</p>
                       <p className="mt-2 text-[15px] text-muted-on-navy">
                         Estimación ilustrativa con estrategias como Modalidad 40 y asignaciones familiares. El
                         resultado depende de tu caso y del dictamen del IMSS.
@@ -309,36 +332,60 @@ export function PensionCalculator() {
               </ResultPanel>
             )
           ) : r97 === null ? (
-            <ResultPlaceholder text="Llena tus datos y proyecta: aquí verás tu saldo estimado a los 65 años y la pensión mensual que alcanzaría." />
+            <ResultPlaceholder
+              title="Ingresa tus datos para ver tu proyección"
+              text="Tu pension dependera exclusivamente del saldo acumulado en tu cuenta de Afore"
+            />
           ) : (
             <ResultPanel key={JSON.stringify(r97)}>
-              <p className="text-[15px] font-semibold text-muted-on-navy">Pensión mensual estimada (Ley 97, a los 65 años)</p>
+              <h4 className="font-display text-2xl font-semibold text-white">Tu Proyección Ley 97</h4>
+              <p className="mt-4 text-[15px] font-semibold uppercase tracking-wide text-muted-on-navy">
+                Pensión mensual estimada
+              </p>
               <p className="mt-2 font-display text-[clamp(2.5rem,8vw,3.5rem)] font-semibold leading-none tracking-[-0.02em] text-accent tabular-nums">
                 {mxn.format(r97.pensionEstimada)}
               </p>
-              <dl className="mt-5 space-y-2 text-[15px]">
-                <div className="flex justify-between gap-4">
-                  <dt className="text-muted-on-navy">Saldo proyectado en tu AFORE</dt>
-                  <dd className="font-bold text-white tabular-nums">{mxn.format(r97.saldoProyectado)}</dd>
+              <p className="mt-2 text-[15px] text-muted-on-navy">Modalidad: {r97.modalidad}</p>
+              <p className="mt-5 text-[15px] font-semibold uppercase tracking-wide text-muted-on-navy">
+                Saldo AFORE a los 65 años
+              </p>
+              <p className="mt-1 font-display text-3xl font-semibold text-white tabular-nums">
+                {mxn.format(r97.saldoProyectado)}
+              </p>
+              <p className="mt-1 text-[15px] text-muted-on-navy">En {r97.añosParaRetiro} años</p>
+              {r97.cumpleSemanas ? (
+                <div className="mt-5 rounded-xl bg-navy-2 p-4">
+                  <p className="flex items-center gap-2 text-[15px] font-bold text-white">
+                    <CheckCircle2 className="size-5 shrink-0 text-primary" aria-hidden />
+                    Recomendaciones para mejorar tu pensión
+                  </p>
+                  <ul className="mt-3 space-y-2 text-[15px] text-muted-on-navy">
+                    <li>Contrata un Plan Personal de Retiro (P.P.R)</li>
+                    <li>Cambia a una AFORE con mejores rendimientos</li>
+                    <li>Mantén tu empleo formal para seguir cotizando</li>
+                  </ul>
                 </div>
-                <div className="flex justify-between gap-4">
-                  <dt className="text-muted-on-navy">Modalidad sugerida</dt>
-                  <dd className="font-bold text-white">{r97.modalidad}</dd>
+              ) : (
+                <div className="mt-5 rounded-xl bg-navy-2 p-4">
+                  <p className="flex items-center gap-2 text-[15px] font-bold text-white">
+                    <AlertCircle className="size-5 shrink-0 text-accent" aria-hidden />
+                    Atención Requerida
+                  </p>
+                  <p className="mt-2 text-[15px] text-muted-on-navy">
+                    ⚠️ Atención: No cumplirás las 850 semanas mínimas requeridas
+                  </p>
+                  <p className="mt-2 text-[15px] text-muted-on-navy">
+                    Es importante que aumentes tus semanas cotizadas o consideres estrategias
+                    alternativas para asegurar tu retiro.
+                  </p>
                 </div>
-                <div className="flex justify-between gap-4">
-                  <dt className="text-muted-on-navy">Años para tu retiro</dt>
-                  <dd className="font-bold text-white tabular-nums">{r97.añosParaRetiro}</dd>
-                </div>
-              </dl>
-              <p className="mt-4 flex items-start gap-2 rounded-xl bg-navy-2 p-4 text-[15px] text-muted-on-navy">
-                {r97.cumpleSemanas ? (
-                  <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
-                ) : (
-                  <AlertCircle className="mt-0.5 size-5 shrink-0 text-accent" aria-hidden />
-                )}
-                {r97.cumpleSemanas
-                  ? "Vas en camino de cumplir las semanas mínimas. Las aportaciones voluntarias y un mejor rendimiento pueden cambiar mucho el resultado final."
-                  : "Con tu ritmo actual no alcanzarías las 850 semanas mínimas que pide la Ley 97. Se puede corregir a tiempo: platícanos tu caso."}
+              )}
+              <p className="mt-5 font-display text-xl font-semibold text-white">
+                ¿Quieres maximizar tu pensión?
+              </p>
+              <p className="mt-2 text-[15px] leading-relaxed text-muted-on-navy">
+                Nuestros expertos pueden ayudarte a diseñar una estrategia personalizada para aumentar
+                tu pensión hasta un 40%
               </p>
               <WaLink />
             </ResultPanel>
@@ -362,10 +409,11 @@ function ResultPanel({ children }: { children: React.ReactNode }) {
   )
 }
 
-function ResultPlaceholder({ text }: { text: string }) {
+function ResultPlaceholder({ title, text }: { title: string; text: string }) {
   return (
-    <div className="flex min-h-64 items-center justify-center rounded-2xl bg-secondary p-8">
-      <p className="max-w-xs text-center text-muted-foreground">{text}</p>
+    <div className="flex min-h-64 flex-col items-center justify-center rounded-2xl bg-secondary p-8">
+      <h3 className="font-display text-2xl font-semibold text-ink">{title}</h3>
+      <p className="mt-3 max-w-xs text-center text-muted-foreground">{text}</p>
     </div>
   )
 }
@@ -379,7 +427,7 @@ function WaLink() {
       className="mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-4 text-[15px] font-bold text-primary-foreground transition-colors duration-150 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
     >
       <MessageCircle className="size-4" aria-hidden />
-      Platicar mi caso
+      Quiero maximizar mi pensión
     </a>
   )
 }

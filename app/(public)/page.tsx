@@ -1,190 +1,348 @@
-import { MessageCircle, Plus } from "lucide-react"
+import Image from "next/image"
+import { AlertTriangle, Clock, MessageCircle, Plus, Shield, TrendingUp } from "lucide-react"
 import { Curvas } from "@/components/brand/Curvas"
+import { HeroShowcase } from "@/components/landing/HeroShowcase"
 import { Reveal } from "@/components/landing/Reveal"
+import { TablaGarantizada } from "@/components/landing/TablaGarantizada"
 import { PensionCalculator } from "@/components/pension/PensionCalculator"
 import { WA_LINK } from "@/lib/site"
 
+const features = [
+  {
+    icon: Shield,
+    title: "Estrategia Personalizada",
+    body: "Cada situación es única. Diseñamos el plan perfecto para tu perfil.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Maximiza tu Pensión",
+    body: "Aumenta hasta 300% tu pensión con las estrategias correctas.",
+  },
+  {
+    icon: Clock,
+    title: "El Momento Es Ahora",
+    body: "Cada día que esperas, pierdes oportunidades de optimización.",
+  },
+]
+
 const leyes = [
   {
-    nombre: "Ley 73",
-    lema: "La oportunidad dorada",
-    chip: "Antes de julio de 1997",
-    aplica: "Aplica si comenzaste a cotizar antes del 1 de julio de 1997.",
+    titulo: "🌟 Ley 73 - La Oportunidad Dorada",
     navy: true,
     puntos: [
       "Pensión vitalicia garantizada por el Estado",
       "Solo 500 semanas cotizadas requeridas",
       "Aguinaldo anual incluido",
-      "Basada en el promedio salarial de tus últimos 5 años",
+      "Basada en promedio de últimos 5 años",
     ],
+    nota: "Aplica si comenzaste a cotizar antes del 1 julio 1997",
   },
   {
-    nombre: "Ley 97",
-    lema: "Tu esfuerzo, tu recompensa",
-    chip: "Después de julio de 1997",
-    aplica: "Aplica si comenzaste a cotizar después del 1 de julio de 1997.",
+    titulo: "📊 Ley 97 - Tu Esfuerzo, Tu Recompensa",
     navy: false,
     puntos: [
-      "Pensión basada en el saldo de tu AFORE",
-      "850 semanas requeridas en 2025 (aumenta cada año)",
+      "Pensión basada en tu AFORE",
+      "850 semanas en 2025 (aumenta cada año)",
       "Renta vitalicia o retiro programado",
-      "Depende de los rendimientos de inversión",
+      "Depende de rendimientos de inversión",
     ],
+    nota: "Aplica si comenzaste a cotizar después del 1 julio 1997",
   },
 ]
 
 const garantizada = [
-  { monto: "$3,414", etiqueta: "Pensión mínima" },
-  { monto: "$6,000", etiqueta: "Promedio nacional" },
-  { monto: "$10,732", etiqueta: "Pensión máxima" },
+  { monto: "$3,414", etiqueta: "Pensión Mínima" },
+  { monto: "$6,000", etiqueta: "Promedio Nacional" },
+  { monto: "$10,732", etiqueta: "Pensión Máxima" },
+]
+
+const ahorro40 = [
+  "💰 Solo $2,000 pesos mensuales - menos que una salida al restaurante",
+  "📈 Rendimientos compuestos trabajando para ti por 25 años",
+  "🏖️ Retírate con tranquilidad financiera y disfruta tu vejez",
+  "🛡️ Protege a tu familia con un seguro de vida",
+]
+
+const ahorro30 = [
+  { fuerte: "⏰ Solo 10 años de ahorro", resto: " - Del año 30 al 40 de tu vida" },
+  { fuerte: "🚀 Efecto multiplicador", resto: " - Tu dinero crece exponencialmente con el tiempo" },
+  { fuerte: "🎯 Inversión total:", resto: " $360,000 se convierten en +$1,225,000" },
+  { fuerte: "✨ Libertad financiera", resto: " - Retírate antes de los 65 si lo deseas" },
+]
+
+const causas = [
+  "Desinformación sobre derechos",
+  "Complejidad de trámites",
+  "Pérdida de vigencia de derechos",
 ]
 
 const estrategias = [
   {
-    title: "Modalidad 40",
-    body: "Sigue cotizando de forma voluntaria para subir tu salario base y sumar semanas. Bien planeada, es de las inversiones más rentables que existen para tu pensión.",
+    title: "Modalidad 40: Tu Inversión Más Rentable",
+    body: "Continúa cotizando voluntariamente para aumentar tu salario base de cotización.",
+    puntos: [
+      "Aumenta tu promedio salarial",
+      "Suma semanas adicionales",
+      "ROI extraordinario a largo plazo",
+      "Hasta 25 UMAs de cotización",
+    ],
   },
   {
-    title: "Asignaciones familiares",
-    body: "Un derecho poco conocido: por cónyuge, hijos menores o ascendientes dependientes tu pensión puede aumentar hasta 25%, de forma permanente.",
+    title: "Asignaciones Familiares +25%",
+    body: "Derecho poco conocido que puede aumentar tu pensión hasta 25%.",
+    puntos: [
+      "Por cónyuge dependiente",
+      "Por hijos menores",
+      "Por ascendientes dependientes",
+      "Incremento permanente",
+    ],
+  },
+]
+
+const testimonios = [
+  {
+    nombre: "MARIA DEL ROSARIO CORONA MORALES",
+    texto:
+      "Gracias a PENSION+ logré una pensión de $26,639.00. Tenía dos años sin cotizar, llegué con ellos y no solo me pensioné sino que también me financiaron la MOD 40 y tengo una pensión digna.",
+    avatar: "/images/avatar-1.jpg",
+    alt: "Retrato de una mujer mayor sonriendo",
   },
   {
-    title: "Ahorro voluntario",
-    body: "Aportaciones voluntarias a tu AFORE con interés compuesto a tu favor. Cada año que empiezas antes cambia el resultado final.",
+    nombre: "RAMON HERNANDEZ OCHOA",
+    texto:
+      "Gracias a que me acerqué con tiempo a PENSION+, me asesoraron y me llevaron de la mano para alcanzar una pensión de $30,036.00. Una buena pensión sí es posible.",
+    avatar: "/images/avatar-2.jpg",
+    alt: "Retrato de un hombre sonriendo",
   },
   {
-    title: "Elegir bien tu momento",
-    body: "Pensionarte a los 60 o a los 65 cambia tu pensión hasta 25%. También importa no perder la vigencia de derechos: eso se planea con años de anticipación.",
+    nombre: "MARIA MAGDALENA MARTINEZ",
+    texto:
+      "Gracias a PENSION+ me pude pensionar ya que tenía muchos años sin cotizar y con su ayuda pude pensionarme, recuperé mis derechos y ya disfruto de una pensión.",
+    avatar: "/images/avatar-3.jpg",
+    alt: "Retrato de una mujer hablando por teléfono",
   },
 ]
 
 const faqs = [
   {
-    q: "¿La calculadora es exacta?",
-    a: "No. Es una estimación con las reglas generales del IMSS. El monto real depende de tu historial exacto, la vigencia de tus derechos y el dictamen oficial.",
+    q: "¿Cómo sé si me corresponde la Ley 73 o la Ley 97?",
+    a: "Ley 73: Si te diste de alta en el IMSS antes del 1 de julio de 1997. Ley 97: Si comenzaste a cotizar a partir del 1 de julio de 1997.",
   },
   {
-    q: "¿Cómo sé si soy Ley 73 o Ley 97?",
-    a: "Por la fecha en que empezaste a cotizar al IMSS: antes del 1 de julio de 1997 eres Ley 73; después, Ley 97. Lo confirmas en tu constancia de semanas cotizadas.",
+    q: "¿Cómo se calcula la pensión en cada ley?",
+    a: "Ley 73: Se basa en el salario promedio de los últimos 5 años y el número de semanas cotizadas. Ley 97: Depende del ahorro acumulado en tu AFORE, los rendimientos y aportaciones voluntarias.",
   },
   {
-    q: "¿Qué es la Modalidad 40?",
-    a: "Un esquema del IMSS para seguir cotizando por tu cuenta después de dejar un empleo, con el salario que elijas dentro de los topes. Sirve para subir el promedio salarial y sumar semanas.",
+    q: "¿Cuántas semanas necesito cotizar?",
+    a: "Ley 73: Mínimo 500 semanas cotizadas. Ley 97: En 2025 se requieren 850 semanas, aumentando progresivamente hasta 1,000 semanas en 2031.",
   },
   {
-    q: "¿Cobran por la asesoría inicial?",
-    a: "No. Platicar tu caso por WhatsApp no tiene costo. Si hay una estrategia que aplique para ti, te explicamos en qué consiste y qué implica antes de que decidas nada.",
+    q: "¿Cuál es la edad mínima para pensionarse?",
+    a: "Cesantía en edad avanzada: Desde los 60 años. Vejez: A partir de los 65 años (aplica para ambas leyes).",
   },
   {
-    q: "¿Ustedes son el IMSS o una AFORE?",
-    a: "No. Somos un servicio privado de asesoría. No tenemos vínculo con el IMSS, CONSAR ni ninguna AFORE.",
+    q: "¿Si tengo más de 500 semanas me puedo pensionar aunque no tenga 60 años de edad?",
+    a: "No, porque un requisito es la edad.",
+  },
+  {
+    q: "¿Me conviene invertirle a mi modalidad 40 si tengo menos de 1300 semanas?",
+    a: "No, porque para el IMSS 500 semanas es un requisito y de ahí incrementa hasta un 2-2.5% más por año trabajado.",
+  },
+  {
+    q: "¿Me puedo pensionar si tengo más de 6 años sin cotizar aunque tenga más de 60 años y más de 500 semanas cotizadas?",
+    a: "No, el IMSS contempla un requisito que se llama vigencia de derechos, que si un trabajador deja de cotizar más de 6 años para pensionarse tiene que cotizar un año obrero patronal.",
+  },
+  {
+    q: "¿Puedo mejorar mi pensión?",
+    a: "Sí, con estrategias como: Modalidad 40 (Ley 73): Permite seguir cotizando voluntariamente. Aportaciones voluntarias a tu AFORE (Ley 97). Plan privado de pensión (PPR).",
+  },
+  {
+    q: "¿Dónde puedo consultar mis semanas cotizadas?",
+    a: "En el portal del IMSS: Consulta de semanas cotizadas. Necesitas tu CURP, NSS y correo electrónico.",
+  },
+  {
+    q: "¿Si me cambio de AFORE pierdo semanas?",
+    a: "No, no tiene relación el cambio de AFORE con las semanas cotizadas.",
+  },
+  {
+    q: "¿Si me cambio de AFORE pierdo dinero?",
+    a: "No, aunque es cierto que puede haber minusvalía. Si al cambio de AFORE aparece menos, es porque tu AFORE anterior tuvo minusvalía y tomaste una buena decisión al cambiarte. Porque en tu AFORE que te acabas de cambiar no tenía tu dinero no pudo haber invertido mal.",
+  },
+  {
+    q: "¿Cuál es la diferencia entre Ley 73 y Ley 97?",
+    a: "La Ley 73 garantiza una pensión basada en tu salario promedio de los últimos 5 años y las semanas cotizadas, mientras que la Ley 97 depende del saldo acumulado en tu AFORE. Para muchas personas, la Ley 73 ofrece pensiones más altas, especialmente si cotizaron antes de 1997.",
+  },
+  {
+    q: "¿Qué es la Modalidad 40 y cómo me beneficia?",
+    a: "La Modalidad 40 te permite seguir cotizando voluntariamente al IMSS después de dejar de trabajar. Esto te ayuda a aumentar tu salario promedio de cotización y obtener más semanas, lo que resulta en una pensión más alta. Es especialmente útil para optimizar tu pensión antes del retiro.",
+  },
+  {
+    q: "¿Cuánto tiempo toma el proceso de optimización de pensión?",
+    a: "El proceso típicamente toma entre 3 a 6 meses, dependiendo de tu situación particular. Incluye la revisión de tu historial laboral, identificación de semanas no reconocidas, trámites ante el IMSS, y la implementación de estrategias como Modalidad 40 si es necesario.",
+  },
+  {
+    q: "¿Puedo recuperar semanas cotizadas no reconocidas por el IMSS?",
+    a: "Sí, es muy común que el IMSS no tenga registradas todas las semanas que trabajaste. Nuestro equipo se especializa en identificar y recuperar estas semanas perdidas a través de la documentación adecuada y los trámites correspondientes ante el Instituto.",
+  },
+  {
+    q: "¿Qué documentos necesito para iniciar mi asesoría?",
+    a: "Necesitarás tu NSS (Número de Seguridad Social), estados de cuenta del IMSS de los últimos años, comprobantes de trabajo, y cualquier documentación laboral que tengas. Nuestro equipo te guiará sobre qué documentos específicos necesitas según tu caso particular.",
+  },
+]
+
+const contactoFinal = [
+  {
+    title: "Consulta Gratuita",
+    body: "30 minutos para evaluar tu situación y diseñar tu estrategia",
+    cta: "Llamar ahora",
+  },
+  {
+    title: "Agendar Cita",
+    body: "Reunión presencial u online en el horario que prefieras",
+    cta: "Agendar",
+  },
+  {
+    title: "WhatsApp",
+    body: "Resuelve tus dudas inmediatamente por mensaje",
+    cta: "Escribir",
   },
 ]
 
 const h2 = "font-display text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-[1.12] tracking-[-0.01em] text-ink"
+const h2Navy = "font-display text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-[1.12] tracking-[-0.01em] text-white"
+const btnTeal =
+  "inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-6 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-ring hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+const btnTealOnNavy =
+  "inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-6 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
 
 export default function HomePage() {
   return (
     <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-ink pb-28 pt-16 text-white sm:pb-36 sm:pt-24">
-        <Curvas animate className="pointer-events-none absolute -bottom-4 right-0 w-[70%] max-w-4xl" />
-        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <div className="anim-rise max-w-3xl">
-            <h1 className="font-display text-[clamp(2.25rem,6vw,3.5rem)] font-semibold leading-[1.08] tracking-[-0.02em]">
-              Tu pensión puede ser más grande de lo que crees.
-            </h1>
-          </div>
-          <div className="anim-rise max-w-xl" style={{ "--rise-delay": "0.08s" } as React.CSSProperties}>
-            <p className="mt-6 text-lg text-muted-on-navy">
-              El 70% de los adultos mayores en México no recibe pensión, casi siempre por desinformación,
-              trámites complejos o pérdida de derechos. Calcula la tuya y descubre cuánto margen tienes
-              para mejorarla.
-            </p>
-          </div>
-          <div className="anim-rise mt-8 flex flex-wrap items-center gap-4" style={{ "--rise-delay": "0.16s" } as React.CSSProperties}>
-            <a
-              href="#calculadora"
-              className="inline-flex h-12 items-center rounded-lg bg-primary px-6 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+      {/* 2. Hero */}
+      <section className="relative overflow-hidden bg-ink pb-16 pt-10 text-white sm:pb-20 sm:pt-12">
+        <Curvas
+          animate
+          className="pointer-events-none absolute bottom-0 right-0 w-[60%] max-w-2xl opacity-25"
+        />
+        <div className="relative mx-auto grid w-full max-w-6xl items-end gap-8 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.25fr] lg:gap-10">
+          <div className="lg:self-center">
+            <div className="anim-rise">
+              <h1 className="font-display text-[clamp(2rem,4.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em]">
+                Tu Retiro No Es Casualidad, <span className="text-primary">Es Estrategia</span>
+              </h1>
+            </div>
+            <div className="anim-rise max-w-lg" style={{ "--rise-delay": "0.08s" } as React.CSSProperties}>
+              <p className="mt-4 text-[17px] text-muted-on-navy">
+                Maximiza tu pensión y asegura un futuro digno. El 70% de los mexicanos no recibe
+                pensión, tú puedes ser diferente.
+              </p>
+            </div>
+            <div
+              className="anim-rise mt-6 flex flex-wrap items-center gap-4"
+              style={{ "--rise-delay": "0.16s" } as React.CSSProperties}
             >
-              Calcular mi pensión
-            </a>
-            <a
-              href={WA_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-12 items-center gap-2 text-base font-semibold text-white underline decoration-primary decoration-2 underline-offset-4 hover:decoration-white"
-            >
-              <MessageCircle className="size-5 text-primary" aria-hidden />
-              Platicar mi caso
-            </a>
+              <a href="#calculadora" className={btnTealOnNavy}>
+                Calcular mi pension ahora
+              </a>
+              <a
+                href={WA_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-12 items-center gap-2 text-base font-semibold text-white underline decoration-primary decoration-2 underline-offset-4 hover:decoration-white"
+              >
+                <MessageCircle className="size-5 text-primary" aria-hidden />
+                Agendar asesoria gratuita
+              </a>
+            </div>
+          </div>
+          <div className="anim-rise" style={{ "--rise-delay": "0.24s" } as React.CSSProperties}>
+            <HeroShowcase />
           </div>
         </div>
       </section>
 
-      {/* Calculadora (muerde el hero) */}
-      <section id="calculadora" className="relative -mt-16 scroll-mt-24 sm:-mt-20">
+      {/* 6. Calculadora (muerde el hero) */}
+      <section id="calculadora" className="relative z-10 -mt-16 scroll-mt-24 sm:-mt-20">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <PensionCalculator />
         </div>
       </section>
 
-      {/* Ley 73 vs Ley 97 */}
+      {/* 3. Features */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
+        <div className="grid gap-10 sm:grid-cols-3">
+          {features.map((f, i) => (
+            <Reveal key={f.title} delay={i * 0.08}>
+              <div>
+                <span className="flex size-14 items-center justify-center rounded-xl bg-primary/12 text-primary-text">
+                  <f.icon className="size-7" aria-hidden />
+                </span>
+                <h3 className="mt-5 font-display text-xl font-semibold text-ink">{f.title}</h3>
+                <p className="mt-2 leading-relaxed text-muted-foreground">{f.body}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* 4. Ley 73 vs Ley 97 */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
         <Reveal>
           <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>
-            ¿Ley 73 o Ley 97? Tu futuro depende de conocer la diferencia.
+            Ley 73 vs Ley 97: <span className="text-primary-text">Tu Futuro</span> Depende de Conocer
+            la Diferencia
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-            La regla es una fecha: cuándo empezaste a cotizar al IMSS.
-          </p>
         </Reveal>
         <div className="mt-12 grid gap-5 lg:grid-cols-2">
           {leyes.map((ley, i) => (
-            <Reveal key={ley.nombre} delay={i * 0.08} className="h-full">
+            <Reveal key={ley.titulo} delay={i * 0.08} className="h-full">
               <article
                 className={`flex h-full flex-col rounded-2xl p-7 sm:p-9 ${
                   ley.navy ? "bg-ink text-white" : "card-shadow bg-card text-ink"
                 }`}
               >
-                <span
-                  className={`inline-flex w-fit rounded-md px-2.5 py-1 text-[13px] font-bold uppercase tracking-wide ${
-                    ley.navy ? "bg-navy-2 text-muted-on-navy" : "bg-secondary text-primary-text"
+                <h3 className="font-display text-2xl font-semibold">{ley.titulo}</h3>
+                <ul
+                  className={`mt-5 space-y-3 leading-relaxed ${
+                    ley.navy ? "text-muted-on-navy" : "text-foreground/85"
                   }`}
                 >
-                  {ley.chip}
-                </span>
-                <h3 className="mt-5 font-display text-3xl font-semibold">
-                  {ley.nombre}
-                  <span className={`block text-lg font-normal ${ley.navy ? "text-muted-on-navy" : "text-muted-foreground"}`}>
-                    {ley.lema}
-                  </span>
-                </h3>
-                <ul className={`mt-5 space-y-3 leading-relaxed ${ley.navy ? "text-muted-on-navy" : "text-foreground/85"}`}>
                   {ley.puntos.map((p) => (
                     <li key={p} className="flex items-start gap-2.5">
-                      <Plus aria-hidden className={`mt-1.5 size-4 shrink-0 ${ley.navy ? "text-primary" : "text-primary-text"}`} />
+                      <Plus
+                        aria-hidden
+                        className={`mt-1.5 size-4 shrink-0 ${ley.navy ? "text-primary" : "text-primary-text"}`}
+                      />
                       {p}
                     </li>
                   ))}
                 </ul>
-                <p className="mt-auto pt-6 text-[15px] font-bold">{ley.aplica}</p>
+                <p className="mt-auto pt-6 text-[15px] font-bold">{ley.nota}</p>
               </article>
             </Reveal>
           ))}
         </div>
       </section>
 
-      {/* Pensión garantizada */}
+      {/* 5. Pensión Garantizada 2025 */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
         <div className="rounded-3xl bg-secondary px-6 py-14 sm:px-12 sm:py-16">
           <Reveal>
             <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>
-              ¿Sabes cuánto es la pensión garantizada?
+              Sabes Cuánto Es Tu Pensión Garantizada en 2025?
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-              Si cotizas bajo la Ley 97 y tu ahorro no alcanza, el gobierno garantiza una pensión mínima.
-              La pregunta es si alcanza para vivir con tranquilidad.
+              Si cotizas bajo la <strong className="font-bold text-ink">Ley 97 del IMSS</strong> y no
+              alcanzas el ahorro suficiente en tu AFORE, el gobierno te garantiza una pensión mínima.
+              Pero… ¿es suficiente para vivir con tranquilidad?
+            </p>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <h3 className="mt-12 text-center font-display text-2xl font-semibold text-ink">
+              Montos de la Pensión Garantizada 2025
+            </h3>
+            <p className="mt-3 text-center text-[15px] text-muted-foreground">
+              Los montos dependen de tu edad, semanas cotizadas y salario base.
             </p>
           </Reveal>
           <div className="mt-10 grid gap-8 sm:grid-cols-3 sm:gap-4">
@@ -195,27 +353,177 @@ export default function HomePage() {
                     {g.monto}
                   </p>
                   <p className="mt-3 text-[15px] font-bold text-ink">{g.etiqueta}</p>
-                  <p className="text-[15px] text-muted-foreground">al mes</p>
                 </div>
               </Reveal>
             ))}
           </div>
           <Reveal delay={0.2}>
-            <p className="mx-auto mt-8 max-w-2xl text-center text-[15px] leading-relaxed text-muted-foreground">
-              La mayoría de los trabajadores recibe alrededor de $6,000 al mes: una cantidad difícil para
-              cubrir vivienda, salud y alimentación. Si aún no te pensionas, estás a tiempo de cambiar ese
-              número. Montos de referencia 2025; verifica el vigente con el IMSS.
+            <p className="mx-auto mt-10 max-w-3xl text-center leading-relaxed text-muted-foreground">
+              La <strong className="font-bold text-ink">Pensión Mínima Garantizada</strong> bajo la Ley
+              97 asegura un ingreso mensual entre{" "}
+              <strong className="font-bold text-ink">$3,414 y $10,732</strong> pesos. Sin embargo, la
+              mayoría de los trabajadores recibe alrededor de{" "}
+              <strong className="font-bold text-ink">$6,000</strong> al mes, una cantidad insuficiente
+              para cubrir gastos básicos de vivienda, salud y alimentación.
             </p>
+            <div className="mx-auto mt-8 max-w-3xl rounded-2xl bg-accent/25 p-6 text-ink">
+              <p className="font-display text-xl font-semibold">
+                ⚠️ Aún estás a tiempo de mejorar tu futuro financiero.
+              </p>
+              <p className="mt-2 leading-relaxed">
+                Optimiza tu AFORE, realiza aportaciones voluntarias o explora la{" "}
+                <strong className="font-bold">Modalidad 40</strong> antes de llegar a la edad de
+                retiro. Cada año cuenta.
+              </p>
+            </div>
           </Reveal>
         </div>
       </section>
 
-      {/* Estrategias */}
+      {/* 7. Tabla de pensión garantizada */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
+        <Reveal>
+          <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>Selecciona tu rango de UMA</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+            Encuentra el Salario Base de Cotización (SBC) que corresponde a tu situación y tu edad de
+            retiro.
+          </p>
+        </Reveal>
+        <Reveal delay={0.08}>
+          <div className="mt-10">
+            <TablaGarantizada />
+          </div>
+        </Reveal>
+      </section>
+
+      {/* 8. Ahorro 40-65 años */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <Reveal>
+            <div>
+              <h2 className={h2}>
+                Plan de Ahorro Para el Retiro 100% deducible de impuestos{" "}
+                <span className="block text-primary-text">¡Aún Estás a Tiempo!</span>
+              </h2>
+              <p className="mt-5 text-lg leading-relaxed text-ink">
+                Con solo $2,000 MXN al mes hasta los 65 años, podrías acumular:{" "}
+                <strong className="font-display text-2xl font-semibold tabular-nums">
+                  $1,929,394
+                </strong>{" "}
+                Para tu retiro digno y tranquilo
+              </p>
+              <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
+                {ahorro40.map((b) => (
+                  <li key={b}>{b}</li>
+                ))}
+              </ul>
+              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-8 ${btnTeal}`}>
+                💬 Quiero Comenzar a Ahorrar Ahora
+              </a>
+            </div>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <Image
+              src="/images/asesoria-mujer.jpg"
+              alt="Mujer sonriendo mientras habla por teléfono sentada en el sillón de su casa"
+              width={1200}
+              height={800}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="w-full rounded-2xl object-cover"
+            />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 9. Ahorro 30 años / plan 10 años */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <Reveal className="lg:order-1">
+            <Image
+              src="/images/asesoria-datos.jpg"
+              alt="Tres personas revisando y firmando documentos de su plan de retiro sobre una mesa"
+              width={1200}
+              height={800}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="w-full rounded-2xl object-cover"
+            />
+          </Reveal>
+          <Reveal delay={0.1} className="lg:order-2">
+            <div>
+              <h2 className={h2}>¿Tienes 30 años? Necesitas un Plan Privado de Pensión</h2>
+              <p className="mt-5 text-lg leading-relaxed text-ink">
+                Ahorra $3,000 al mes durante 10 años y a los 65 años podrías tener:{" "}
+                <strong className="font-display text-2xl font-semibold tabular-nums">
+                  +$1,225,000
+                </strong>{" "}
+                sin aportar un peso más después del año 10
+              </p>
+              <div className="mt-6 rounded-2xl bg-secondary p-6 leading-relaxed text-ink">
+                📊 <strong className="font-bold">El Secreto:</strong> El interés compuesto hará crecer
+                tu dinero automáticamente por más de 25 años adicionales. ¡Tu dinero trabaja mientras
+                tú vives!
+              </div>
+              <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
+                {ahorro30.map((b) => (
+                  <li key={b.fuerte}>
+                    <strong className="font-bold text-ink">{b.fuerte}</strong>
+                    {b.resto}
+                  </li>
+                ))}
+              </ul>
+              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-8 ${btnTeal}`}>
+                💬 Comenzar Mi Plan de 10 Años
+              </a>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 10. Problema del retiro */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
+        <Reveal>
+          <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-14 sm:px-12 sm:py-16">
+            <Curvas className="pointer-events-none absolute -bottom-3 right-0 w-[55%] max-w-xl opacity-70" />
+            <div className="relative">
+              <AlertTriangle className="size-10 text-primary" aria-hidden />
+              <h2 className={`mt-5 max-w-2xl ${h2Navy}`}>La Realidad del Retiro en México</h2>
+              <p className="mt-4 max-w-2xl text-muted-on-navy">
+                Una crisis silenciosa que puede evitarse con la estrategia correcta
+              </p>
+              <div className="mt-12 grid gap-10 lg:grid-cols-2">
+                <div>
+                  <p className="font-display text-[clamp(4rem,12vw,6rem)] font-semibold leading-none tracking-[-0.03em] text-accent tabular-nums">
+                    70%
+                  </p>
+                  <p className="mt-4 max-w-xs text-lg text-muted-on-navy">
+                    de los adultos mayores en México no recibe pensión
+                  </p>
+                </div>
+                <div>
+                  <p className="font-bold text-white">3 Principales Causas</p>
+                  <ul className="mt-4 space-y-3 text-muted-on-navy">
+                    {causas.map((c) => (
+                      <li key={c} className="flex items-start gap-2.5 border-t border-white/10 pt-3">
+                        <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary" />
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* 11. Estrategias */}
       <section id="estrategias" className="mx-auto w-full max-w-6xl scroll-mt-24 px-4 pt-24 sm:px-6 sm:pt-32">
         <Reveal>
-          <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>Las estrategias que cambian el resultado.</h2>
+          <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>
+            Estrategias Que Transformarán Tu Pensión
+          </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-            Una pensión optimizada casi siempre se explica por lo mismo: planeación con años de anticipación.
+            La diferencia entre una pensión promedio y una optimizada
           </p>
         </Reveal>
         <div className="mx-auto mt-12 grid max-w-4xl gap-x-14 sm:grid-cols-2">
@@ -228,6 +536,14 @@ export default function HomePage() {
                 <div>
                   <h3 className="font-display text-xl font-semibold text-ink">{e.title}</h3>
                   <p className="mt-2 leading-relaxed text-muted-foreground">{e.body}</p>
+                  <ul className="mt-4 space-y-2 text-muted-foreground">
+                    {e.puntos.map((p) => (
+                      <li key={p} className="flex items-start gap-2.5">
+                        <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary-text" />
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             </Reveal>
@@ -235,17 +551,55 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* 12. Testimonios */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
+        <Reveal>
+          <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>Lo Que Dicen Nuestros Clientes</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+            Miles de personas ya han optimizado su pensión con nuestra asesoría
+          </p>
+        </Reveal>
+        <div className="mt-12 grid gap-5 lg:grid-cols-3">
+          {testimonios.map((t, i) => (
+            <Reveal key={t.nombre} delay={i * 0.08} className="h-full">
+              <figure className="card-shadow flex h-full flex-col rounded-2xl bg-card p-7">
+                <blockquote className="leading-relaxed text-foreground/85">{t.texto}</blockquote>
+                <figcaption className="mt-auto flex items-center gap-4 pt-6">
+                  <Image
+                    src={t.avatar}
+                    alt={t.alt}
+                    width={160}
+                    height={160}
+                    sizes="56px"
+                    className="size-14 shrink-0 rounded-full object-cover"
+                  />
+                  <span className="font-display text-[15px] font-semibold leading-snug text-ink">
+                    {t.nombre}
+                  </span>
+                </figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* 13. FAQ */}
       <section id="preguntas" className="mx-auto w-full max-w-3xl scroll-mt-24 px-4 pt-24 sm:px-6 sm:pt-32">
         <Reveal>
-          <h2 className={`text-center ${h2}`}>Preguntas frecuentes</h2>
+          <h2 className={`text-center ${h2}`}>Preguntas Frecuentes</h2>
+          <p className="mt-4 text-center text-muted-foreground">
+            Resolvemos las dudas más comunes sobre pensiones y nuestros servicios
+          </p>
         </Reveal>
         <div className="mt-10 border-t border-border">
           {faqs.map((f) => (
             <details key={f.q} className="group border-b border-border">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg font-bold text-ink [&::-webkit-details-marker]:hidden">
                 {f.q}
-                <Plus aria-hidden className="size-5 shrink-0 text-primary-text transition-transform duration-150 group-open:rotate-45" />
+                <Plus
+                  aria-hidden
+                  className="size-5 shrink-0 text-primary-text transition-transform duration-150 group-open:rotate-45"
+                />
               </summary>
               <p className="pb-6 leading-relaxed text-muted-foreground">{f.a}</p>
             </details>
@@ -253,32 +607,57 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* 14. CTA final */}
       <section className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
         <Reveal>
-          <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-14 text-center sm:px-12 sm:py-20">
-            <Curvas className="pointer-events-none absolute -bottom-3 right-0 w-[60%] max-w-2xl opacity-80" />
-            <div className="relative">
-              <h2 className="mx-auto max-w-2xl font-display text-[clamp(2rem,4.5vw,3.1rem)] font-semibold leading-tight tracking-[-0.02em] text-white">
-                Cada año cuenta. Empieza hoy.
-              </h2>
-              <p className="mx-auto mt-4 max-w-md text-muted-on-navy">
-                Cuéntanos tu caso por WhatsApp y te decimos, sin costo, qué estrategia aplica para ti y qué
-                tan lejos puede llegar tu pensión.
+          <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-14 sm:px-12 sm:py-20">
+            <Curvas className="pointer-events-none absolute -bottom-3 right-0 w-[60%] max-w-2xl opacity-70" />
+            <div className="relative grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
+              <div>
+                <h2 className={h2Navy}>Tu Retiro Digno Comienza Hoy</h2>
+                <p className="mt-4 max-w-xl text-muted-on-navy">
+                  No dejes tu futuro al azar. Cada día que esperas es una oportunidad perdida de
+                  optimizar tu pensión.
+                </p>
+                <ul className="mt-10 space-y-5">
+                  {contactoFinal.map((c) => (
+                    <li key={c.title} className="border-t border-white/10 pt-5">
+                      <p className="font-display text-xl font-semibold text-white">{c.title}</p>
+                      <p className="mt-1 text-muted-on-navy">{c.body}</p>
+                      <a
+                        href={WA_LINK}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-2 font-bold text-white underline decoration-primary decoration-2 underline-offset-4 hover:decoration-white"
+                      >
+                        <MessageCircle className="size-5 text-primary" aria-hidden />
+                        {c.cta}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <Image
+                  src="/images/exito-whatsapp.jpg"
+                  alt="Hombre mayor sonriendo mientras lee un mensaje en su tableta con una taza en la mano"
+                  width={900}
+                  height={700}
+                  sizes="(min-width: 1024px) 45vw, 100vw"
+                  className="aspect-4/3 w-full rounded-2xl object-cover"
+                />
+              </div>
+            </div>
+            <div className="relative mt-12 rounded-2xl bg-navy-2 p-7 sm:p-9">
+              <h3 className="font-display text-2xl font-semibold text-white">Es urgente</h3>
+              <p className="mt-3 max-w-2xl leading-relaxed text-muted-on-navy">
+                Los derechos de la Ley 73 no durarán para siempre. Los últimos trabajadores que pueden
+                aprovecharla se jubilarán entre 2039-2044.
               </p>
-              <a
-                href={WA_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-8 inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-8 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
-              >
+              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-6 ${btnTealOnNavy}`}>
                 <MessageCircle className="size-5" aria-hidden />
-                Platicar mi caso por WhatsApp
+                Verificar mis derechos ahora
               </a>
-              <p className="mx-auto mt-6 max-w-md text-[15px] text-white/60">
-                Asesoría informativa. Los montos de esta página son estimaciones; el dictamen final siempre
-                lo emite el IMSS.
-              </p>
             </div>
           </div>
         </Reveal>

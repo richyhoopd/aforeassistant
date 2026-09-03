@@ -20,18 +20,25 @@ const SITE = "https://www.pensionmas.com.mx"
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: "Pensión+ — Calcula y mejora tu pensión del IMSS",
+  title: "Pensión+ - Afore y Pensiones",
   description:
-    "Calcula tu pensión estimada bajo Ley 73 o Ley 97 del IMSS y descubre estrategias reales (Modalidad 40, asignaciones familiares, ahorro voluntario) para mejorarla.",
+    "Pesión más te asesora en calcular, optimizar y planear tu pensión y afore de forma sencilla.",
+  keywords: ["Pesión más", "afore", "pensiones", "retiro", "ahorro", "México", "cálculo de pensión"],
+  authors: [{ name: "Pesión más" }],
   openGraph: {
-    title: "Pensión+ — Calcula y mejora tu pensión del IMSS",
-    description: "Calculadora Ley 73 / Ley 97 y estrategias para mejorar tu pensión. Asesoría clara, sin promesas.",
+    title: "Pesión más - Afore y Pensiones",
+    description: "Descubre cómo mejorar tu pensión y planear tu retiro con pensión+.",
     url: SITE,
-    siteName: "Pensión+",
+    siteName: "Pension+",
     locale: "es_MX",
     type: "website",
   },
-  twitter: { card: "summary_large_image", site: "@pensionmasmx" },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pension+ - Afore y Pensiones",
+    description: "Calcula tu pensión y planifica tu retiro con pensión+.",
+    site: "@pensionmasmx",
+  },
   verification: {
     other: {
       "facebook-domain-verification": "h76gliptuljmxgit6aicr71tmqujv8",

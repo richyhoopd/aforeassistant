@@ -43,6 +43,8 @@ Reglas duras: teal nunca como texto sobre claro; blanco nunca sobre teal; oro nu
 - **Calculadora**: card blanca con `.card-shadow` que muerde el hero; tabs segmentadas (activa navy); inputs 48px sin borde sobre `--secondary`; resultado en panel navy con cifra en oro.
 - **Cards Ley 73 / Ley 97**: 73 navy, 97 blanca. Sin contorno.
 - **FAQ**: `<details>` con hairlines, "+" que rota 45°.
+- **TablaGarantizada** (`components/landing/TablaGarantizada.tsx`): `<table>` semántica con la pensión garantizada por rango de UMA y edad. Cabecera navy con texto blanco, filas alternas `bg-secondary/60`, hairlines `border-border`, `tabular-nums`, `overflow-x-auto` en móvil dentro de una card `.card-shadow`. Sin colores inline.
+- **Fotografía**: `next/image` siempre, `width`/`height` explícitos, `alt` en español y `sizes` en las de dos columnas. `persona-hero.png` (725×700, `priority`, `hidden lg:block`) en el hero; `asesoria-mujer.jpg` y `asesoria-datos.jpg` (1200×800) en las secciones de ahorro, alternando lado; `exito-whatsapp.jpg` (900×700, `object-cover`) en el CTA final; `avatar-1/2/3.jpg` (160×160, recortadas a 56px redondas) en testimonios. Todas en `rounded-2xl`, sin borde ni sombra. Cero URLs externas.
 - **Favicon**: `app/icon.svg`, "+" teal en círculo navy. `apple-icon.tsx` y `opengraph-image.tsx` con `ImageResponse`.
 
 ## Prohibiciones
