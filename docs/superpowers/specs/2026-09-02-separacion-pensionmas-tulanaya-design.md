@@ -230,3 +230,10 @@ del copy condensado de `/pension`, y recupera las fotos de la última landing de
 sitio original no tenía fotos propias (usaba Unsplash y Dreamstime); su único asset local era el logo PNG,
 que se sustituye por el logo tipográfico nuevo. Se agrega la tabla de pensión garantizada como
 `components/landing/TablaGarantizada.tsx`. Sección 2.3 queda superseded por el mapeo de Task 10b del plan.
+
+## Addendum 2026-09-04 — correo del resultado con Resend
+
+Ricardo pidió que el resultado de la calculadora se muestre en un popup con input de correo y decidió
+envío real. Se agrega el único backend de la landing: `app/api/resultado/route.ts` (Node runtime, Resend)
+con env vars `RESEND_API_KEY`, `RESULT_FROM`, `RESULT_BCC`. Sin la key responde 503 y la UI muestra error;
+no se guarda nada en ninguna base. Supersede la línea "sin backend, sin env vars" de Decisiones tomadas.
