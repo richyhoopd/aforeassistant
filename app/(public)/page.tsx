@@ -232,7 +232,7 @@ export default function HomePage() {
           strokeWidth={3}
           className="pointer-events-none absolute bottom-0 right-0 w-[85%] max-w-3xl"
         />
-        <div className="relative mx-auto grid w-full max-w-6xl items-end gap-4 px-4 sm:gap-8 sm:px-6 md:grid-cols-[1.15fr_0.85fr] md:gap-6 lg:grid-cols-[0.85fr_1.25fr] lg:gap-10">
+        <div className="relative mx-auto grid w-full max-w-6xl items-end gap-4 px-4 sm:gap-8 sm:px-6 md:grid-cols-[1.15fr_0.85fr] md:gap-6 lg:grid-cols-[1fr_1.2fr] lg:gap-8">
           <div className="md:self-center">
             <div className="anim-rise">
               <h1 className="font-display text-[clamp(2rem,4.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em]">

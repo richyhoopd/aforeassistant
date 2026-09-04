@@ -85,7 +85,7 @@ export function HeroShowcase() {
           {reviews.map((r, i) => (
             <figure
               key={r.name}
-              className={`card-shadow flex items-start gap-3 rounded-xl bg-card p-3 ${
+              className={`card-shadow card-lift flex items-start gap-3 rounded-xl bg-card p-3 ${
                 i % 2 === 1 ? "lg:ml-4" : ""
               }`}
             >

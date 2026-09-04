@@ -74,7 +74,7 @@ Reglas duras: teal nunca como texto sobre claro; blanco nunca sobre teal; oro nu
 
 ## Motion
 
-`.anim-rise` en hero; `Reveal` (visible por defecto, IntersectionObserver); `.draw-curve` dibuja las curvas una vez; `.anim-fade-up` en el resultado. Botones `transition-colors 150ms`. Todo se apaga con `prefers-reduced-motion`. Sin framer-motion.
+`.anim-rise` en hero; `Reveal` (visible por defecto, IntersectionObserver); `.draw-curve` dibuja las curvas una vez; `.anim-fade-up` en el resultado. Botones `transition-colors 150ms`. `.card-lift` en las reseñas del hero: `translateY(-3px)` + sombra más profunda en 220ms (ease-out-quint), solo transform y sombra. Todo se apaga con `prefers-reduced-motion`. Sin framer-motion.
 
 **Regla dura: ninguna animación puede ser lo único que hace visible un contenido.** En un documento oculto (pestaña en segundo plano, prerender, captura de OG) el navegador congela los pasos de render: una animación con `fill: both` se queda clavada en su fotograma inicial y un `IntersectionObserver` no entrega nada. Sin guardas, el hero se servía en `opacity: 0` y todo lo que va bajo el fold también. Dos guardas lo cubren:
 

@@ -106,7 +106,7 @@ export function PensionCalculator() {
   const f = (n: string) => `${uid}-${n}`
 
   return (
-    <div className="card-shadow relative mx-auto w-full max-w-5xl rounded-2xl bg-card p-5 sm:p-8">
+    <div className="card-shadow relative w-full rounded-2xl bg-card p-5 sm:p-8">
       <noscript>
         <p className="mb-6 rounded-lg bg-accent/25 p-4 text-ink">
           La calculadora necesita JavaScript. Si prefieres, escríbenos por{" "}
