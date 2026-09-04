@@ -520,23 +520,24 @@ export default function HomePage() {
       </section>
 
       {/* 6. Por qué Pensión+ */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <section className="relative mt-24 overflow-hidden bg-ink py-20 text-white sm:mt-32 sm:py-28">
+        <MoneyBackdrop tone="dark" />
+        <div className="relative mx-auto grid w-full max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16">
           <Reveal>
             <div className="lg:sticky lg:top-28">
-              <h2 className={h2}>Por qué Pensión+</h2>
+              <h2 className={h2Navy}>Por qué Pensión+</h2>
               <ul className="mt-8 space-y-7">
                 {razones.map((r) => (
                   <li key={r.title} className="flex gap-4">
                     <span
                       aria-hidden
-                      className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-secondary text-primary-text"
+                      className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-navy-2 text-primary"
                     >
                       <r.icon className="size-5" />
                     </span>
                     <div>
-                      <h3 className="font-display text-xl font-semibold text-ink">{r.title}</h3>
-                      <p className="mt-1 leading-relaxed text-muted-foreground">{r.body}</p>
+                      <h3 className="font-display text-xl font-semibold text-white">{r.title}</h3>
+                      <p className="mt-1 leading-relaxed text-muted-on-navy">{r.body}</p>
                     </div>
                   </li>
                 ))}
@@ -545,10 +546,10 @@ export default function HomePage() {
           </Reveal>
           <Reveal delay={0.1}>
             <div>
-              <p className="font-display text-xl font-semibold text-ink">
+              <p className="font-display text-xl font-semibold text-white">
                 Lo Que Dicen Nuestros Clientes
               </p>
-              <p className="mt-1 leading-relaxed text-muted-foreground">
+              <p className="mt-1 leading-relaxed text-muted-on-navy">
                 Miles de personas ya han optimizado su pensión con nuestra asesoría
               </p>
               <div className="mt-6 space-y-4">
