@@ -40,6 +40,8 @@ Reglas duras: teal nunca como texto sobre claro; blanco nunca sobre teal; oro nu
 
 `--radius: 0.75rem`. Botones e inputs `rounded-lg`, cards `rounded-2xl`, paneles `rounded-3xl`.
 
+**Landing (misma escala que la calculadora):** paneles y cards de sección **32px**, cards internas y de testimonio **24px**, fotos **28px**, botones y controles **18px**, tejas de ícono **14px**, círculos de acordeón `full`. El `rounded-lg` de los botones quedó solo en el header. Un radio nuevo en la landing tiene que ser uno de esos.
+
 **Card de la calculadora (escala propia, muy redonda):** card grande 32px · controles y CTA 18px · panel interior 24px · píldoras full. La teja de ícono del estado vacío va a 14px y el checkbox a 7px (**no** `rounded-md`: con `--radius: 0.75rem` esa clase computa 10px y sobre una caja de 20px da un círculo, que se lee como radio button). Dentro de esa card ningún radio se sale de esa escala: si un elemento nuevo no encaja en 32 / 24 / 18 / 14 / full, es que no pertenece ahí.
 
 ## Components
@@ -67,11 +69,31 @@ Reglas duras: teal nunca como texto sobre claro; blanco nunca sobre teal; oro nu
   - El scroll vertical vive en el `<dialog>`, no en el panel: si el panel tiene `overflow-y-auto`, las curvas que se salen de su caja le dibujan barras de scroll.
   - Textos y payload en `lib/pension/share.ts` (`buildResultText`, `buildEmailPayload`, `whatsappHref`): funciones puras, con pruebas en `share.test.ts`.
 - **Cards Ley 73 / Ley 97**: 73 navy, 97 blanca. Sin contorno.
-- **FAQ**: `<details>` con hairlines, "+" que rota 45°.
+- **Faq** (`components/landing/Faq.tsx`): acordeón a dos columnas `lg:grid-cols-[1fr_1.4fr]`. Izquierda `lg:sticky lg:top-28` con teja `size-20 rounded-[20px] bg-ink` y el wordmark blanco dentro, h2 grande `clamp(2rem,4.4vw,3.4rem)` y el link de WhatsApp. Derecha una sola card blanca `card-shadow rounded-[24px]` con las preguntas separadas por `border-border`; cada una es un `<button aria-expanded aria-controls>` con círculo `size-8` que muestra `Plus` / `Minus` (`bg-secondary text-primary-text`, abierto y hover `bg-ink text-white`). Una sola abierta a la vez, la primera abierta al cargar. **La altura se anima con CSS grid** (`.acc-panel`, `grid-template-rows: 0fr → 1fr`, 280ms ease-out-quint, `overflow-hidden` en el hijo): sin `max-height` mágico y sin framer-motion; `prefers-reduced-motion` la apaga.
+- **MoneyBackdrop** (`components/landing/MoneyBackdrop.tsx`): fondo de billetes y monedas en tinta navy para la sección de Ley 73 vs Ley 97. Dos capas del mismo patrón SVG (`.money-ink`, tile de 240px, trazo 1.4 en `#10213A`): la base a `opacity-[0.05]` y una de realce a `0.22` recortada por una máscara radial de 120px que sigue al cursor (`--mx` / `--my` con `requestAnimationFrame`, `mouseleave` la apaga). Va como primer hijo de una `<section relative overflow-hidden>` y el contenido queda en `relative`. Con `prefers-reduced-motion` la capa de realce no existe. Sin imágenes externas ni emojis: el patrón es un data URI.
 - **TablaGarantizada** (`components/landing/TablaGarantizada.tsx`): `<table>` semántica con la pensión garantizada por rango de UMA y edad. Cabecera navy con texto blanco, filas alternas `bg-secondary/60`, hairlines `border-border`, `tabular-nums`, `overflow-x-auto` en móvil dentro de una card `.card-shadow`. Sin colores inline.
 - **Fotografía**: `next/image` siempre, `width`/`height` explícitos, `alt` en español y `sizes` en las de dos columnas. `persona-hero.png` (725×700, `priority`, recorte a 210/280/370px de alto) en el hero; `asesoria-mujer.jpg` (1200×800) en la sección de ahorro de 40-65; `asesoria-hombre.jpg` (1200×800, `object-cover`) en el CTA final; `avatar-1/2/3.jpg` (160×160) solo en `HeroProof`. Todas en `rounded-2xl`, sin borde ni sombra. Cero URLs externas.
-  `exito-whatsapp.jpg` y `asesoria-datos.jpg` se eliminaron: el primero era la misma foto de stock que `persona-hero.png` (mismo señor, misma taza) y salía duplicada en la página; el segundo ilustraba la sección "¿Tienes 30 años?" con adultos mayores, que contradice a quien le habla esa sección, y no tenía otro uso. Los testimonios del sitio original (`app/(public)/page.tsx`) van con un círculo de iniciales en vez de foto — el sitio original tampoco tenía fotos ahí.
+  `asesoria-datos.jpg` (1200×800) volvió con la síntesis en 8 secciones: ilustra "¿Sabes cuánto es tu pensión garantizada?", que sí le habla a adultos mayores revisando su estado de cuenta. `exito-whatsapp.jpg` sigue eliminado: era la misma foto de stock que `persona-hero.png` (mismo señor, misma taza) y salía duplicada en la página. Los testimonios del sitio original (`app/(public)/page.tsx`) van con un círculo de iniciales en vez de foto — el sitio original tampoco tenía fotos ahí.
 - **Favicon**: `app/icon.svg`, "+" teal en círculo navy. `apple-icon.tsx` y `opengraph-image.tsx` con `ImageResponse`.
+
+## Landing: 8 secciones, dos patrones
+
+La página (`app/(public)/page.tsx`) pasó de 14 secciones a 8. El copy es el mismo del sitio original, reagrupado; lo que se cayó al fusionar está en el reporte de la tarea, no se reescribió nada.
+
+1. **Hero + calculadora** (la costura de arriba; no se toca).
+2. **Ley 73 vs Ley 97**: h2 centrado, dos cards `rounded-[32px]` (73 navy, 97 blanca) sobre `MoneyBackdrop`.
+3. **Pensión garantizada** (patrón A, foto a la derecha) con la `TablaGarantizada` colapsada en un `<details>` a ancho completo.
+4. **La realidad del retiro** (patrón B): 70% en oro a la izquierda, "Lo que sí puedes hacer" a la derecha.
+5. **Plan de ahorro** (patrón A, foto a la izquierda).
+6. **Por qué Pensión+**: dos columnas sin foto, razones a la izquierda (`lg:sticky`), testimonios a la derecha.
+7. **Preguntas frecuentes** (`Faq`).
+8. **CTA final** (patrón B).
+
+**Patrón A (dos columnas con foto).** Izquierda: h2 alineado a la izquierda, párrafo, lista de bullets con `Plus` en `text-primary-text` y CTA de WhatsApp (`bg-primary h-12 rounded-[18px]`). Derecha: `next/image` `rounded-[28px] object-cover` con `sizes="(min-width:1024px) 45vw, 100vw"`. El lado de la foto **alterna** entre secciones A consecutivas (`order-*`). Sin card alrededor del texto.
+
+**Patrón B (panel navy).** `bg-ink rounded-[32px] p-8 sm:p-12` con `Curvas` (`wave`, `strokeWidth={3}`) abajo a la derecha, h2 blanco, cifra grande `text-accent font-display clamp(3.5rem,8vw,5.5rem) tabular-nums` con su etiqueta en `text-muted-on-navy`, y a la derecha una lista de filas separadas por `border-white/10` con `Plus` en `text-primary`. El CTA cierra el panel.
+
+**Encabezados.** h2 a la izquierda dentro del patrón A; centrado solo en la sección 2. Sin eyebrows, sin numerales, sin emojis, sin citas en caja.
 
 ## Prohibiciones
 
@@ -82,7 +104,7 @@ Reglas duras: teal nunca como texto sobre claro; blanco nunca sobre teal; oro nu
 - **Emojis en el copy.** Ninguno, aunque vengan del texto original. Si una lista necesita marcador, se usa el `Plus` de lucide (`mt-1.5 size-4 text-primary-text`), que ya es el marcador del sistema.
 - **Eyebrows en versalitas** repetidos sobre cada sección, y etiquetas `uppercase tracking-wide` dentro de los paneles.
 - **Numerales 01/02/03 como andamiaje.** Solo si la sección es de verdad una secuencia ordenada. Las dos estrategias no lo son y van sin numerar.
-- **Mosaicos de cards idénticas** con teja redondeada de ícono sobre cada encabezado. Los tres diferenciadores van como fila tipográfica con hairline superior e ícono de 20px en línea con el título.
+- **Mosaicos de cards idénticas** con teja redondeada de ícono sobre cada encabezado. Los tres diferenciadores van como lista sin card, con la teja `size-11 rounded-[14px] bg-secondary text-primary-text` a la izquierda del título, no encima ni dentro de un recuadro.
 - **`MessageCircle` para WhatsApp.** Ver `WhatsAppIcon`.
 - **Formularios que no caben en un viewport.** Si el usuario tiene que hacer scroll para ver el botón de la calculadora, el formulario está mal armado: campos en dos columnas antes que campos apilados.
 - **Cajas de estado vacío.** Un panel que solo dice "Resultados / completa el formulario" es relleno: ocupa el peso visual de un resultado sin dar información. El vacío se resuelve con contenido útil sin fondo (ver Calculadora) o no se resuelve.

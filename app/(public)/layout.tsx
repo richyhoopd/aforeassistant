@@ -46,6 +46,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 <li><Link href="/#calculadora" className={footerLink}>Calculadora de pensión</Link></li>
                 <li><Link href="/#estrategias" className={footerLink}>Estrategias</Link></li>
                 <li><Link href="/#preguntas" className={footerLink}>Preguntas frecuentes</Link></li>
+                <li><Link href="/terminos" className={footerLink}>Términos y condiciones</Link></li>
                 <li><Link href="/privacidad" className={footerLink}>Aviso de privacidad</Link></li>
               </ul>
             </nav>

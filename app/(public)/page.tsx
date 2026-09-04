@@ -1,14 +1,16 @@
 import Image from "next/image"
-import { AlertTriangle, Clock, Plus, Shield, TrendingUp } from "lucide-react"
+import { Clock, Minus, Plus, Shield, TrendingUp } from "lucide-react"
 import { Curvas } from "@/components/brand/Curvas"
 import { WhatsAppIcon } from "@/components/brand/WhatsAppIcon"
+import { Faq } from "@/components/landing/Faq"
 import { HeroProof, HeroShowcase } from "@/components/landing/HeroShowcase"
+import { MoneyBackdrop } from "@/components/landing/MoneyBackdrop"
 import { Reveal } from "@/components/landing/Reveal"
 import { TablaGarantizada } from "@/components/landing/TablaGarantizada"
 import { PensionCalculator } from "@/components/pension/PensionCalculator"
 import { WA_LINK } from "@/lib/site"
 
-const features = [
+const razones = [
   {
     icon: Shield,
     title: "Estrategia Personalizada",
@@ -52,23 +54,20 @@ const leyes = [
 ]
 
 const garantizada = [
-  { monto: "$3,414", etiqueta: "Pensión Mínima" },
-  { monto: "$6,000", etiqueta: "Promedio Nacional" },
-  { monto: "$10,732", etiqueta: "Pensión Máxima" },
+  { etiqueta: "Pensión mínima:", monto: "$3,414", resto: " al mes" },
+  { etiqueta: "Promedio nacional:", monto: "$6,000", resto: " al mes" },
+  { etiqueta: "Pensión máxima:", monto: "$10,732", resto: " al mes" },
 ]
 
-const ahorro40 = [
-  "Solo $2,000 pesos mensuales - menos que una salida al restaurante",
-  "Rendimientos compuestos trabajando para ti por 25 años",
-  "Retírate con tranquilidad financiera y disfruta tu vejez",
-  "Protege a tu familia con un seguro de vida",
-]
-
-const ahorro30 = [
-  { fuerte: "Solo 10 años de ahorro", resto: " - Del año 30 al 40 de tu vida" },
-  { fuerte: "Efecto multiplicador", resto: " - Tu dinero crece exponencialmente con el tiempo" },
-  { fuerte: "Inversión total:", resto: " $360,000 se convierten en +$1,225,000" },
-  { fuerte: "Libertad financiera", resto: " - Retírate antes de los 65 si lo deseas" },
+const ahorro = [
+  { texto: "Solo $2,000 pesos mensuales - menos que una salida al restaurante" },
+  { texto: "Rendimientos compuestos trabajando para ti por 25 años" },
+  { texto: "Retírate con tranquilidad financiera y disfruta tu vejez" },
+  { texto: "Protege a tu familia con un seguro de vida" },
+  { fuerte: "Solo 10 años de ahorro", texto: " - Del año 30 al 40 de tu vida" },
+  { fuerte: "Efecto multiplicador", texto: " - Tu dinero crece exponencialmente con el tiempo" },
+  { fuerte: "Inversión total:", texto: " $360,000 se convierten en +$1,225,000" },
+  { fuerte: "Libertad financiera", texto: " - Retírate antes de los 65 si lo deseas" },
 ]
 
 const causas = [
@@ -210,19 +209,21 @@ const contactoFinal = [
   },
 ]
 
-const h2 = "font-display text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-[1.12] tracking-[-0.01em] text-ink"
-const h2Navy = "font-display text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-[1.12] tracking-[-0.01em] text-white"
+const h2 =
+  "font-display text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-[1.12] tracking-[-0.01em] text-ink"
+const h2Navy =
+  "font-display text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-[1.12] tracking-[-0.01em] text-white"
 const btnTeal =
-  "inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-6 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-ring hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+  "inline-flex h-12 items-center gap-2 rounded-[18px] bg-primary px-6 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-ring hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 const btnTealOnNavy =
-  "inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-6 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+  "inline-flex h-12 items-center gap-2 rounded-[18px] bg-primary px-6 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
 const linkOnNavy =
   "inline-flex h-12 items-center gap-2 rounded-md text-base font-semibold text-white underline decoration-primary decoration-2 underline-offset-4 transition-colors duration-150 hover:decoration-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
 
 export default function HomePage() {
   return (
     <div>
-      {/* 2. Hero */}
+      {/* 1. Hero + calculadora */}
       <section
         data-hero
         className="relative overflow-hidden bg-ink pb-28 pt-8 text-white sm:pt-12 md:pb-32"
@@ -273,148 +274,225 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. Calculadora: muerde la franja de navy que el hero deja libre bajo su contenido */}
+      {/* La calculadora muerde la franja de navy que el hero deja libre bajo su contenido */}
       <section id="calculadora" className="relative z-10 -mt-16 scroll-mt-24 md:-mt-20">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <PensionCalculator />
         </div>
       </section>
 
-      {/* 3. Features */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <div className="grid gap-x-10 sm:grid-cols-3">
-          {features.map((f, i) => (
-            <Reveal key={f.title} delay={i * 0.08}>
-              <div className="border-t border-border py-7">
-                <h3 className="flex items-center gap-2.5 font-display text-xl font-semibold text-ink">
-                  <f.icon className="size-5 shrink-0 text-primary-text" aria-hidden />
-                  {f.title}
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted-foreground">{f.body}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* 4. Ley 73 vs Ley 97 */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <Reveal>
-          <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>
-            Ley 73 vs Ley 97: <span className="text-primary-text">Tu Futuro</span> Depende de Conocer
-            la Diferencia
-          </h2>
-        </Reveal>
-        <div className="mt-12 grid gap-5 lg:grid-cols-2">
-          {leyes.map((ley, i) => (
-            <Reveal key={ley.titulo} delay={i * 0.08} className="h-full">
-              <article
-                className={`flex h-full flex-col rounded-2xl p-7 sm:p-9 ${
-                  ley.navy ? "bg-ink text-white" : "card-shadow bg-card text-ink"
-                }`}
-              >
-                <h3 className="font-display text-2xl font-semibold">{ley.titulo}</h3>
-                <ul
-                  className={`mt-5 space-y-3 leading-relaxed ${
-                    ley.navy ? "text-muted-on-navy" : "text-foreground/85"
-                  }`}
-                >
-                  {ley.puntos.map((p) => (
-                    <li key={p} className="flex items-start gap-2.5">
-                      <Plus
-                        aria-hidden
-                        className={`mt-1.5 size-4 shrink-0 ${ley.navy ? "text-primary" : "text-primary-text"}`}
-                      />
-                      {p}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-auto pt-6 text-[15px] font-bold">{ley.nota}</p>
-              </article>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* 5. Pensión Garantizada 2025 */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <div className="rounded-3xl bg-secondary px-6 py-14 sm:px-12 sm:py-16">
+      {/* 2. Ley 73 vs Ley 97 */}
+      <section className="relative overflow-hidden pt-24 sm:pt-32">
+        <MoneyBackdrop />
+        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6">
           <Reveal>
             <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>
-              Sabes Cuánto Es Tu Pensión Garantizada en 2025?
+              Ley 73 vs Ley 97: <span className="text-primary-text">Tu Futuro</span> Depende de
+              Conocer la Diferencia
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-              Si cotizas bajo la <strong className="font-bold text-ink">Ley 97 del IMSS</strong> y no
-              alcanzas el ahorro suficiente en tu AFORE, el gobierno te garantiza una pensión mínima.
-              Pero… ¿es suficiente para vivir con tranquilidad?
-            </p>
           </Reveal>
-          <Reveal delay={0.08}>
-            <h3 className="mt-12 text-center font-display text-2xl font-semibold text-ink">
-              Montos de la Pensión Garantizada 2025
-            </h3>
-            <p className="mt-3 text-center text-[15px] text-muted-foreground">
-              Los montos dependen de tu edad, semanas cotizadas y salario base.
-            </p>
-          </Reveal>
-          <div className="mt-10 grid gap-8 sm:grid-cols-3 sm:gap-4">
-            {garantizada.map((g, i) => (
-              <Reveal key={g.etiqueta} delay={i * 0.08}>
-                <div className="text-center">
-                  <p className="inline-block border-b-[3px] border-accent pb-1 font-display text-4xl font-semibold tracking-[-0.02em] text-ink tabular-nums">
-                    {g.monto}
-                  </p>
-                  <p className="mt-3 text-[15px] font-bold text-ink">{g.etiqueta}</p>
-                </div>
+          <div className="mt-12 grid gap-5 lg:grid-cols-2">
+            {leyes.map((ley, i) => (
+              <Reveal key={ley.titulo} delay={i * 0.08} className="h-full">
+                <article
+                  className={`flex h-full flex-col rounded-[32px] p-8 sm:p-10 ${
+                    ley.navy ? "bg-ink text-white" : "card-shadow bg-card text-ink"
+                  }`}
+                >
+                  <h3 className="font-display text-2xl font-semibold">{ley.titulo}</h3>
+                  <ul
+                    className={`mt-5 space-y-3 leading-relaxed ${
+                      ley.navy ? "text-muted-on-navy" : "text-foreground/85"
+                    }`}
+                  >
+                    {ley.puntos.map((p) => (
+                      <li key={p} className="flex items-start gap-2.5">
+                        <Plus
+                          aria-hidden
+                          className={`mt-1.5 size-4 shrink-0 ${ley.navy ? "text-primary" : "text-primary-text"}`}
+                        />
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-auto pt-6 text-[15px] font-bold">{ley.nota}</p>
+                </article>
               </Reveal>
             ))}
           </div>
-          <p className="mt-4 text-center text-[15px] text-muted-foreground">
-            Montos de referencia 2025 publicados por el IMSS; verifica el vigente antes de decidir.
-          </p>
-          <Reveal delay={0.2}>
-            <p className="mx-auto mt-10 max-w-3xl text-center leading-relaxed text-muted-foreground">
-              La <strong className="font-bold text-ink">Pensión Mínima Garantizada</strong> bajo la Ley
-              97 asegura un ingreso mensual entre{" "}
-              <strong className="font-bold text-ink">$3,414 y $10,732</strong> pesos. Sin embargo, la
-              mayoría de los trabajadores recibe alrededor de{" "}
-              <strong className="font-bold text-ink">$6,000</strong> al mes, una cantidad insuficiente
-              para cubrir gastos básicos de vivienda, salud y alimentación.
-            </p>
-            <div className="mx-auto mt-8 max-w-3xl rounded-2xl bg-accent/25 p-6 text-ink">
-              <p className="font-display text-xl font-semibold">
-                Aún estás a tiempo de mejorar tu futuro financiero.
-              </p>
-              <p className="mt-2 leading-relaxed">
-                Optimiza tu AFORE, realiza aportaciones voluntarias o explora la{" "}
-                <strong className="font-bold">Modalidad 40</strong> antes de llegar a la edad de
-                retiro. Cada año cuenta.
-              </p>
-            </div>
-          </Reveal>
         </div>
       </section>
 
-      {/* 7. Tabla de pensión garantizada */}
+      {/* 3. Pensión garantizada */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+          <Reveal>
+            <div>
+              <h2 className={h2}>¿Sabes Cuánto Es Tu Pensión Garantizada en 2025?</h2>
+              <p className="mt-5 leading-relaxed text-muted-foreground">
+                Si cotizas bajo la <strong className="font-bold text-ink">Ley 97 del IMSS</strong> y
+                no alcanzas el ahorro suficiente en tu AFORE, el gobierno te garantiza una pensión
+                mínima. Pero… ¿es suficiente para vivir con tranquilidad?
+              </p>
+              <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
+                {garantizada.map((g) => (
+                  <li key={g.etiqueta} className="flex items-start gap-2.5">
+                    <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary-text" />
+                    <span>
+                      {g.etiqueta}{" "}
+                      <strong className="font-display text-xl font-semibold text-ink tabular-nums">
+                        {g.monto}
+                      </strong>
+                      {g.resto}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-[15px] text-muted-foreground">
+                Montos de referencia 2025 publicados por el IMSS; verifica el vigente antes de
+                decidir.
+              </p>
+              <p className="mt-6 leading-relaxed text-muted-foreground">
+                La <strong className="font-bold text-ink">Pensión Mínima Garantizada</strong> bajo la
+                Ley 97 asegura un ingreso mensual entre{" "}
+                <strong className="font-bold text-ink">$3,414 y $10,732</strong> pesos. Sin embargo,
+                la mayoría de los trabajadores recibe alrededor de{" "}
+                <strong className="font-bold text-ink">$6,000</strong> al mes, una cantidad
+                insuficiente para cubrir gastos básicos de vivienda, salud y alimentación.
+              </p>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                Optimiza tu AFORE, realiza aportaciones voluntarias o explora la{" "}
+                <strong className="font-bold text-ink">Modalidad 40</strong> antes de llegar a la
+                edad de retiro. Cada año cuenta.
+              </p>
+              <p className="mt-6 font-semibold text-ink">
+                Aún estás a tiempo de mejorar tu futuro financiero.
+              </p>
+              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-8 ${btnTeal}`}>
+                <WhatsAppIcon className="size-5" />
+                Platicar mi caso por WhatsApp
+              </a>
+            </div>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <Image
+              src="/images/asesoria-datos.jpg"
+              alt="Pareja de adultos mayores revisando su estado de cuenta"
+              width={1200}
+              height={800}
+              sizes="(min-width: 1024px) 45vw, 100vw"
+              className="aspect-4/3 w-full rounded-[28px] object-cover"
+            />
+          </Reveal>
+          <div className="col-span-full">
+            <details className="group mt-6 border-t border-border">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-5 rounded-[18px] py-5 font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
+                Ver la tabla por rango de UMA
+                <span
+                  aria-hidden
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-primary-text transition-colors duration-150 group-hover:bg-ink group-hover:text-white group-open:bg-ink group-open:text-white"
+                >
+                  <Plus className="size-4 group-open:hidden" />
+                  <Minus className="hidden size-4 group-open:block" />
+                </span>
+              </summary>
+              <div className="pb-2">
+                <p className="max-w-3xl leading-relaxed text-muted-foreground">
+                  Encuentra el Salario Base de Cotización (SBC) que corresponde a tu situación y tu
+                  edad de retiro.
+                </p>
+                <div className="mt-6">
+                  <TablaGarantizada />
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. La realidad del retiro */}
+      <section
+        id="estrategias"
+        className="mx-auto w-full max-w-6xl scroll-mt-24 px-4 pt-24 sm:px-6 sm:pt-32"
+      >
         <Reveal>
-          <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>Selecciona tu rango de UMA</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-            Encuentra el Salario Base de Cotización (SBC) que corresponde a tu situación y tu edad de
-            retiro.
-          </p>
-        </Reveal>
-        <Reveal delay={0.08}>
-          <div className="mt-10">
-            <TablaGarantizada />
+          <div className="relative overflow-hidden rounded-[32px] bg-ink p-8 sm:p-12">
+            <Curvas
+              wave
+              strokeWidth={3}
+              className="pointer-events-none absolute -bottom-3 right-0 w-[55%] max-w-lg"
+            />
+            <div className="relative grid gap-12 lg:grid-cols-2 lg:gap-16">
+              <div>
+                <h2 className={h2Navy}>La Realidad del Retiro en México</h2>
+                <p className="mt-4 max-w-md text-muted-on-navy">
+                  Una crisis silenciosa que puede evitarse con la estrategia correcta
+                </p>
+                <p className="mt-10 font-display text-[clamp(3.5rem,8vw,5.5rem)] font-semibold leading-none tracking-[-0.03em] text-accent tabular-nums">
+                  70%
+                </p>
+                <p className="mt-3 max-w-xs text-lg text-muted-on-navy">
+                  de los adultos mayores en México no recibe pensión
+                </p>
+                <p className="mt-10 font-bold text-white">3 Principales Causas</p>
+                <ul className="mt-4 space-y-3 text-muted-on-navy">
+                  {causas.map((c) => (
+                    <li key={c} className="flex items-start gap-2.5 border-t border-white/10 pt-3">
+                      <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary" />
+                      {c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="font-display text-xl font-semibold text-white">
+                  Lo que sí puedes hacer
+                </p>
+                <ul className="mt-5 space-y-6">
+                  {estrategias.map((e) => (
+                    <li key={e.title} className="border-t border-white/10 pt-5">
+                      <p className="font-bold text-white">{e.title}</p>
+                      <p className="mt-1 leading-relaxed text-muted-on-navy">{e.body}</p>
+                      <ul className="mt-3 space-y-2 text-muted-on-navy">
+                        {e.puntos.map((p) => (
+                          <li key={p} className="flex items-start gap-2.5">
+                            <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary" />
+                            {p}
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href={WA_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`mt-8 ${btnTealOnNavy}`}
+                >
+                  <WhatsAppIcon className="size-5" />
+                  Platicar mi caso por WhatsApp
+                </a>
+              </div>
+            </div>
           </div>
         </Reveal>
       </section>
 
-      {/* 8. Ahorro 40-65 años */}
+      {/* 5. Plan de ahorro */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          <Reveal>
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+          <Reveal delay={0.1} className="order-2 lg:order-1">
+            <Image
+              src="/images/asesoria-mujer.jpg"
+              alt="Mujer sonriendo mientras habla por teléfono sentada en el sillón de su casa"
+              width={1200}
+              height={800}
+              sizes="(min-width: 1024px) 45vw, 100vw"
+              className="aspect-4/3 w-full rounded-[28px] object-cover"
+            />
+          </Reveal>
+          <Reveal className="order-1 lg:order-2">
             <div>
               <h2 className={h2}>
                 Plan de Ahorro Para el Retiro 100% deducible de impuestos{" "}
@@ -427,11 +505,22 @@ export default function HomePage() {
                 </strong>{" "}
                 Para tu retiro digno y tranquilo
               </p>
+              <p className="mt-4 text-lg leading-relaxed text-ink">
+                ¿Tienes 30 años? Necesitas un Plan Privado de Pensión: ahorra $3,000 al mes durante
+                10 años y a los 65 años podrías tener:{" "}
+                <strong className="font-display text-2xl font-semibold tabular-nums">
+                  +$1,225,000
+                </strong>{" "}
+                sin aportar un peso más después del año 10
+              </p>
               <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
-                {ahorro40.map((b) => (
-                  <li key={b} className="flex items-start gap-2.5">
+                {ahorro.map((b) => (
+                  <li key={b.texto} className="flex items-start gap-2.5">
                     <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary-text" />
-                    {b}
+                    <span>
+                      {b.fuerte ? <strong className="font-bold text-ink">{b.fuerte}</strong> : null}
+                      {b.texto}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -441,189 +530,76 @@ export default function HomePage() {
               </a>
             </div>
           </Reveal>
-          <Reveal delay={0.1}>
-            <Image
-              src="/images/asesoria-mujer.jpg"
-              alt="Mujer sonriendo mientras habla por teléfono sentada en el sillón de su casa"
-              width={1200}
-              height={800}
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="w-full rounded-2xl object-cover"
-            />
-          </Reveal>
         </div>
       </section>
 
-      {/* 9. Ahorro 30 años / plan 10 años */}
+      {/* 6. Por qué Pensión+ */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <div className="grid gap-x-14 gap-y-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           <Reveal>
-            <div>
-              <h2 className={h2}>¿Tienes 30 años? Necesitas un Plan Privado de Pensión</h2>
-              <p className="mt-5 text-lg leading-relaxed text-ink">
-                Ahorra $3,000 al mes durante 10 años y a los 65 años podrías tener:{" "}
-                <strong className="font-display text-2xl font-semibold tabular-nums">
-                  +$1,225,000
-                </strong>{" "}
-                sin aportar un peso más después del año 10
-              </p>
-              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-8 ${btnTeal}`}>
-                <WhatsAppIcon className="size-5" />
-                Comenzar Mi Plan de 10 Años
-              </a>
-            </div>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <div className="rounded-2xl bg-secondary p-7 sm:p-8">
-              <p className="leading-relaxed text-ink">
-                <strong className="font-bold">El Secreto:</strong> El interés compuesto hará crecer tu
-                dinero automáticamente por más de 25 años adicionales. ¡Tu dinero trabaja mientras tú
-                vives!
-              </p>
-              <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
-                {ahorro30.map((b) => (
-                  <li key={b.fuerte} className="flex items-start gap-2.5">
-                    <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary-text" />
-                    <span>
-                      <strong className="font-bold text-ink">{b.fuerte}</strong>
-                      {b.resto}
+            <div className="lg:sticky lg:top-28">
+              <h2 className={h2}>Por qué Pensión+</h2>
+              <ul className="mt-8 space-y-7">
+                {razones.map((r) => (
+                  <li key={r.title} className="flex gap-4">
+                    <span
+                      aria-hidden
+                      className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-secondary text-primary-text"
+                    >
+                      <r.icon className="size-5" />
                     </span>
+                    <div>
+                      <h3 className="font-display text-xl font-semibold text-ink">{r.title}</h3>
+                      <p className="mt-1 leading-relaxed text-muted-foreground">{r.body}</p>
+                    </div>
                   </li>
                 ))}
               </ul>
             </div>
           </Reveal>
-        </div>
-      </section>
-
-      {/* 10. Problema del retiro */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <Reveal>
-          <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-14 sm:px-12 sm:py-16">
-            <Curvas strokeWidth={3} className="pointer-events-none absolute -bottom-3 right-0 w-[60%] max-w-xl" />
-            <div className="relative">
-              <AlertTriangle className="size-10 text-primary" aria-hidden />
-              <h2 className={`mt-5 max-w-2xl ${h2Navy}`}>La Realidad del Retiro en México</h2>
-              <p className="mt-4 max-w-2xl text-muted-on-navy">
-                Una crisis silenciosa que puede evitarse con la estrategia correcta
+          <Reveal delay={0.1}>
+            <div>
+              <p className="font-display text-xl font-semibold text-ink">
+                Lo Que Dicen Nuestros Clientes
               </p>
-              <div className="mt-12 grid gap-10 lg:grid-cols-2">
-                <div>
-                  <p className="font-display text-[clamp(4rem,12vw,6rem)] font-semibold leading-none tracking-[-0.03em] text-accent tabular-nums">
-                    70%
-                  </p>
-                  <p className="mt-4 max-w-xs text-lg text-muted-on-navy">
-                    de los adultos mayores en México no recibe pensión
-                  </p>
-                </div>
-                <div>
-                  <p className="font-bold text-white">3 Principales Causas</p>
-                  <ul className="mt-4 space-y-3 text-muted-on-navy">
-                    {causas.map((c) => (
-                      <li key={c} className="flex items-start gap-2.5 border-t border-white/10 pt-3">
-                        <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary" />
-                        {c}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <p className="mt-1 leading-relaxed text-muted-foreground">
+                Miles de personas ya han optimizado su pensión con nuestra asesoría
+              </p>
+              <div className="mt-6 space-y-4">
+                {testimonios.map((t) => (
+                  <figure key={t.nombre} className="card-shadow rounded-[24px] bg-card p-6">
+                    <blockquote className="leading-relaxed text-foreground/85">{t.texto}</blockquote>
+                    <figcaption className="mt-5 flex items-center gap-4">
+                      <span
+                        aria-hidden
+                        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary font-display text-base font-semibold text-primary-text"
+                      >
+                        {initials(t.nombre)}
+                      </span>
+                      <span className="font-display text-[15px] font-semibold leading-snug text-ink">
+                        {t.nombre}
+                      </span>
+                    </figcaption>
+                  </figure>
+                ))}
               </div>
             </div>
-          </div>
-        </Reveal>
-      </section>
-
-      {/* 11. Estrategias */}
-      <section id="estrategias" className="mx-auto w-full max-w-6xl scroll-mt-24 px-4 pt-24 sm:px-6 sm:pt-32">
-        <Reveal>
-          <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>
-            Estrategias Que Transformarán Tu Pensión
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-            La diferencia entre una pensión promedio y una optimizada
-          </p>
-        </Reveal>
-        <div className="mx-auto mt-12 grid max-w-4xl gap-x-14 sm:grid-cols-2">
-          {estrategias.map((e, i) => (
-            <Reveal key={e.title} delay={i * 0.05}>
-              <div className="border-t border-border py-7">
-                <div>
-                  <h3 className="font-display text-xl font-semibold text-ink">{e.title}</h3>
-                  <p className="mt-2 leading-relaxed text-muted-foreground">{e.body}</p>
-                  <ul className="mt-4 space-y-2 text-muted-foreground">
-                    {e.puntos.map((p) => (
-                      <li key={p} className="flex items-start gap-2.5">
-                        <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary-text" />
-                        {p}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </Reveal>
-          ))}
+          </Reveal>
         </div>
       </section>
 
-      {/* 12. Testimonios */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <Reveal>
-          <h2 className={`mx-auto max-w-3xl text-center ${h2}`}>Lo Que Dicen Nuestros Clientes</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-            Miles de personas ya han optimizado su pensión con nuestra asesoría
-          </p>
-        </Reveal>
-        <div className="mt-12 grid gap-5 lg:grid-cols-3">
-          {testimonios.map((t, i) => (
-            <Reveal key={t.nombre} delay={i * 0.08} className="h-full">
-              <figure className="card-shadow flex h-full flex-col rounded-2xl bg-card p-7">
-                <blockquote className="leading-relaxed text-foreground/85">{t.texto}</blockquote>
-                <figcaption className="mt-auto flex items-center gap-4 pt-6">
-                  <span
-                    aria-hidden
-                    className="flex size-12 shrink-0 items-center justify-center rounded-full bg-secondary font-display text-base font-semibold text-primary-text"
-                  >
-                    {initials(t.nombre)}
-                  </span>
-                  <span className="font-display text-[15px] font-semibold leading-snug text-ink">
-                    {t.nombre}
-                  </span>
-                </figcaption>
-              </figure>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+      {/* 7. Preguntas frecuentes */}
+      <Faq items={faqs} />
 
-      {/* 13. FAQ */}
-      <section id="preguntas" className="mx-auto w-full max-w-3xl scroll-mt-24 px-4 pt-24 sm:px-6 sm:pt-32">
-        <Reveal>
-          <h2 className={`text-center ${h2}`}>Preguntas Frecuentes</h2>
-          <p className="mt-4 text-center text-muted-foreground">
-            Resolvemos las dudas más comunes sobre pensiones y nuestros servicios
-          </p>
-        </Reveal>
-        <div className="mt-10 border-t border-border">
-          {faqs.map((f) => (
-            <details key={f.q} className="group border-b border-border">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-md py-5 text-lg font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
-                {f.q}
-                <Plus
-                  aria-hidden
-                  className="size-5 shrink-0 text-primary-text transition-transform duration-150 group-open:rotate-45"
-                />
-              </summary>
-              <p className="pb-6 leading-relaxed text-muted-foreground">{f.a}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      {/* 14. CTA final */}
+      {/* 8. CTA final */}
       <section className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
         <Reveal>
-          <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-14 sm:px-12 sm:py-20">
-            <Curvas strokeWidth={3} className="pointer-events-none absolute -bottom-3 right-0 w-[65%] max-w-2xl" />
+          <div className="relative overflow-hidden rounded-[32px] bg-ink p-8 sm:p-12">
+            <Curvas
+              wave
+              strokeWidth={3}
+              className="pointer-events-none absolute -bottom-3 right-0 w-[65%] max-w-2xl"
+            />
             <div className="relative grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
               <div>
                 <h2 className={h2Navy}>Tu Retiro Digno Comienza Hoy</h2>
@@ -656,15 +632,15 @@ export default function HomePage() {
                   width={1200}
                   height={800}
                   sizes="(min-width: 1024px) 45vw, 100vw"
-                  className="aspect-4/3 w-full rounded-2xl object-cover"
+                  className="aspect-4/3 w-full rounded-[28px] object-cover"
                 />
               </div>
             </div>
-            <div className="relative mt-12 rounded-2xl bg-navy-2 p-7 sm:p-9">
+            <div className="relative mt-12 rounded-[24px] bg-navy-2 p-7 sm:p-9">
               <h3 className="font-display text-2xl font-semibold text-white">Es urgente</h3>
               <p className="mt-3 max-w-2xl leading-relaxed text-muted-on-navy">
-                Los derechos de la Ley 73 no durarán para siempre. Los últimos trabajadores que pueden
-                aprovecharla se jubilarán entre 2039-2044.
+                Los derechos de la Ley 73 no durarán para siempre. Los últimos trabajadores que
+                pueden aprovecharla se jubilarán entre 2039-2044.
               </p>
               <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-6 ${btnTealOnNavy}`}>
                 <WhatsAppIcon className="size-5" />
