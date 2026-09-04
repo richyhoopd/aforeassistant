@@ -330,9 +330,8 @@ export default function HomePage() {
             <div>
               <h2 className={h2}>¿Sabes Cuánto Es Tu Pensión Garantizada en 2025?</h2>
               <p className="mt-5 leading-relaxed text-muted-foreground">
-                Si cotizas bajo la <strong className="font-bold text-ink">Ley 97 del IMSS</strong> y
-                no alcanzas el ahorro suficiente en tu AFORE, el gobierno te garantiza una pensión
-                mínima. Pero… ¿es suficiente para vivir con tranquilidad?
+                Si cotizas bajo la <strong className="font-bold text-ink">Ley 97</strong> y tu AFORE
+                no alcanza, el gobierno te garantiza un mínimo. La pregunta es si alcanza para vivir.
               </p>
               <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
                 {garantizada.map((g) => (
@@ -352,21 +351,8 @@ export default function HomePage() {
                 Montos de referencia 2025 publicados por el IMSS; verifica el vigente antes de
                 decidir.
               </p>
-              <p className="mt-6 leading-relaxed text-muted-foreground">
-                La <strong className="font-bold text-ink">Pensión Mínima Garantizada</strong> bajo la
-                Ley 97 asegura un ingreso mensual entre{" "}
-                <strong className="font-bold text-ink">$3,414 y $10,732</strong> pesos. Sin embargo,
-                la mayoría de los trabajadores recibe alrededor de{" "}
-                <strong className="font-bold text-ink">$6,000</strong> al mes, una cantidad
-                insuficiente para cubrir gastos básicos de vivienda, salud y alimentación.
-              </p>
-              <p className="mt-4 leading-relaxed text-muted-foreground">
-                Optimiza tu AFORE, realiza aportaciones voluntarias o explora la{" "}
-                <strong className="font-bold text-ink">Modalidad 40</strong> antes de llegar a la
-                edad de retiro. Cada año cuenta.
-              </p>
               <p className="mt-6 font-semibold text-ink">
-                Aún estás a tiempo de mejorar tu futuro financiero.
+                Aportaciones voluntarias o Modalidad 40 antes del retiro cambian ese número. Aún estás a tiempo.
               </p>
               <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-8 ${btnTeal}`}>
                 <WhatsAppIcon className="size-5" />
