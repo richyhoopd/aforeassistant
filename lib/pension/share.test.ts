@@ -62,7 +62,7 @@ describe("buildResultText", () => {
 
   it("el href de WhatsApp va codificado y con el formato esperado", () => {
     const t = buildResultText("ley73", ley73, FECHA)
-    expect(whatsappHref(t).startsWith("https://wa.me/523313013253?text=")).toBe(true)
+    expect(whatsappHref(t).startsWith("https://wa.me/523349698324?text=")).toBe(true)
     expect(whatsappHref(t)).not.toContain(" ")
     expect(whatsappHref(t)).not.toContain("\n")
   })
