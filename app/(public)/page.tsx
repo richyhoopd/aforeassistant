@@ -575,17 +575,6 @@ export default function HomePage() {
                 />
               </div>
             </div>
-            <div className="relative mt-12 rounded-[24px] bg-navy-2 p-7 sm:p-9">
-              <h3 className="font-display text-2xl font-semibold text-white">Es urgente</h3>
-              <p className="mt-3 max-w-2xl leading-relaxed text-muted-on-navy">
-                Los derechos de la Ley 73 no durarán para siempre. Los últimos trabajadores que
-                pueden aprovecharla se jubilarán entre 2039-2044.
-              </p>
-              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-6 ${btnTealOnNavy}`}>
-                <WhatsAppIcon className="size-5" />
-                Verificar mis derechos ahora
-              </a>
-            </div>
           </div>
         </Reveal>
       </section>
