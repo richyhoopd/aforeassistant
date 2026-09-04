@@ -88,11 +88,6 @@ export function buildResultText(
   }
 }
 
-/** `mailto:` con asunto y cuerpo ya codificados. */
-export function mailtoHref(t: ShareText): string {
-  return `mailto:?subject=${encodeURIComponent(t.subject)}&body=${encodeURIComponent(t.body)}`
-}
-
 /** `wa.me` con el resumen de una línea ya codificado. */
 export function whatsappHref(t: ShareText): string {
   return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(t.whatsapp)}`

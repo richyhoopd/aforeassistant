@@ -105,6 +105,7 @@ export function ResultDialog({ open, onClose, kind, result, form, seq = 0 }: Pro
 
   const onSubmitEmail = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (send === "sending") return
     setSend("sending")
     try {
       const res = await fetch("/api/resultado", {

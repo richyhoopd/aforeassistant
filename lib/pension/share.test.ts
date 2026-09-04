@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { Ley73Result, Ley97Result } from "./calc"
-import { buildEmailPayload, buildResultText, mailtoHref, whatsappHref } from "./share"
+import { buildEmailPayload, buildResultText, whatsappHref } from "./share"
 
 const FECHA = new Date(2026, 8, 2) // 2 de septiembre de 2026
 
@@ -60,13 +60,11 @@ describe("buildResultText", () => {
     expect(t.whatsapp).toContain("Ley 97, estimado $4,936 al mes")
   })
 
-  it("los href van codificados y con el formato esperado", () => {
+  it("el href de WhatsApp va codificado y con el formato esperado", () => {
     const t = buildResultText("ley73", ley73, FECHA)
-    expect(mailtoHref(t).startsWith("mailto:?subject=")).toBe(true)
-    expect(mailtoHref(t)).toContain("&body=")
-    expect(mailtoHref(t)).not.toContain("\n")
     expect(whatsappHref(t).startsWith("https://wa.me/523349687609?text=")).toBe(true)
     expect(whatsappHref(t)).not.toContain(" ")
+    expect(whatsappHref(t)).not.toContain("\n")
   })
 })
 

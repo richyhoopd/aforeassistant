@@ -203,7 +203,7 @@ export function PensionCalculator() {
               aria-controls={f(`panel-${key}`)}
               tabIndex={tab === key ? 0 : -1}
               onClick={() => setTab(key)}
-              className={`inline-flex h-10 items-center justify-center rounded-full px-5 text-[15px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+              className={`inline-flex h-11 items-center justify-center rounded-full px-5 text-[15px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                 tab === key ? "bg-ink text-white shadow-sm" : "text-muted-foreground hover:text-ink"
               }`}
             >
@@ -283,7 +283,7 @@ export function PensionCalculator() {
         {/* Formulario Ley 97 */}
         <div role="tabpanel" id={f("panel-ley97")} aria-labelledby={f("tab-ley97")} hidden={tab !== "ley97"}>
           <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); onCalcLey97() }} noValidate>
-            <div className={`${gridCls} grid-cols-2`}>
+            <div className={`${gridCls} sm:grid-cols-2`}>
               <div>
                 <Label htmlFor={f("l97-edad")} className={labelCls}>Edad actual</Label>
                 <Input id={f("l97-edad")} type="number" inputMode="numeric" placeholder="Ej. 45" value={l97.edad}
