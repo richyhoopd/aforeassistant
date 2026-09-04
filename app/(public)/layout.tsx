@@ -54,7 +54,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               <p className="font-bold text-white">Contacto</p>
               <ul className="mt-4 space-y-2.5">
                 <li>
-                  <a href="tel:+523313013253" className={footerLink}>+52 (33) 1301-3253</a>
+                  <a href="tel:+523349698324" className={footerLink}>+52 (33) 4969-8324</a>
                 </li>
                 <li>pensionmas.mx@gmail.com</li>
                 <li>Guadalajara, Jalisco, México</li>
