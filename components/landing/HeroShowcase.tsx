@@ -26,39 +26,66 @@ const reviews = [
 ]
 
 /**
- * Showcase del hero: la foto sale por el borde inferior de la sección (el hero
- * la recorta con overflow-hidden) y a su derecha va la columna de reseñas
- * escalonadas. El margen inferior negativo de la foto vale exactamente el
- * padding inferior del hero, así que el pie de la foto cae al ras del borde y
- * las reseñas quedan por encima de la zona que muerde la calculadora.
- * En móvil las reseñas no caben sin duplicar la altura del hero: se ocultan
- * bajo sm y la foto queda centrada. Reaparecen desde sm.
+ * Prueba social compacta para móvil y tablet: los mismos tres rostros de las
+ * reseñas, apilados, con el conteo. Las tarjetas completas duplicarían la
+ * altura del hero y su contenido ya vive entero en la sección de testimonios,
+ * así que abajo de `lg` se muestra el resumen y nada se pierde.
+ */
+export function HeroProof() {
+  return (
+    <div className="flex items-center gap-3 lg:hidden">
+      <div className="flex -space-x-2.5">
+        {reviews.map((r) => (
+          <Image
+            key={r.avatar}
+            src={r.avatar}
+            alt=""
+            width={160}
+            height={160}
+            sizes="36px"
+            className="size-9 rounded-full object-cover ring-2 ring-ink"
+          />
+        ))}
+      </div>
+      <p className="font-display text-lg font-semibold tracking-[-0.01em] text-white">
+        <span className="text-primary">+500</span> personas asesoradas
+      </p>
+    </div>
+  )
+}
+
+/**
+ * Showcase del hero. La foto baja más que el contenido (margen inferior
+ * negativo) y se esconde bajo la card de la calculadora, que va con z-10;
+ * las reseñas se quedan arriba, en la franja de navy libre.
+ * Las reseñas en columna solo caben desde `lg`; abajo de eso va `HeroProof`.
  */
 export function HeroShowcase() {
   return (
-    <div className="flex items-end justify-center gap-3 sm:justify-start sm:gap-4">
-      <div className="relative -mb-16 shrink-0 sm:-mb-20 lg:-ml-12 lg:-mr-16 xl:-ml-16 xl:-mr-20">
+    <div className="flex items-end justify-center gap-4 lg:justify-start">
+      <div className="-mb-24 shrink-0 md:-mb-28 lg:-ml-12 lg:-mr-16 xl:-ml-16 xl:-mr-20">
         <Image
           src="/images/persona-hero.png"
           alt="Hombre mayor sonriendo mientras revisa su tableta con una taza de café en la mano"
           width={725}
           height={700}
           priority
-          sizes="(min-width: 1024px) 400px, (min-width: 640px) 340px, 280px"
-          className="h-[240px] w-auto object-contain object-bottom sm:h-[300px] xl:h-[360px]"
+          sizes="(min-width: 1280px) 380px, (min-width: 768px) 290px, 220px"
+          data-hero-photo
+          className="h-[210px] w-auto object-contain object-bottom md:h-[280px] xl:h-[370px]"
         />
       </div>
 
-      <div className="relative z-10 hidden min-w-0 flex-1 sm:block">
-        <p className="mb-3 font-display text-xl font-semibold tracking-[-0.01em] text-white">
+      <div data-hero-reviews className="relative z-10 hidden min-w-0 flex-1 lg:block">
+        <p className="mb-2.5 font-display text-xl font-semibold tracking-[-0.01em] text-white">
           <span className="text-primary">+500</span> personas asesoradas
         </p>
 
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {reviews.map((r, i) => (
             <figure
               key={r.name}
-              className={`card-shadow flex items-start gap-3 rounded-xl bg-card p-3.5 ${
+              className={`card-shadow flex items-start gap-3 rounded-xl bg-card p-3 ${
                 i % 2 === 1 ? "lg:ml-4" : ""
               }`}
             >

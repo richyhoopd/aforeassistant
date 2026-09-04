@@ -76,6 +76,9 @@
   h1, h2, h3 {
     text-wrap: balance;
   }
+  p {
+    text-wrap: pretty;
+  }
 }
 
 /* Sombra única de card: nunca borde gris. */
@@ -131,3 +134,8 @@
   .anim-rise, .anim-fade-up { animation: none; }
   .draw-curve { animation: none; stroke-dashoffset: 0; }
 }
+
+/* Documento que arranca oculto: sin entrada, contenido visible de una vez. */
+.anim-off .anim-rise,
+.anim-off .anim-fade-up { animation: none; }
+.anim-off .draw-curve { animation: none; stroke-dashoffset: 0; }

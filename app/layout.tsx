@@ -51,8 +51,25 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // `suppressHydrationWarning`: el script de abajo marca <html> antes de que
+  // React hidrate, igual que el patron de tema de next-themes.
   return (
-    <html lang="es-MX">
+    <html lang="es-MX" suppressHydrationWarning>
+      <head>
+        {/*
+          Una animacion CSS con `fill: both` se queda clavada en su fotograma
+          inicial mientras el documento esta oculto (pestana en segundo plano,
+          prerender, captura de OG). Como ese fotograma es `opacity: 0`, el hero
+          se serviria en blanco. Si el documento arranca oculto, se apaga la
+          entrada y el contenido se pinta ya visible.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "if(document.visibilityState!=='visible')document.documentElement.classList.add('anim-off')",
+          }}
+        />
+      </head>
       <body className={`${outfit.variable} ${nunito.variable} font-sans antialiased`}>{children}</body>
     </html>
   )

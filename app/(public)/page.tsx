@@ -1,7 +1,8 @@
 import Image from "next/image"
-import { AlertTriangle, Clock, MessageCircle, Plus, Shield, TrendingUp } from "lucide-react"
+import { AlertTriangle, Clock, Plus, Shield, TrendingUp } from "lucide-react"
 import { Curvas } from "@/components/brand/Curvas"
-import { HeroShowcase } from "@/components/landing/HeroShowcase"
+import { WhatsAppIcon } from "@/components/brand/WhatsAppIcon"
+import { HeroProof, HeroShowcase } from "@/components/landing/HeroShowcase"
 import { Reveal } from "@/components/landing/Reveal"
 import { TablaGarantizada } from "@/components/landing/TablaGarantizada"
 import { PensionCalculator } from "@/components/pension/PensionCalculator"
@@ -27,7 +28,7 @@ const features = [
 
 const leyes = [
   {
-    titulo: "🌟 Ley 73 - La Oportunidad Dorada",
+    titulo: "Ley 73 - La Oportunidad Dorada",
     navy: true,
     puntos: [
       "Pensión vitalicia garantizada por el Estado",
@@ -38,7 +39,7 @@ const leyes = [
     nota: "Aplica si comenzaste a cotizar antes del 1 julio 1997",
   },
   {
-    titulo: "📊 Ley 97 - Tu Esfuerzo, Tu Recompensa",
+    titulo: "Ley 97 - Tu Esfuerzo, Tu Recompensa",
     navy: false,
     puntos: [
       "Pensión basada en tu AFORE",
@@ -57,17 +58,17 @@ const garantizada = [
 ]
 
 const ahorro40 = [
-  "💰 Solo $2,000 pesos mensuales - menos que una salida al restaurante",
-  "📈 Rendimientos compuestos trabajando para ti por 25 años",
-  "🏖️ Retírate con tranquilidad financiera y disfruta tu vejez",
-  "🛡️ Protege a tu familia con un seguro de vida",
+  "Solo $2,000 pesos mensuales - menos que una salida al restaurante",
+  "Rendimientos compuestos trabajando para ti por 25 años",
+  "Retírate con tranquilidad financiera y disfruta tu vejez",
+  "Protege a tu familia con un seguro de vida",
 ]
 
 const ahorro30 = [
-  { fuerte: "⏰ Solo 10 años de ahorro", resto: " - Del año 30 al 40 de tu vida" },
-  { fuerte: "🚀 Efecto multiplicador", resto: " - Tu dinero crece exponencialmente con el tiempo" },
-  { fuerte: "🎯 Inversión total:", resto: " $360,000 se convierten en +$1,225,000" },
-  { fuerte: "✨ Libertad financiera", resto: " - Retírate antes de los 65 si lo deseas" },
+  { fuerte: "Solo 10 años de ahorro", resto: " - Del año 30 al 40 de tu vida" },
+  { fuerte: "Efecto multiplicador", resto: " - Tu dinero crece exponencialmente con el tiempo" },
+  { fuerte: "Inversión total:", resto: " $360,000 se convierten en +$1,225,000" },
+  { fuerte: "Libertad financiera", resto: " - Retírate antes de los 65 si lo deseas" },
 ]
 
 const causas = [
@@ -214,18 +215,24 @@ const btnTeal =
   "inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-6 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-ring hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 const btnTealOnNavy =
   "inline-flex h-12 items-center gap-2 rounded-lg bg-primary px-6 text-base font-bold text-primary-foreground transition-colors duration-150 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+const linkOnNavy =
+  "inline-flex h-12 items-center gap-2 rounded-md text-base font-semibold text-white underline decoration-primary decoration-2 underline-offset-4 transition-colors duration-150 hover:decoration-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
 
 export default function HomePage() {
   return (
     <div>
       {/* 2. Hero */}
-      <section className="relative overflow-hidden bg-ink pb-16 pt-10 text-white sm:pb-20 sm:pt-12">
+      <section
+        data-hero
+        className="relative overflow-hidden bg-ink pb-28 pt-8 text-white sm:pt-12 md:pb-32"
+      >
         <Curvas
           animate
-          className="pointer-events-none absolute bottom-0 right-0 w-[60%] max-w-2xl opacity-25"
+          strokeWidth={3}
+          className="pointer-events-none absolute bottom-0 right-0 w-[85%] max-w-3xl"
         />
-        <div className="relative mx-auto grid w-full max-w-6xl items-end gap-8 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.25fr] lg:gap-10">
-          <div className="lg:self-center">
+        <div className="relative mx-auto grid w-full max-w-6xl items-end gap-4 px-4 sm:gap-8 sm:px-6 md:grid-cols-[1.15fr_0.85fr] md:gap-6 lg:grid-cols-[0.85fr_1.25fr] lg:gap-10">
+          <div className="md:self-center">
             <div className="anim-rise">
               <h1 className="font-display text-[clamp(2rem,4.5vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.02em]">
                 Tu Retiro No Es Casualidad, <span className="text-primary">Es Estrategia</span>
@@ -238,21 +245,24 @@ export default function HomePage() {
               </p>
             </div>
             <div
-              className="anim-rise mt-6 flex flex-wrap items-center gap-4"
+              className="anim-rise mt-6 flex flex-wrap items-center gap-x-6 gap-y-3"
               style={{ "--rise-delay": "0.16s" } as React.CSSProperties}
             >
               <a href="#calculadora" className={btnTealOnNavy}>
-                Calcular mi pension ahora
+                Calcular mi pensión ahora
               </a>
               <a
                 href={WA_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-12 items-center gap-2 text-base font-semibold text-white underline decoration-primary decoration-2 underline-offset-4 hover:decoration-white"
+                className={linkOnNavy}
               >
-                <MessageCircle className="size-5 text-primary" aria-hidden />
-                Agendar asesoria gratuita
+                <WhatsAppIcon className="size-5 text-primary" />
+                Agendar asesoría gratuita
               </a>
+            </div>
+            <div className="anim-rise mt-7 lg:hidden" style={{ "--rise-delay": "0.24s" } as React.CSSProperties}>
+              <HeroProof />
             </div>
           </div>
           <div className="anim-rise" style={{ "--rise-delay": "0.24s" } as React.CSSProperties}>
@@ -261,8 +271,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. Calculadora (muerde el hero) */}
-      <section id="calculadora" className="relative z-10 -mt-16 scroll-mt-24 sm:-mt-20">
+      {/* 6. Calculadora: muerde la franja de navy que el hero deja libre bajo su contenido */}
+      <section id="calculadora" className="relative z-10 -mt-16 scroll-mt-24 md:-mt-20">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <PensionCalculator />
         </div>
@@ -270,14 +280,14 @@ export default function HomePage() {
 
       {/* 3. Features */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <div className="grid gap-10 sm:grid-cols-3">
+        <div className="grid gap-x-10 sm:grid-cols-3">
           {features.map((f, i) => (
             <Reveal key={f.title} delay={i * 0.08}>
-              <div>
-                <span className="flex size-14 items-center justify-center rounded-xl bg-primary/12 text-primary-text">
-                  <f.icon className="size-7" aria-hidden />
-                </span>
-                <h3 className="mt-5 font-display text-xl font-semibold text-ink">{f.title}</h3>
+              <div className="border-t border-border py-7">
+                <h3 className="flex items-center gap-2.5 font-display text-xl font-semibold text-ink">
+                  <f.icon className="size-5 shrink-0 text-primary-text" aria-hidden />
+                  {f.title}
+                </h3>
                 <p className="mt-2 leading-relaxed text-muted-foreground">{f.body}</p>
               </div>
             </Reveal>
@@ -368,7 +378,7 @@ export default function HomePage() {
             </p>
             <div className="mx-auto mt-8 max-w-3xl rounded-2xl bg-accent/25 p-6 text-ink">
               <p className="font-display text-xl font-semibold">
-                ⚠️ Aún estás a tiempo de mejorar tu futuro financiero.
+                Aún estás a tiempo de mejorar tu futuro financiero.
               </p>
               <p className="mt-2 leading-relaxed">
                 Optimiza tu AFORE, realiza aportaciones voluntarias o explora la{" "}
@@ -414,11 +424,15 @@ export default function HomePage() {
               </p>
               <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
                 {ahorro40.map((b) => (
-                  <li key={b}>{b}</li>
+                  <li key={b} className="flex items-start gap-2.5">
+                    <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary-text" />
+                    {b}
+                  </li>
                 ))}
               </ul>
               <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-8 ${btnTeal}`}>
-                💬 Quiero Comenzar a Ahorrar Ahora
+                <WhatsAppIcon className="size-5" />
+                Quiero Comenzar a Ahorrar Ahora
               </a>
             </div>
           </Reveal>
@@ -437,18 +451,8 @@ export default function HomePage() {
 
       {/* 9. Ahorro 30 años / plan 10 años */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          <Reveal className="lg:order-1">
-            <Image
-              src="/images/asesoria-datos.jpg"
-              alt="Tres personas revisando y firmando documentos de su plan de retiro sobre una mesa"
-              width={1200}
-              height={800}
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="w-full rounded-2xl object-cover"
-            />
-          </Reveal>
-          <Reveal delay={0.1} className="lg:order-2">
+        <div className="grid gap-x-14 gap-y-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <Reveal>
             <div>
               <h2 className={h2}>¿Tienes 30 años? Necesitas un Plan Privado de Pensión</h2>
               <p className="mt-5 text-lg leading-relaxed text-ink">
@@ -458,22 +462,30 @@ export default function HomePage() {
                 </strong>{" "}
                 sin aportar un peso más después del año 10
               </p>
-              <div className="mt-6 rounded-2xl bg-secondary p-6 leading-relaxed text-ink">
-                📊 <strong className="font-bold">El Secreto:</strong> El interés compuesto hará crecer
-                tu dinero automáticamente por más de 25 años adicionales. ¡Tu dinero trabaja mientras
-                tú vives!
-              </div>
+              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-8 ${btnTeal}`}>
+                <WhatsAppIcon className="size-5" />
+                Comenzar Mi Plan de 10 Años
+              </a>
+            </div>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <div className="rounded-2xl bg-secondary p-7 sm:p-8">
+              <p className="leading-relaxed text-ink">
+                <strong className="font-bold">El Secreto:</strong> El interés compuesto hará crecer tu
+                dinero automáticamente por más de 25 años adicionales. ¡Tu dinero trabaja mientras tú
+                vives!
+              </p>
               <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
                 {ahorro30.map((b) => (
-                  <li key={b.fuerte}>
-                    <strong className="font-bold text-ink">{b.fuerte}</strong>
-                    {b.resto}
+                  <li key={b.fuerte} className="flex items-start gap-2.5">
+                    <Plus aria-hidden className="mt-1.5 size-4 shrink-0 text-primary-text" />
+                    <span>
+                      <strong className="font-bold text-ink">{b.fuerte}</strong>
+                      {b.resto}
+                    </span>
                   </li>
                 ))}
               </ul>
-              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-8 ${btnTeal}`}>
-                💬 Comenzar Mi Plan de 10 Años
-              </a>
             </div>
           </Reveal>
         </div>
@@ -483,7 +495,7 @@ export default function HomePage() {
       <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
         <Reveal>
           <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-14 sm:px-12 sm:py-16">
-            <Curvas className="pointer-events-none absolute -bottom-3 right-0 w-[55%] max-w-xl opacity-70" />
+            <Curvas strokeWidth={3} className="pointer-events-none absolute -bottom-3 right-0 w-[60%] max-w-xl" />
             <div className="relative">
               <AlertTriangle className="size-10 text-primary" aria-hidden />
               <h2 className={`mt-5 max-w-2xl ${h2Navy}`}>La Realidad del Retiro en México</h2>
@@ -529,10 +541,7 @@ export default function HomePage() {
         <div className="mx-auto mt-12 grid max-w-4xl gap-x-14 sm:grid-cols-2">
           {estrategias.map((e, i) => (
             <Reveal key={e.title} delay={i * 0.05}>
-              <div className="flex gap-4 border-t border-border py-7">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary/12 font-display text-lg font-semibold text-primary-text">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
+              <div className="border-t border-border py-7">
                 <div>
                   <h3 className="font-display text-xl font-semibold text-ink">{e.title}</h3>
                   <p className="mt-2 leading-relaxed text-muted-foreground">{e.body}</p>
@@ -594,7 +603,7 @@ export default function HomePage() {
         <div className="mt-10 border-t border-border">
           {faqs.map((f) => (
             <details key={f.q} className="group border-b border-border">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg font-bold text-ink [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-md py-5 text-lg font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
                 {f.q}
                 <Plus
                   aria-hidden
@@ -611,7 +620,7 @@ export default function HomePage() {
       <section className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
         <Reveal>
           <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-14 sm:px-12 sm:py-20">
-            <Curvas className="pointer-events-none absolute -bottom-3 right-0 w-[60%] max-w-2xl opacity-70" />
+            <Curvas strokeWidth={3} className="pointer-events-none absolute -bottom-3 right-0 w-[65%] max-w-2xl" />
             <div className="relative grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
               <div>
                 <h2 className={h2Navy}>Tu Retiro Digno Comienza Hoy</h2>
@@ -628,9 +637,9 @@ export default function HomePage() {
                         href={WA_LINK}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-2 inline-flex items-center gap-2 font-bold text-white underline decoration-primary decoration-2 underline-offset-4 hover:decoration-white"
+                        className="mt-2 inline-flex min-h-11 items-center gap-2 rounded-md font-bold text-white underline decoration-primary decoration-2 underline-offset-4 transition-colors duration-150 hover:decoration-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
                       >
-                        <MessageCircle className="size-5 text-primary" aria-hidden />
+                        <WhatsAppIcon className="size-5 text-primary" />
                         {c.cta}
                       </a>
                     </li>
@@ -655,7 +664,7 @@ export default function HomePage() {
                 aprovecharla se jubilarán entre 2039-2044.
               </p>
               <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-6 ${btnTealOnNavy}`}>
-                <MessageCircle className="size-5" aria-hidden />
+                <WhatsAppIcon className="size-5" />
                 Verificar mis derechos ahora
               </a>
             </div>

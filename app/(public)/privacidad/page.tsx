@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-export const metadata: Metadata = { title: "Aviso de privacidad — Pensión+" }
+export const metadata: Metadata = { title: "Aviso de privacidad | Pensión+" }
 
 const sections: { h: string; p: string[] }[] = [
   {

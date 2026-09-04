@@ -15,7 +15,8 @@ const pairs = [
   ["muted-foreground / blanco", "#4F5868", "#FFFFFF", 4.5],
   ["muted-on-navy / navy", "#B7BFCC", "#10213A", 4.5],
   ["blanco / navy", "#FFFFFF", "#10213A", 4.5],
-  ["ring / off-white (gráfico)", "#007A7A", "#F5F3EE", 3],
+  ["blanco / ring #007A7A (hover)", "#FFFFFF", "#007A7A", 4.5],
+  ["ring / off-white (\"+\" del logo)", "#007A7A", "#F5F3EE", 4.5],
   ["teal / navy (gráfico)", "#00A8A8", "#10213A", 3],
 ]
 let fail = false

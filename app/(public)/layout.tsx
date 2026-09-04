@@ -1,6 +1,6 @@
 import Link from "next/link"
-import { MessageCircle } from "lucide-react"
 import { Logo } from "@/components/brand/Logo"
+import { WhatsAppIcon } from "@/components/brand/WhatsAppIcon"
 import { WA_LINK } from "@/lib/site"
 
 const servicios = [
@@ -10,6 +10,9 @@ const servicios = [
   "Asignaciones familiares",
   "Asesoría Ley 73/97",
 ]
+
+const footerLink =
+  "inline-flex min-h-11 items-center rounded-md transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -25,7 +28,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             rel="noopener noreferrer"
             className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-4 text-[15px] font-bold text-primary-foreground transition-colors duration-150 hover:bg-ring hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <MessageCircle className="size-5" aria-hidden />
+            <WhatsAppIcon className="size-5" />
             WhatsApp
           </a>
         </div>
@@ -53,11 +56,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </div>
             <nav aria-label="Recursos" className="text-[15px]">
               <p className="font-bold text-white">Recursos</p>
-              <ul className="mt-4 space-y-2.5">
-                <li><Link href="/#calculadora" className="transition-colors hover:text-white">Calculadora de pensión</Link></li>
-                <li><Link href="/#estrategias" className="transition-colors hover:text-white">Estrategias</Link></li>
-                <li><Link href="/#preguntas" className="transition-colors hover:text-white">Preguntas frecuentes</Link></li>
-                <li><Link href="/privacidad" className="transition-colors hover:text-white">Aviso de privacidad</Link></li>
+              <ul className="mt-2.5 space-y-0.5">
+                <li><Link href="/#calculadora" className={footerLink}>Calculadora de pensión</Link></li>
+                <li><Link href="/#estrategias" className={footerLink}>Estrategias</Link></li>
+                <li><Link href="/#preguntas" className={footerLink}>Preguntas frecuentes</Link></li>
+                <li><Link href="/privacidad" className={footerLink}>Aviso de privacidad</Link></li>
               </ul>
             </nav>
             <div className="text-[15px]">
@@ -67,8 +70,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 <li>pensionmas.mx@gmail.com</li>
                 <li>Guadalajara, Jalisco, México</li>
                 <li>
-                  <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 transition-colors hover:text-white">
-                    <MessageCircle className="size-4 text-primary" aria-hidden />
+                  <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`gap-2 ${footerLink}`}>
+                    <WhatsAppIcon className="size-4 text-primary" />
                     WhatsApp
                   </a>
                 </li>

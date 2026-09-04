@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og"
 
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
-export const alt = "Pensión+ — Calcula y mejora tu pensión del IMSS"
+export const alt = "Pensión+: calcula y mejora tu pensión del IMSS"
 
 export default function OgImage() {
   return new ImageResponse(

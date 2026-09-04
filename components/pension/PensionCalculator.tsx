@@ -1,11 +1,12 @@
 "use client"
 
 import { useId, useState } from "react"
-import { AlertCircle, Calculator, CheckCircle2, MessageCircle, TrendingUp } from "lucide-react"
+import { AlertCircle, Calculator, CheckCircle2, TrendingUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Curvas } from "@/components/brand/Curvas"
+import { WhatsAppIcon } from "@/components/brand/WhatsAppIcon"
 import { WA_LINK } from "@/lib/site"
 import {
   calcLey73,
@@ -294,7 +295,7 @@ export function PensionCalculator() {
                 ) : (
                   <div>
                     <h4 className="font-display text-2xl font-semibold text-white">Resultados de tu cálculo</h4>
-                    <p className="mt-4 text-[15px] font-semibold text-muted-on-navy">➡️ Pensión calculada</p>
+                    <p className="mt-4 text-[15px] font-semibold text-muted-on-navy">Pensión calculada</p>
                     <p className="mt-2 font-display text-[clamp(2.5rem,8vw,3.5rem)] font-semibold leading-none tracking-[-0.02em] text-accent tabular-nums">
                       {mxn.format(r73.normal)}
                     </p>
@@ -305,11 +306,11 @@ export function PensionCalculator() {
                       </p>
                     )}
                     <p className="mt-4 leading-relaxed text-muted-on-navy">
-                      ✅ Porcentaje base por semanas:{" "}
+                      Porcentaje base por semanas:{" "}
                       <strong className="text-white">{r73.basePercentage.toFixed(2)}%</strong>
                     </p>
                     <p className="mt-1 leading-relaxed text-muted-on-navy">
-                      ✅ Factor aplicado por edad:{" "}
+                      Factor aplicado por edad:{" "}
                       <strong className="text-white">{(r73.ageFactor * 100).toFixed(0)}%</strong>
                     </p>
                     <div className="mt-5 rounded-xl bg-navy-2 p-4">
@@ -334,19 +335,19 @@ export function PensionCalculator() {
           ) : r97 === null ? (
             <ResultPlaceholder
               title="Ingresa tus datos para ver tu proyección"
-              text="Tu pension dependera exclusivamente del saldo acumulado en tu cuenta de Afore"
+              text="Tu pensión dependerá exclusivamente del saldo acumulado en tu cuenta de AFORE"
             />
           ) : (
             <ResultPanel key={JSON.stringify(r97)}>
               <h4 className="font-display text-2xl font-semibold text-white">Tu Proyección Ley 97</h4>
-              <p className="mt-4 text-[15px] font-semibold uppercase tracking-wide text-muted-on-navy">
+              <p className="mt-4 text-[15px] font-semibold text-muted-on-navy">
                 Pensión mensual estimada
               </p>
               <p className="mt-2 font-display text-[clamp(2.5rem,8vw,3.5rem)] font-semibold leading-none tracking-[-0.02em] text-accent tabular-nums">
                 {mxn.format(r97.pensionEstimada)}
               </p>
               <p className="mt-2 text-[15px] text-muted-on-navy">Modalidad: {r97.modalidad}</p>
-              <p className="mt-5 text-[15px] font-semibold uppercase tracking-wide text-muted-on-navy">
+              <p className="mt-5 text-[15px] font-semibold text-muted-on-navy">
                 Saldo AFORE a los 65 años
               </p>
               <p className="mt-1 font-display text-3xl font-semibold text-white tabular-nums">
@@ -372,7 +373,7 @@ export function PensionCalculator() {
                     Atención Requerida
                   </p>
                   <p className="mt-2 text-[15px] text-muted-on-navy">
-                    ⚠️ Atención: No cumplirás las 850 semanas mínimas requeridas
+                    No cumplirás las 850 semanas mínimas requeridas
                   </p>
                   <p className="mt-2 text-[15px] text-muted-on-navy">
                     Es importante que aumentes tus semanas cotizadas o consideres estrategias
@@ -403,7 +404,7 @@ export function PensionCalculator() {
 function ResultPanel({ children }: { children: React.ReactNode }) {
   return (
     <div className="anim-fade-up relative overflow-hidden rounded-2xl bg-ink p-6 sm:p-8">
-      <Curvas className="pointer-events-none absolute -bottom-2 -right-6 w-56 opacity-70" />
+      <Curvas className="pointer-events-none absolute -bottom-2 -right-6 w-56 opacity-90" />
       <div className="relative">{children}</div>
     </div>
   )
@@ -426,7 +427,7 @@ function WaLink() {
       rel="noopener noreferrer"
       className="mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-4 text-[15px] font-bold text-primary-foreground transition-colors duration-150 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
     >
-      <MessageCircle className="size-4" aria-hidden />
+      <WhatsAppIcon className="size-4" />
       Quiero maximizar mi pensión
     </a>
   )
