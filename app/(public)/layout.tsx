@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Logo } from "@/components/brand/Logo"
 import { WhatsAppIcon } from "@/components/brand/WhatsAppIcon"
+import { SiteHeader } from "@/components/landing/SiteHeader"
 import { WA_LINK } from "@/lib/site"
 
 const servicios = [
@@ -17,22 +18,7 @@ const footerLink =
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-            <Logo tone="light" priority className="h-6 sm:h-7" />
-          </Link>
-          <a
-            href={WA_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-4 text-[15px] font-bold text-primary-foreground transition-colors duration-150 hover:bg-ring hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <WhatsAppIcon className="size-5" />
-            WhatsApp
-          </a>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="flex-1">{children}</main>
 
@@ -40,7 +26,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
             <div>
-              <Logo tone="dark" className="h-8" />
+              <Logo tone="dark" className="h-11" />
               <p className="mt-4 max-w-xs text-[15px] leading-relaxed">
                 Asesoría Financiera y Patrimonial especializada en maximizar tu pensión y asegurar tu
                 futuro.

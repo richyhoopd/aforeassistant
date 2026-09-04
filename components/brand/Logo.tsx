@@ -2,17 +2,17 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 /**
- * Logotipo de marca: el wordmark real "Pensión+", recortado del logo completo
- * (`ASSETS-PENSIONMAS/full-logo-pp.png`) sin el emblema y sin fondo.
+ * Logotipo de marca: el wordmark "pensión+" recortado del logo oficial
+ * (imagen entregada por Ricardo, 1280×1280, fondo navy) con el fondo eliminado.
+ * Las dos curvas del emblema viven aparte como `Curvas` (SVG); aquí va solo el
+ * wordmark.
  *
- * Se usa la versión plana de un solo color, no el original biselado: el sistema
- * de `DESIGN.md` no tiene degradados ni relieves, y el logotipo original los
- * trae los tres. Aplanarlo a `--ink` sobre claro y a blanco sobre navy conserva
- * la forma de la marca y la mete en la paleta.
+ * - `dark`: wordmark blanco con "+" teal, para fondos navy (footer, paneles).
+ * - `light`: wordmark navy `--ink` con "+" teal, para fondos claros (header, 404).
  *
  * El tamaño se controla con una clase de alto (`h-*`); el ancho va `auto` y la
- * proporción la fija el `width`/`height` intrínseco, así que no hay salto de
- * layout al cargar.
+ * proporción la fija el `width`/`height` intrínseco (818×191), así que no hay
+ * salto de layout al cargar.
  */
 const SRC = {
   light: "/images/logo-pensionmas-navy.png",
@@ -32,8 +32,8 @@ export function Logo({
     <Image
       src={SRC[tone]}
       alt="Pensión+"
-      width={1255}
-      height={240}
+      width={818}
+      height={191}
       priority={priority}
       className={cn("w-auto", className)}
     />

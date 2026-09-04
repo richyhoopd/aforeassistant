@@ -4,7 +4,7 @@ import { Logo } from "@/components/brand/Logo"
 export default function NotFound() {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-background px-4 text-center">
-      <Logo tone="light" className="h-8" />
+      <Logo tone="light" className="h-12" />
       <h1 className="font-display text-3xl font-semibold text-ink">Esta página no existe.</h1>
       <Link
         href="/"
