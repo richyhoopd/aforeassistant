@@ -243,8 +243,6 @@ dialog[open]::backdrop {
    reinicia sin costura. Pausa al pasar el cursor o enfocar. */
 .marquee {
   scrollbar-width: none;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
 }
 .marquee::-webkit-scrollbar {
   display: none;
@@ -264,9 +262,5 @@ dialog[open]::backdrop {
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
     animation: none;
-  }
-  .marquee {
-    -webkit-mask-image: none;
-    mask-image: none;
   }
 }

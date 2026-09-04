@@ -14,18 +14,19 @@ function initials(nombre: string): string {
  * es duplicar la lista y animar `translateX(-50%)`: al llegar a la mitad el
  * contenido es idéntico al inicio, así que el reinicio no se nota. Se pausa al
  * pasar el cursor o al enfocar algo dentro. Con `prefers-reduced-motion` no se
- * mueve y la pista queda con scroll horizontal manual.
+ * mueve y la pista queda con scroll horizontal manual. Va fuera del contenedor
+ * de la sección para que las cards salgan por los bordes de la pantalla.
  */
 export function TestimonialsCarousel({ items }: { items: Testimonio[] }) {
   const doble = [...items, ...items]
   return (
     <div
-      className="marquee -mx-4 overflow-x-auto sm:-mx-6"
+      className="marquee w-full overflow-x-auto"
       role="region"
       aria-label="Reseñas de clientes"
       style={{ "--marquee-duration": `${Math.max(40, items.length * 12)}s` } as React.CSSProperties}
     >
-      <ul className="marquee-track flex w-max gap-5 px-4 sm:px-6">
+      <ul className="marquee-track flex w-max gap-5 pl-5">
         {doble.map((t, i) => (
           <li
             key={`${t.nombre}-${i}`}

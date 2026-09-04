@@ -541,10 +541,10 @@ export default function HomePage() {
               ))}
             </ul>
           </Reveal>
-          <Reveal delay={0.1} className="mt-14">
-            <TestimonialsCarousel items={testimonios} />
-          </Reveal>
         </div>
+        <Reveal delay={0.1} className="relative mt-14">
+          <TestimonialsCarousel items={testimonios} />
+        </Reveal>
       </section>
 
       {/* 7. Preguntas frecuentes */}
