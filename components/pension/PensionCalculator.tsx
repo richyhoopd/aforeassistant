@@ -316,13 +316,14 @@ export function PensionCalculator() {
                 <FieldError id={f("e-l97-semanas")} msg={e97.semanas} />
               </div>
 
+              <div className="grid grid-cols-2 gap-x-4 sm:col-span-2">
               <div>
                 <Label htmlFor={f("l97-voluntarias")} className={labelCls}>Aportación voluntaria mensual (opcional)</Label>
                 <Input id={f("l97-voluntarias")} type="number" inputMode="numeric" placeholder="Ej. 1,000" value={l97.aportaciones}
                   onChange={(e) => upd97({ aportaciones: e.target.value })} className={controlCls} />
-              </div>
+                </div>
 
-              <div>
+                <div>
                 <Label htmlFor={f("l97-rendimiento")} className={labelCls}>Rendimiento anual esperado (%)</Label>
                 <select
                   id={f("l97-rendimiento")}
@@ -334,6 +335,7 @@ export function PensionCalculator() {
                   <option value="5">5% - Moderado (Recomendado)</option>
                   <option value="7">7% - Agresivo</option>
                 </select>
+                </div>
               </div>
             </div>
 
