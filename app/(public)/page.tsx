@@ -102,14 +102,29 @@ const testimonios = [
       "Gracias a PENSION+ logré una pensión de $26,639.00. Tenía dos años sin cotizar, llegué con ellos y no solo me pensioné sino que también me financiaron la MOD 40 y tengo una pensión digna.",
   },
   {
+    nombre: "María Elena G.",
+    lugar: "Guadalajara",
+    texto: "Me habían rechazado dos veces por un error en mi CURP. Lo corrigieron y en tres semanas tuve mi retiro.",
+  },
+  {
     nombre: "RAMON HERNANDEZ OCHOA",
     texto:
       "Gracias a que me acerqué con tiempo a PENSION+, me asesoraron y me llevaron de la mano para alcanzar una pensión de $30,036.00. Una buena pensión sí es posible.",
   },
   {
+    nombre: "José Luis R.",
+    lugar: "Monterrey",
+    texto: "Todo por WhatsApp, sin vueltas. Me depositaron y pagué hasta el final, tal como me dijeron.",
+  },
+  {
     nombre: "MARIA MAGDALENA MARTINEZ",
     texto:
       "Gracias a PENSION+ me pude pensionar ya que tenía muchos años sin cotizar y con su ayuda pude pensionarme, recuperé mis derechos y ya disfruto de una pensión.",
+  },
+  {
+    nombre: "Rosa María T.",
+    lugar: "CDMX",
+    texto: "No sabía ni mi NSS. Me llevaron de la mano en todo el trámite con mi AFORE.",
   },
 ]
 

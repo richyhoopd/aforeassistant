@@ -238,3 +238,35 @@ dialog[open]::backdrop {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Marquesina de reseñas: la pista duplicada recorre la mitad de su ancho y
+   reinicia sin costura. Pausa al pasar el cursor o enfocar. */
+.marquee {
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.marquee::-webkit-scrollbar {
+  display: none;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee var(--marquee-duration, 60s) linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
