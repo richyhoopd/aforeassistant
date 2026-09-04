@@ -60,14 +60,9 @@ const garantizada = [
 ]
 
 const ahorro = [
-  { texto: "Solo $2,000 pesos mensuales - menos que una salida al restaurante" },
-  { texto: "Rendimientos compuestos trabajando para ti por 25 años" },
-  { texto: "Retírate con tranquilidad financiera y disfruta tu vejez" },
-  { texto: "Protege a tu familia con un seguro de vida" },
-  { fuerte: "Solo 10 años de ahorro", texto: " - Del año 30 al 40 de tu vida" },
-  { fuerte: "Efecto multiplicador", texto: " - Tu dinero crece exponencialmente con el tiempo" },
-  { fuerte: "Inversión total:", texto: " $360,000 se convierten en +$1,225,000" },
-  { fuerte: "Libertad financiera", texto: " - Retírate antes de los 65 si lo deseas" },
+  { fuerte: "$2,000 al mes", texto: ", menos que una salida al restaurante." },
+  { fuerte: "$360,000 se convierten en +$1,225,000", texto: " si empiezas a los 30 y ahorras solo 10 años." },
+  { fuerte: "Seguro de vida incluido", texto: " para proteger a tu familia." },
 ]
 
 const causas = [
@@ -481,24 +476,19 @@ export default function HomePage() {
           <Reveal className="order-1 lg:order-2">
             <div>
               <h2 className={h2}>
-                Plan de Ahorro Para el Retiro 100% deducible de impuestos{" "}
+                Plan de Ahorro Para el Retiro, 100% deducible.{" "}
                 <span className="block text-primary-text">¡Aún Estás a Tiempo!</span>
               </h2>
-              <p className="mt-5 text-lg leading-relaxed text-ink">
-                Con solo $2,000 MXN al mes hasta los 65 años, podrías acumular:{" "}
-                <strong className="font-display text-2xl font-semibold tabular-nums">
-                  $1,929,394
-                </strong>{" "}
-                Para tu retiro digno y tranquilo
-              </p>
-              <p className="mt-4 text-lg leading-relaxed text-ink">
-                ¿Tienes 30 años? Necesitas un Plan Privado de Pensión: ahorra $3,000 al mes durante
-                10 años y a los 65 años podrías tener:{" "}
-                <strong className="font-display text-2xl font-semibold tabular-nums">
-                  +$1,225,000
-                </strong>{" "}
-                sin aportar un peso más después del año 10
-              </p>
+              <dl className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <dt className="text-[15px] text-muted-foreground">$2,000 al mes hasta los 65</dt>
+                  <dd className="font-display text-3xl font-semibold text-ink tabular-nums">$1,929,394</dd>
+                </div>
+                <div>
+                  <dt className="text-[15px] text-muted-foreground">$3,000 al mes, solo de los 30 a los 40</dt>
+                  <dd className="font-display text-3xl font-semibold text-ink tabular-nums">+$1,225,000</dd>
+                </div>
+              </dl>
               <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
                 {ahorro.map((b) => (
                   <li key={b.texto} className="flex items-start gap-2.5">
