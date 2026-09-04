@@ -20,7 +20,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-            <Logo tone="light" className="text-[28px] sm:text-[32px]" />
+            <Logo tone="light" priority className="h-6 sm:h-7" />
           </Link>
           <a
             href={WA_LINK}
@@ -40,7 +40,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
             <div>
-              <Logo tone="dark" className="text-[36px]" />
+              <Logo tone="dark" className="h-8" />
               <p className="mt-4 max-w-xs text-[15px] leading-relaxed">
                 Asesoría Financiera y Patrimonial especializada en maximizar tu pensión y asegurar tu
                 futuro.

@@ -1,27 +1,41 @@
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 /**
- * Wordmark tipográfico. El "+" sobre navy usa `--primary` (teal de marca);
- * sobre claro usa `--ring` #007A7A a cualquier tamaño: `--primary` sobre
- * off-white da 2.64:1 y no pasa ni el mínimo 3:1 de elemento gráfico
- * (verificado en `scripts/contrast.mjs`), así que no existe un tamaño en el
- * que el teal de marca sea legible sobre claro.
+ * Logotipo de marca: el wordmark real "Pensión+", recortado del logo completo
+ * (`ASSETS-PENSIONMAS/full-logo-pp.png`) sin el emblema y sin fondo.
+ *
+ * Se usa la versión plana de un solo color, no el original biselado: el sistema
+ * de `DESIGN.md` no tiene degradados ni relieves, y el logotipo original los
+ * trae los tres. Aplanarlo a `--ink` sobre claro y a blanco sobre navy conserva
+ * la forma de la marca y la mete en la paleta.
+ *
+ * El tamaño se controla con una clase de alto (`h-*`); el ancho va `auto` y la
+ * proporción la fija el `width`/`height` intrínseco, así que no hay salto de
+ * layout al cargar.
  */
-export function Logo({ tone, className }: { tone: "light" | "dark"; className?: string }) {
+const SRC = {
+  light: "/images/logo-pensionmas-navy.png",
+  dark: "/images/logo-pensionmas-blanco.png",
+} as const
+
+export function Logo({
+  tone,
+  className,
+  priority = false,
+}: {
+  tone: "light" | "dark"
+  className?: string
+  priority?: boolean
+}) {
   return (
-    <span
-      role="img"
-      aria-label="Pensión+"
-      className={cn(
-        "inline-flex items-baseline font-display font-medium lowercase leading-none tracking-[-0.02em]",
-        tone === "dark" ? "text-white" : "text-ink",
-        className
-      )}
-    >
-      pensión
-      <span aria-hidden className={cn("ml-0.5 font-bold", tone === "dark" ? "text-primary" : "text-ring")}>
-        +
-      </span>
-    </span>
+    <Image
+      src={SRC[tone]}
+      alt="Pensión+"
+      width={1255}
+      height={240}
+      priority={priority}
+      className={cn("w-auto", className)}
+    />
   )
 }

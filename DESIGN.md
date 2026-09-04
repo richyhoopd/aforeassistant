@@ -23,7 +23,7 @@ Hero y CTA en navy sólido; cuerpo en off-white. Teal para acción y curvas; oro
 | `--muted-on-navy` | `oklch(0.802 0.02 260)` | #B7BFCC | secundario sobre navy |
 | `--navy-2` | `oklch(0.293 0.061 258)` | #182C4A | paneles dentro de navy |
 | `--border` | `oklch(0.901 0.014 89)` | #E2DED4 | hairlines |
-| `--ring` | `oklch(0.525 0.09 195)` | #007A7A | foco; "+" del logo sobre claro; hover de botón teal |
+| `--ring` | `oklch(0.525 0.09 195)` | #007A7A | anillo de foco; hover de botón teal |
 
 Reglas duras: teal nunca como texto sobre claro; blanco nunca sobre teal; oro nunca como texto sobre claro. Verificación: `node scripts/contrast.mjs`.
 
@@ -42,7 +42,12 @@ Reglas duras: teal nunca como texto sobre claro; blanco nunca sobre teal; oro nu
 
 ## Components
 
-- **Logo** (`components/brand/Logo.tsx`): tipográfico, Outfit 500 minúsculas, "+" teal. `tone="dark"` sobre navy usa `--primary`; `tone="light"` sobre claro usa `--ring` **a cualquier tamaño** (ver la nota de contraste de arriba: no existe umbral por tamaño). Header 28/32px, footer 36px. Lleva `role="img"` + `aria-label="Pensión+"`. El hero no repite el wordmark.
+- **Logo** (`components/brand/Logo.tsx`): el **logotipo real de la marca**, no una reconstrucción tipográfica. Se recortó del logo completo (`ASSETS-PENSIONMAS/full-logo-pp.png`, 3490×1144, ya con alfa) quitando el emblema del ave y la familia: entre emblema y texto hay un hueco limpio de columnas vacías en x 1014-1116, y el corte va ahí. El wordmark queda en 2275×435 y se sirve a 1255×240.
+  Se usa **aplanado a un solo color**, no el original biselado: el original trae degradado, relieve y sombra, y las tres cosas están prohibidas en este sistema. Aplanar conserva la forma de la marca y la mete en la paleta.
+  - `tone="light"` (sobre claro) → `logo-pensionmas-navy.png`, relleno `--ink` #10213A, 14.56:1 sobre off-white.
+  - `tone="dark"` (sobre navy) → `logo-pensionmas-blanco.png`, relleno blanco, 16.15:1 sobre navy.
+  El tamaño se da con una clase de alto (`h-6 sm:h-7` en el header, `h-8` en footer y 404); el ancho va `auto` y la proporción la fijan `width`/`height` intrínsecos, así que no hay salto de layout. `alt="Pensión+"`. El header lo carga con `priority`. El hero no repite el wordmark.
+  Los PNG se generan sin dependencias: `scripts/` no lo incluye porque fue un recorte de una sola vez, hecho con un códec PNG de stdlib (`zlib`) y reducción por promedio de área en alfa premultiplicado, para que no queden halos oscuros en los bordes.
 - **Curvas** (`components/brand/Curvas.tsx`): las dos curvas del logo en SVG, opacidad plena. `strokeWidth` es el trazo teal y el oro va medio punto por debajo. Hero y paneles navy grandes a **3** (oro 2.5); panel de resultado de la calculadora a 2.5 (oro 2). El hero las anima con `.draw-curve`.
 - **WhatsAppIcon** (`components/brand/WhatsAppIcon.tsx`): glifo oficial de WhatsApp (Simple Icons), `viewBox="0 0 24 24"`, `fill="currentColor"`, `aria-hidden`. **Es el único ícono para WhatsApp**: header, link del hero, `WaLink` de la calculadora, CTAs de ahorro, CTA final y footer. `MessageCircle` de lucide está prohibido para este uso y ya no se importa en ningún lado.
 - **HeroShowcase** (`components/landing/HeroShowcase.tsx`): reseñas con avatar, nombre, lugar, texto y calificación. Exporta `HeroShowcase` (columna completa, solo desde `lg`) y `HeroProof` (avatares apilados + conteo, bajo `lg`) para no romper los topes de altura del hero.
