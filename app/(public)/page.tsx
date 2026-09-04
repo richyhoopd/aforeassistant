@@ -229,6 +229,7 @@ export default function HomePage() {
       >
         <Curvas
           animate
+          wave
           strokeWidth={3}
           className="pointer-events-none absolute bottom-0 right-0 w-[85%] max-w-3xl"
         />

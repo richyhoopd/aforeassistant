@@ -40,6 +40,8 @@ Reglas duras: teal nunca como texto sobre claro; blanco nunca sobre teal; oro nu
 
 `--radius: 0.75rem`. Botones e inputs `rounded-lg`, cards `rounded-2xl`, paneles `rounded-3xl`.
 
+**Card de la calculadora (escala propia, muy redonda):** card grande 32px · controles y CTA 18px · panel interior 24px · píldoras full. La teja de ícono del estado vacío va a 14px y el checkbox a 7px (**no** `rounded-md`: con `--radius: 0.75rem` esa clase computa 10px y sobre una caja de 20px da un círculo, que se lee como radio button). Dentro de esa card ningún radio se sale de esa escala: si un elemento nuevo no encaja en 32 / 24 / 18 / 14 / full, es que no pertenece ahí.
+
 ## Components
 
 - **Logo** (`components/brand/Logo.tsx`): el wordmark "pensión+" del logotipo oficial (imagen de Ricardo, 1280×1280 sobre navy) con el fondo eliminado por chroma de distancia al navy y des-premultiplicado en los bordes. Recorte 818×191 solo del texto; las dos curvas del emblema van aparte como `Curvas` (SVG). Sin bisel ni degradado: el original ya es plano.
@@ -50,7 +52,13 @@ Reglas duras: teal nunca como texto sobre claro; blanco nunca sobre teal; oro nu
 - **WhatsAppIcon** (`components/brand/WhatsAppIcon.tsx`): glifo oficial de WhatsApp (Simple Icons), `viewBox="0 0 24 24"`, `fill="currentColor"`, `aria-hidden`. **Es el único ícono para WhatsApp**: header, link del hero, `WaLink` de la calculadora, CTAs de ahorro, CTA final y footer. `MessageCircle` de lucide está prohibido para este uso y ya no se importa en ningún lado.
 - **HeroShowcase** (`components/landing/HeroShowcase.tsx`): reseñas con avatar, nombre, lugar, texto y calificación. Exporta `HeroShowcase` (columna completa, solo desde `lg`) y `HeroProof` (avatares apilados + conteo, bajo `lg`) para no romper los topes de altura del hero.
 - **Hero + calculadora (la costura)**: el hero reserva bajo su contenido una franja de navy (`pb-28 md:pb-32`) y la calculadora la muerde (`-mt-16 md:-mt-20`, `z-10`). Contrato medible: la **foto** sí se mete bajo la card (~48px en móvil, ~64px desde `md`), pero la **columna de reseñas y el texto del hero** conservan ≥ 40px de aire respecto al borde superior de la card. Topes de altura del hero: ≤ 560px desde 768px de ancho, ≤ 640px en 390px. Las reseñas en columna solo aparecen desde `lg`; abajo va `HeroProof` (avatares apilados + conteo), porque las tarjetas completas rompen los topes y su contenido ya vive en la sección de testimonios.
-- **Calculadora**: card blanca con `.card-shadow`; tabs segmentadas (activa navy); inputs 48px sin borde sobre `--secondary`; resultado en panel navy con cifra en oro.
+- **Calculadora** (`components/pension/PensionCalculator.tsx`): card blanca `rounded-[32px]` con `.card-shadow`, `p-5 sm:p-8`. **Cabe en un solo viewport**: encabezado en una fila desde `md` (h2 a la izquierda, segmented control de leyes a la derecha), sin subtítulo, y `lg:grid-cols-[1.1fr_0.9fr]` con el formulario a la izquierda y el resultado a la derecha. Topes medidos: **≤ 780px de alto en 1440×900 y ≤ 720px en 390/500×844**, con `scroll-mt-24`. Si un campo nuevo rompe el tope, no entra.
+  - Los campos van en `grid-cols-2` dentro del formulario (no en columna), para que el formulario mida la mitad de alto. Labels con `sm:min-h-[2.35rem]`: reservan dos líneas para que los inputs de una misma fila queden a la misma altura sin importar cuánto envuelva el texto.
+  - Controles: **sin borde**, relleno `bg-secondary`, `rounded-[18px] h-12 px-4`, hover un tinte más oscuro, foco `ring-2 ring-ring/40` **sin offset ni borde**, error `ring-2 ring-destructive/50` + mensaje en texto (nunca caja). CTA principal a ancho completo con el mismo radio y alto. `border-border` está prohibido en controles: el hairline es para separar superficies, no para dibujar cajas de formulario.
+  - Nada de textos de ayuda bajo los inputs: el ejemplo vive en el `placeholder` ("Ej. 1,300"). Label `mb-1 leading-tight`, grupos a `gap-3`.
+  - Estado vacío: **no es una caja**. Lista "Ten a la mano" con teja `size-10 rounded-[14px] bg-secondary text-primary-text` y texto de 17px, distinta por ley. Solo desde `lg`: en móvil no se muestra, para no gastar viewport. El disclaimer es **una línea** bajo el botón en móvil y bajo la columna derecha en desktop.
+  - Labels **sin numerar** ("1) 2) 3) 4)" queda prohibido) y sin h3 duplicando el h2 de la card.
+  - Resultado: panel navy `rounded-[24px]` con cifra en oro, subpaneles `bg-navy-2 rounded-2xl`, `anim-fade-up` y `aria-live="polite"`.
 - **Cards Ley 73 / Ley 97**: 73 navy, 97 blanca. Sin contorno.
 - **FAQ**: `<details>` con hairlines, "+" que rota 45°.
 - **TablaGarantizada** (`components/landing/TablaGarantizada.tsx`): `<table>` semántica con la pensión garantizada por rango de UMA y edad. Cabecera navy con texto blanco, filas alternas `bg-secondary/60`, hairlines `border-border`, `tabular-nums`, `overflow-x-auto` en móvil dentro de una card `.card-shadow`. Sin colores inline.
@@ -69,10 +77,15 @@ Reglas duras: teal nunca como texto sobre claro; blanco nunca sobre teal; oro nu
 - **Numerales 01/02/03 como andamiaje.** Solo si la sección es de verdad una secuencia ordenada. Las dos estrategias no lo son y van sin numerar.
 - **Mosaicos de cards idénticas** con teja redondeada de ícono sobre cada encabezado. Los tres diferenciadores van como fila tipográfica con hairline superior e ícono de 20px en línea con el título.
 - **`MessageCircle` para WhatsApp.** Ver `WhatsAppIcon`.
+- **Formularios que no caben en un viewport.** Si el usuario tiene que hacer scroll para ver el botón de la calculadora, el formulario está mal armado: campos en dos columnas antes que campos apilados.
+- **Cajas de estado vacío.** Un panel que solo dice "Resultados / completa el formulario" es relleno: ocupa el peso visual de un resultado sin dar información. El vacío se resuelve con contenido útil sin fondo (ver Calculadora) o no se resuelve.
+- **Radios mezclados dentro de un mismo componente.** Card a 16, input a 8, tab a 6 y botón a 8 es lo que hace que una UI se lea como generada. Una card = una escala de radios.
+- **Labels numerados** ("1) …") como andamiaje de un formulario corto.
+- **`dark:`** en cualquier clase. No hay modo oscuro.
 
 ## Motion
 
-`.anim-rise` en hero; `Reveal` (visible por defecto, IntersectionObserver); `.draw-curve` dibuja las curvas una vez; `.anim-fade-up` en el resultado. Botones `transition-colors 150ms`. `.card-lift` en las reseñas del hero: `translateY(-3px)` + sombra más profunda en 220ms (ease-out-quint), solo transform y sombra. Todo se apaga con `prefers-reduced-motion`. Sin framer-motion.
+`.anim-rise` en hero; `Reveal` (visible por defecto, IntersectionObserver); `.draw-curve` dibuja las curvas una vez; en el hero además ondulan sin parar (`wave`, SMIL `<animate d>` a 9s y 11s con easing suave, omitido con `prefers-reduced-motion`); `.anim-fade-up` en el resultado. Botones `transition-colors 150ms`. `.card-lift` en las reseñas del hero: `translateY(-3px)` + sombra más profunda en 220ms (ease-out-quint), solo transform y sombra. Todo se apaga con `prefers-reduced-motion`. Sin framer-motion.
 
 **Regla dura: ninguna animación puede ser lo único que hace visible un contenido.** En un documento oculto (pestaña en segundo plano, prerender, captura de OG) el navegador congela los pasos de render: una animación con `fill: both` se queda clavada en su fotograma inicial y un `IntersectionObserver` no entrega nada. Sin guardas, el hero se servía en `opacity: 0` y todo lo que va bajo el fold también. Dos guardas lo cubren:
 
