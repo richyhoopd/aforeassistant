@@ -23,7 +23,7 @@ export function Faq({ items }: { items: { q: string; a: string }[] }) {
       id="preguntas"
       className="mx-auto w-full max-w-6xl scroll-mt-24 px-4 pt-24 sm:px-6 sm:pt-32"
     >
-      <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+      <div className="grid items-start gap-10 lg:grid-cols-[0.75fr_1.65fr] lg:gap-14">
         <div className="lg:sticky lg:top-28">
           <div className="mb-7 flex size-20 items-center justify-center rounded-[20px] bg-ink lg:mb-10">
             <Logo tone="dark" className="w-14" />
@@ -81,7 +81,7 @@ export function Faq({ items }: { items: { q: string; a: string }[] }) {
                   className="acc-panel"
                 >
                   <div>
-                    <p className="max-w-2xl pb-5 leading-relaxed text-muted-foreground lg:pb-6 lg:pr-12">
+                    <p className="pb-5 leading-relaxed text-muted-foreground lg:pb-6 lg:pr-8">
                       {item.a}
                     </p>
                   </div>

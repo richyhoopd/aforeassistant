@@ -5,6 +5,7 @@ import { WhatsAppIcon } from "@/components/brand/WhatsAppIcon"
 import { Faq } from "@/components/landing/Faq"
 import { HeroProof, HeroShowcase } from "@/components/landing/HeroShowcase"
 import { MoneyBackdrop } from "@/components/landing/MoneyBackdrop"
+import { TestimonialsCarousel } from "@/components/landing/TestimonialsCarousel"
 import { Reveal } from "@/components/landing/Reveal"
 import { TablaGarantizada } from "@/components/landing/TablaGarantizada"
 import { PensionCalculator } from "@/components/pension/PensionCalculator"
@@ -60,14 +61,9 @@ const garantizada = [
 ]
 
 const ahorro = [
-  { texto: "Solo $2,000 pesos mensuales - menos que una salida al restaurante" },
-  { texto: "Rendimientos compuestos trabajando para ti por 25 años" },
-  { texto: "Retírate con tranquilidad financiera y disfruta tu vejez" },
-  { texto: "Protege a tu familia con un seguro de vida" },
-  { fuerte: "Solo 10 años de ahorro", texto: " - Del año 30 al 40 de tu vida" },
-  { fuerte: "Efecto multiplicador", texto: " - Tu dinero crece exponencialmente con el tiempo" },
-  { fuerte: "Inversión total:", texto: " $360,000 se convierten en +$1,225,000" },
-  { fuerte: "Libertad financiera", texto: " - Retírate antes de los 65 si lo deseas" },
+  { fuerte: "$2,000 al mes", texto: ", menos que una salida al restaurante." },
+  { fuerte: "$360,000 se convierten en +$1,225,000", texto: " si empiezas a los 30 y ahorras solo 10 años." },
+  { fuerte: "Seguro de vida incluido", texto: " para proteger a tu familia." },
 ]
 
 const causas = [
@@ -106,23 +102,31 @@ const testimonios = [
       "Gracias a PENSION+ logré una pensión de $26,639.00. Tenía dos años sin cotizar, llegué con ellos y no solo me pensioné sino que también me financiaron la MOD 40 y tengo una pensión digna.",
   },
   {
+    nombre: "María Elena G.",
+    lugar: "Guadalajara",
+    texto: "Me habían rechazado dos veces por un error en mi CURP. Lo corrigieron y en tres semanas tuve mi retiro.",
+  },
+  {
     nombre: "RAMON HERNANDEZ OCHOA",
     texto:
       "Gracias a que me acerqué con tiempo a PENSION+, me asesoraron y me llevaron de la mano para alcanzar una pensión de $30,036.00. Una buena pensión sí es posible.",
+  },
+  {
+    nombre: "José Luis R.",
+    lugar: "Monterrey",
+    texto: "Todo por WhatsApp, sin vueltas. Me depositaron y pagué hasta el final, tal como me dijeron.",
   },
   {
     nombre: "MARIA MAGDALENA MARTINEZ",
     texto:
       "Gracias a PENSION+ me pude pensionar ya que tenía muchos años sin cotizar y con su ayuda pude pensionarme, recuperé mis derechos y ya disfruto de una pensión.",
   },
+  {
+    nombre: "Rosa María T.",
+    lugar: "CDMX",
+    texto: "No sabía ni mi NSS. Me llevaron de la mano en todo el trámite con mi AFORE.",
+  },
 ]
-
-function initials(nombre: string): string {
-  const palabras = nombre.trim().split(/\s+/)
-  const primera = palabras[0]?.[0] ?? ""
-  const ultima = palabras.length > 1 ? palabras[palabras.length - 1]?.[0] ?? "" : ""
-  return (primera + ultima).toUpperCase()
-}
 
 const faqs = [
   {
@@ -142,20 +146,8 @@ const faqs = [
     a: "Cesantía en edad avanzada: Desde los 60 años. Vejez: A partir de los 65 años (aplica para ambas leyes).",
   },
   {
-    q: "¿Si tengo más de 500 semanas me puedo pensionar aunque no tenga 60 años de edad?",
-    a: "No, porque un requisito es la edad.",
-  },
-  {
-    q: "¿Me conviene invertirle a mi modalidad 40 si tengo menos de 1300 semanas?",
-    a: "No, porque para el IMSS 500 semanas es un requisito y de ahí incrementa hasta un 2-2.5% más por año trabajado.",
-  },
-  {
     q: "¿Me puedo pensionar si tengo más de 6 años sin cotizar aunque tenga más de 60 años y más de 500 semanas cotizadas?",
     a: "No, el IMSS contempla un requisito que se llama vigencia de derechos, que si un trabajador deja de cotizar más de 6 años para pensionarse tiene que cotizar un año obrero patronal.",
-  },
-  {
-    q: "¿Puedo mejorar mi pensión?",
-    a: "Sí, con estrategias como: Modalidad 40 (Ley 73): Permite seguir cotizando voluntariamente. Aportaciones voluntarias a tu AFORE (Ley 97). Plan privado de pensión (PPR).",
   },
   {
     q: "¿Dónde puedo consultar mis semanas cotizadas?",
@@ -164,14 +156,6 @@ const faqs = [
   {
     q: "¿Si me cambio de AFORE pierdo semanas?",
     a: "No, no tiene relación el cambio de AFORE con las semanas cotizadas.",
-  },
-  {
-    q: "¿Si me cambio de AFORE pierdo dinero?",
-    a: "No, aunque es cierto que puede haber minusvalía. Si al cambio de AFORE aparece menos, es porque tu AFORE anterior tuvo minusvalía y tomaste una buena decisión al cambiarte. Porque en tu AFORE que te acabas de cambiar no tenía tu dinero no pudo haber invertido mal.",
-  },
-  {
-    q: "¿Cuál es la diferencia entre Ley 73 y Ley 97?",
-    a: "La Ley 73 garantiza una pensión basada en tu salario promedio de los últimos 5 años y las semanas cotizadas, mientras que la Ley 97 depende del saldo acumulado en tu AFORE. Para muchas personas, la Ley 73 ofrece pensiones más altas, especialmente si cotizaron antes de 1997.",
   },
   {
     q: "¿Qué es la Modalidad 40 y cómo me beneficia?",
@@ -330,9 +314,8 @@ export default function HomePage() {
             <div>
               <h2 className={h2}>¿Sabes Cuánto Es Tu Pensión Garantizada en 2025?</h2>
               <p className="mt-5 leading-relaxed text-muted-foreground">
-                Si cotizas bajo la <strong className="font-bold text-ink">Ley 97 del IMSS</strong> y
-                no alcanzas el ahorro suficiente en tu AFORE, el gobierno te garantiza una pensión
-                mínima. Pero… ¿es suficiente para vivir con tranquilidad?
+                Si cotizas bajo la <strong className="font-bold text-ink">Ley 97</strong> y tu AFORE
+                no alcanza, el gobierno te garantiza un mínimo. La pregunta es si alcanza para vivir.
               </p>
               <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
                 {garantizada.map((g) => (
@@ -352,21 +335,8 @@ export default function HomePage() {
                 Montos de referencia 2025 publicados por el IMSS; verifica el vigente antes de
                 decidir.
               </p>
-              <p className="mt-6 leading-relaxed text-muted-foreground">
-                La <strong className="font-bold text-ink">Pensión Mínima Garantizada</strong> bajo la
-                Ley 97 asegura un ingreso mensual entre{" "}
-                <strong className="font-bold text-ink">$3,414 y $10,732</strong> pesos. Sin embargo,
-                la mayoría de los trabajadores recibe alrededor de{" "}
-                <strong className="font-bold text-ink">$6,000</strong> al mes, una cantidad
-                insuficiente para cubrir gastos básicos de vivienda, salud y alimentación.
-              </p>
-              <p className="mt-4 leading-relaxed text-muted-foreground">
-                Optimiza tu AFORE, realiza aportaciones voluntarias o explora la{" "}
-                <strong className="font-bold text-ink">Modalidad 40</strong> antes de llegar a la
-                edad de retiro. Cada año cuenta.
-              </p>
               <p className="mt-6 font-semibold text-ink">
-                Aún estás a tiempo de mejorar tu futuro financiero.
+                Aportaciones voluntarias o Modalidad 40 antes del retiro cambian ese número. Aún estás a tiempo.
               </p>
               <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-8 ${btnTeal}`}>
                 <WhatsAppIcon className="size-5" />
@@ -495,24 +465,19 @@ export default function HomePage() {
           <Reveal className="order-1 lg:order-2">
             <div>
               <h2 className={h2}>
-                Plan de Ahorro Para el Retiro 100% deducible de impuestos{" "}
+                Plan de Ahorro Para el Retiro, 100% deducible.{" "}
                 <span className="block text-primary-text">¡Aún Estás a Tiempo!</span>
               </h2>
-              <p className="mt-5 text-lg leading-relaxed text-ink">
-                Con solo $2,000 MXN al mes hasta los 65 años, podrías acumular:{" "}
-                <strong className="font-display text-2xl font-semibold tabular-nums">
-                  $1,929,394
-                </strong>{" "}
-                Para tu retiro digno y tranquilo
-              </p>
-              <p className="mt-4 text-lg leading-relaxed text-ink">
-                ¿Tienes 30 años? Necesitas un Plan Privado de Pensión: ahorra $3,000 al mes durante
-                10 años y a los 65 años podrías tener:{" "}
-                <strong className="font-display text-2xl font-semibold tabular-nums">
-                  +$1,225,000
-                </strong>{" "}
-                sin aportar un peso más después del año 10
-              </p>
+              <dl className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <dt className="text-[15px] text-muted-foreground">$2,000 al mes hasta los 65</dt>
+                  <dd className="font-display text-3xl font-semibold text-ink tabular-nums">$1,929,394</dd>
+                </div>
+                <div>
+                  <dt className="text-[15px] text-muted-foreground">$3,000 al mes, solo de los 30 a los 40</dt>
+                  <dd className="font-display text-3xl font-semibold text-ink tabular-nums">+$1,225,000</dd>
+                </div>
+              </dl>
               <ul className="mt-6 space-y-3 leading-relaxed text-muted-foreground">
                 {ahorro.map((b) => (
                   <li key={b.texto} className="flex items-start gap-2.5">
@@ -534,58 +499,32 @@ export default function HomePage() {
       </section>
 
       {/* 6. Por qué Pensión+ */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <section className="relative mt-24 overflow-hidden bg-ink py-20 text-white sm:mt-32 sm:py-28">
+        <MoneyBackdrop tone="dark" />
+        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6">
           <Reveal>
-            <div className="lg:sticky lg:top-28">
-              <h2 className={h2}>Por qué Pensión+</h2>
-              <ul className="mt-8 space-y-7">
-                {razones.map((r) => (
-                  <li key={r.title} className="flex gap-4">
-                    <span
-                      aria-hidden
-                      className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-secondary text-primary-text"
-                    >
-                      <r.icon className="size-5" />
-                    </span>
-                    <div>
-                      <h3 className="font-display text-xl font-semibold text-ink">{r.title}</h3>
-                      <p className="mt-1 leading-relaxed text-muted-foreground">{r.body}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <div>
-              <p className="font-display text-xl font-semibold text-ink">
-                Lo Que Dicen Nuestros Clientes
-              </p>
-              <p className="mt-1 leading-relaxed text-muted-foreground">
-                Miles de personas ya han optimizado su pensión con nuestra asesoría
-              </p>
-              <div className="mt-6 space-y-4">
-                {testimonios.map((t) => (
-                  <figure key={t.nombre} className="card-shadow rounded-[24px] bg-card p-6">
-                    <blockquote className="leading-relaxed text-foreground/85">{t.texto}</blockquote>
-                    <figcaption className="mt-5 flex items-center gap-4">
-                      <span
-                        aria-hidden
-                        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary font-display text-base font-semibold text-primary-text"
-                      >
-                        {initials(t.nombre)}
-                      </span>
-                      <span className="font-display text-[15px] font-semibold leading-snug text-ink">
-                        {t.nombre}
-                      </span>
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
-            </div>
+            <h2 className={h2Navy}>Por qué Pensión+</h2>
+            <ul className="mt-10 grid gap-8 sm:grid-cols-3">
+              {razones.map((r) => (
+                <li key={r.title} className="flex gap-4">
+                  <span
+                    aria-hidden
+                    className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-navy-2 text-primary"
+                  >
+                    <r.icon className="size-5" />
+                  </span>
+                  <div>
+                    <h3 className="font-display text-xl font-semibold text-white">{r.title}</h3>
+                    <p className="mt-1 leading-relaxed text-muted-on-navy">{r.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </div>
+        <Reveal delay={0.1} className="relative mt-14">
+          <TestimonialsCarousel items={testimonios} />
+        </Reveal>
       </section>
 
       {/* 7. Preguntas frecuentes */}
@@ -635,17 +574,6 @@ export default function HomePage() {
                   className="aspect-4/3 w-full rounded-[28px] object-cover"
                 />
               </div>
-            </div>
-            <div className="relative mt-12 rounded-[24px] bg-navy-2 p-7 sm:p-9">
-              <h3 className="font-display text-2xl font-semibold text-white">Es urgente</h3>
-              <p className="mt-3 max-w-2xl leading-relaxed text-muted-on-navy">
-                Los derechos de la Ley 73 no durarán para siempre. Los últimos trabajadores que
-                pueden aprovecharla se jubilarán entre 2039-2044.
-              </p>
-              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`mt-6 ${btnTealOnNavy}`}>
-                <WhatsAppIcon className="size-5" />
-                Verificar mis derechos ahora
-              </a>
             </div>
           </div>
         </Reveal>

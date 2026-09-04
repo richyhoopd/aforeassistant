@@ -183,6 +183,12 @@ dialog[open]::backdrop {
   background-size: 240px 240px;
 }
 
+/* Misma figura en trazo blanco, para secciones navy. */
+.money-paper {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1.4'%3E%3Cg transform='rotate(-9 68 52)'%3E%3Crect x='16' y='28' width='104' height='48' rx='9'/%3E%3Crect x='24' y='36' width='88' height='32' rx='5'/%3E%3Ccircle cx='68' cy='52' r='13'/%3E%3C/g%3E%3Ccircle cx='192' cy='60' r='19'/%3E%3Ccircle cx='192' cy='60' r='14'/%3E%3Cg transform='rotate(8 166 178)'%3E%3Crect x='114' y='154' width='104' height='48' rx='9'/%3E%3Crect x='122' y='162' width='88' height='32' rx='5'/%3E%3Ccircle cx='166' cy='178' r='13'/%3E%3C/g%3E%3Ccircle cx='52' cy='176' r='14'/%3E%3Ccircle cx='52' cy='176' r='10'/%3E%3C/g%3E%3Cg fill='%23ffffff' font-family='Georgia, serif' font-size='16' text-anchor='middle'%3E%3Ctext x='68' y='58' transform='rotate(-9 68 52)'%3E$%3C/text%3E%3Ctext x='192' y='66'%3E$%3C/text%3E%3Ctext x='166' y='184' transform='rotate(8 166 178)'%3E$%3C/text%3E%3Ctext x='52' y='182' font-size='13'%3E$%3C/text%3E%3C/g%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+
 /* Capa de realce: la máscara la limita a un círculo de 120px bajo el cursor,
    así que solo se avivan las figuras por las que pasa el mouse. */
 .money-spot {
@@ -222,5 +228,39 @@ dialog[open]::backdrop {
 @media (prefers-reduced-motion: reduce) {
   .acc-panel {
     transition: none;
+  }
+}
+
+/* Pista del carrusel: sin barra visible, el scroll sigue funcionando. */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Marquesina de reseñas: la pista duplicada recorre la mitad de su ancho y
+   reinicia sin costura. Pausa al pasar el cursor o enfocar. */
+.marquee {
+  scrollbar-width: none;
+}
+.marquee::-webkit-scrollbar {
+  display: none;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee var(--marquee-duration, 60s) linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
   }
 }

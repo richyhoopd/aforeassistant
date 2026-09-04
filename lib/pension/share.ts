@@ -1,6 +1,6 @@
 import { mxn, type Ley73Form, type Ley73Result, type Ley97Form, type Ley97Result } from "./calc"
 
-export const WA_NUMBER = "523349687609"
+export const WA_NUMBER = "523313013253"
 
 const LEGAL = "Estimación informativa; el dictamen final lo emite el IMSS."
 
