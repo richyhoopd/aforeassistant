@@ -146,20 +146,8 @@ const faqs = [
     a: "Cesantía en edad avanzada: Desde los 60 años. Vejez: A partir de los 65 años (aplica para ambas leyes).",
   },
   {
-    q: "¿Si tengo más de 500 semanas me puedo pensionar aunque no tenga 60 años de edad?",
-    a: "No, porque un requisito es la edad.",
-  },
-  {
-    q: "¿Me conviene invertirle a mi modalidad 40 si tengo menos de 1300 semanas?",
-    a: "No, porque para el IMSS 500 semanas es un requisito y de ahí incrementa hasta un 2-2.5% más por año trabajado.",
-  },
-  {
     q: "¿Me puedo pensionar si tengo más de 6 años sin cotizar aunque tenga más de 60 años y más de 500 semanas cotizadas?",
     a: "No, el IMSS contempla un requisito que se llama vigencia de derechos, que si un trabajador deja de cotizar más de 6 años para pensionarse tiene que cotizar un año obrero patronal.",
-  },
-  {
-    q: "¿Puedo mejorar mi pensión?",
-    a: "Sí, con estrategias como: Modalidad 40 (Ley 73): Permite seguir cotizando voluntariamente. Aportaciones voluntarias a tu AFORE (Ley 97). Plan privado de pensión (PPR).",
   },
   {
     q: "¿Dónde puedo consultar mis semanas cotizadas?",
@@ -168,14 +156,6 @@ const faqs = [
   {
     q: "¿Si me cambio de AFORE pierdo semanas?",
     a: "No, no tiene relación el cambio de AFORE con las semanas cotizadas.",
-  },
-  {
-    q: "¿Si me cambio de AFORE pierdo dinero?",
-    a: "No, aunque es cierto que puede haber minusvalía. Si al cambio de AFORE aparece menos, es porque tu AFORE anterior tuvo minusvalía y tomaste una buena decisión al cambiarte. Porque en tu AFORE que te acabas de cambiar no tenía tu dinero no pudo haber invertido mal.",
-  },
-  {
-    q: "¿Cuál es la diferencia entre Ley 73 y Ley 97?",
-    a: "La Ley 73 garantiza una pensión basada en tu salario promedio de los últimos 5 años y las semanas cotizadas, mientras que la Ley 97 depende del saldo acumulado en tu AFORE. Para muchas personas, la Ley 73 ofrece pensiones más altas, especialmente si cotizaron antes de 1997.",
   },
   {
     q: "¿Qué es la Modalidad 40 y cómo me beneficia?",
