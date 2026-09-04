@@ -105,24 +105,25 @@ const testimonios = [
     nombre: "MARIA DEL ROSARIO CORONA MORALES",
     texto:
       "Gracias a PENSION+ logré una pensión de $26,639.00. Tenía dos años sin cotizar, llegué con ellos y no solo me pensioné sino que también me financiaron la MOD 40 y tengo una pensión digna.",
-    avatar: "/images/avatar-1.jpg",
-    alt: "Retrato de una mujer mayor sonriendo",
   },
   {
     nombre: "RAMON HERNANDEZ OCHOA",
     texto:
       "Gracias a que me acerqué con tiempo a PENSION+, me asesoraron y me llevaron de la mano para alcanzar una pensión de $30,036.00. Una buena pensión sí es posible.",
-    avatar: "/images/avatar-2.jpg",
-    alt: "Retrato de un hombre sonriendo",
   },
   {
     nombre: "MARIA MAGDALENA MARTINEZ",
     texto:
       "Gracias a PENSION+ me pude pensionar ya que tenía muchos años sin cotizar y con su ayuda pude pensionarme, recuperé mis derechos y ya disfruto de una pensión.",
-    avatar: "/images/avatar-3.jpg",
-    alt: "Retrato de una mujer hablando por teléfono",
   },
 ]
+
+function initials(nombre: string): string {
+  const palabras = nombre.trim().split(/\s+/)
+  const primera = palabras[0]?.[0] ?? ""
+  const ultima = palabras.length > 1 ? palabras[palabras.length - 1]?.[0] ?? "" : ""
+  return (primera + ultima).toUpperCase()
+}
 
 const faqs = [
   {
@@ -367,6 +368,9 @@ export default function HomePage() {
               </Reveal>
             ))}
           </div>
+          <p className="mt-4 text-center text-[15px] text-muted-foreground">
+            Montos de referencia 2025 publicados por el IMSS; verifica el vigente antes de decidir.
+          </p>
           <Reveal delay={0.2}>
             <p className="mx-auto mt-10 max-w-3xl text-center leading-relaxed text-muted-foreground">
               La <strong className="font-bold text-ink">Pensión Mínima Garantizada</strong> bajo la Ley
@@ -574,14 +578,12 @@ export default function HomePage() {
               <figure className="card-shadow flex h-full flex-col rounded-2xl bg-card p-7">
                 <blockquote className="leading-relaxed text-foreground/85">{t.texto}</blockquote>
                 <figcaption className="mt-auto flex items-center gap-4 pt-6">
-                  <Image
-                    src={t.avatar}
-                    alt={t.alt}
-                    width={160}
-                    height={160}
-                    sizes="56px"
-                    className="size-14 shrink-0 rounded-full object-cover"
-                  />
+                  <span
+                    aria-hidden
+                    className="flex size-12 shrink-0 items-center justify-center rounded-full bg-secondary font-display text-base font-semibold text-primary-text"
+                  >
+                    {initials(t.nombre)}
+                  </span>
                   <span className="font-display text-[15px] font-semibold leading-snug text-ink">
                     {t.nombre}
                   </span>
@@ -648,10 +650,10 @@ export default function HomePage() {
               </div>
               <div>
                 <Image
-                  src="/images/exito-whatsapp.jpg"
-                  alt="Hombre mayor sonriendo mientras lee un mensaje en su tableta con una taza en la mano"
-                  width={900}
-                  height={700}
+                  src="/images/asesoria-hombre.jpg"
+                  alt="Asesor conversando con un hombre mayor sobre su trámite de pensión"
+                  width={1200}
+                  height={800}
                   sizes="(min-width: 1024px) 45vw, 100vw"
                   className="aspect-4/3 w-full rounded-2xl object-cover"
                 />

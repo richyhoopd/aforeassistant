@@ -22,11 +22,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: "Pensión+ - Afore y Pensiones",
   description:
-    "Pesión más te asesora en calcular, optimizar y planear tu pensión y afore de forma sencilla.",
-  keywords: ["Pesión más", "afore", "pensiones", "retiro", "ahorro", "México", "cálculo de pensión"],
-  authors: [{ name: "Pesión más" }],
+    "Pensión+ te asesora en calcular, optimizar y planear tu pensión y afore de forma sencilla.",
+  keywords: ["Pensión+", "afore", "pensiones", "retiro", "ahorro", "México", "cálculo de pensión"],
+  authors: [{ name: "Pensión+" }],
   openGraph: {
-    title: "Pesión más - Afore y Pensiones",
+    title: "Pensión+ - Afore y Pensiones",
     description: "Descubre cómo mejorar tu pensión y planear tu retiro con pensión+.",
     url: SITE,
     siteName: "Pension+",

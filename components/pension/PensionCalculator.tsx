@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState } from "react"
+import { useId, useRef, useState } from "react"
 import { AlertCircle, Calculator, CheckCircle2, TrendingUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -39,6 +39,27 @@ function FieldError({ id, msg }: { id: string; msg?: string }) {
 export function PensionCalculator() {
   const uid = useId()
   const [tab, setTab] = useState<"ley73" | "ley97">("ley73")
+  const tabKeys = ["ley73", "ley97"] as const
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
+
+  const onTabListKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const currentIndex = tabKeys.indexOf(tab)
+    let nextIndex: number | null = null
+    if (e.key === "ArrowRight") {
+      nextIndex = (currentIndex + 1) % tabKeys.length
+    } else if (e.key === "ArrowLeft") {
+      nextIndex = (currentIndex - 1 + tabKeys.length) % tabKeys.length
+    } else if (e.key === "Home") {
+      nextIndex = 0
+    } else if (e.key === "End") {
+      nextIndex = tabKeys.length - 1
+    }
+    if (nextIndex === null) return
+    e.preventDefault()
+    const nextKey = tabKeys[nextIndex]
+    setTab(nextKey)
+    tabRefs.current[nextIndex]?.focus()
+  }
 
   const [l73, setL73] = useState<Ley73Form>({
     lastJobMonth: "",
@@ -103,20 +124,29 @@ export function PensionCalculator() {
       </div>
 
       <div className="flex justify-center">
-        <div className="inline-flex w-full max-w-sm rounded-lg bg-secondary p-1" role="tablist" aria-label="Ley aplicable">
+        <div
+          className="inline-flex w-full max-w-sm rounded-lg bg-secondary p-1"
+          role="tablist"
+          aria-label="Ley aplicable"
+          onKeyDown={onTabListKeyDown}
+        >
           {(
             [
               ["ley73", "Ley 73", Calculator],
               ["ley97", "Ley 97", TrendingUp],
             ] as const
-          ).map(([key, label, Icon]) => (
+          ).map(([key, label, Icon], index) => (
             <button
               key={key}
+              ref={(el) => {
+                tabRefs.current[index] = el
+              }}
               type="button"
               role="tab"
               id={f(`tab-${key}`)}
               aria-selected={tab === key}
               aria-controls={f(`panel-${key}`)}
+              tabIndex={tab === key ? 0 : -1}
               onClick={() => setTab(key)}
               className={`inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-md text-[15px] font-bold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                 tab === key ? "bg-ink text-white" : "text-muted-foreground hover:text-ink"
