@@ -230,3 +230,11 @@ dialog[open]::backdrop {
     transition: none;
   }
 }
+
+/* Pista del carrusel: sin barra visible, el scroll sigue funcionando. */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

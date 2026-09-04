@@ -5,6 +5,7 @@ import { WhatsAppIcon } from "@/components/brand/WhatsAppIcon"
 import { Faq } from "@/components/landing/Faq"
 import { HeroProof, HeroShowcase } from "@/components/landing/HeroShowcase"
 import { MoneyBackdrop } from "@/components/landing/MoneyBackdrop"
+import { TestimonialsCarousel } from "@/components/landing/TestimonialsCarousel"
 import { Reveal } from "@/components/landing/Reveal"
 import { TablaGarantizada } from "@/components/landing/TablaGarantizada"
 import { PensionCalculator } from "@/components/pension/PensionCalculator"
@@ -111,13 +112,6 @@ const testimonios = [
       "Gracias a PENSION+ me pude pensionar ya que tenía muchos años sin cotizar y con su ayuda pude pensionarme, recuperé mis derechos y ya disfruto de una pensión.",
   },
 ]
-
-function initials(nombre: string): string {
-  const palabras = nombre.trim().split(/\s+/)
-  const primera = palabras[0]?.[0] ?? ""
-  const ultima = palabras.length > 1 ? palabras[palabras.length - 1]?.[0] ?? "" : ""
-  return (primera + ultima).toUpperCase()
-}
 
 const faqs = [
   {
@@ -512,55 +506,28 @@ export default function HomePage() {
       {/* 6. Por qué Pensión+ */}
       <section className="relative mt-24 overflow-hidden bg-ink py-20 text-white sm:mt-32 sm:py-28">
         <MoneyBackdrop tone="dark" />
-        <div className="relative mx-auto grid w-full max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16">
+        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6">
           <Reveal>
-            <div className="lg:sticky lg:top-28">
-              <h2 className={h2Navy}>Por qué Pensión+</h2>
-              <ul className="mt-8 space-y-7">
-                {razones.map((r) => (
-                  <li key={r.title} className="flex gap-4">
-                    <span
-                      aria-hidden
-                      className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-navy-2 text-primary"
-                    >
-                      <r.icon className="size-5" />
-                    </span>
-                    <div>
-                      <h3 className="font-display text-xl font-semibold text-white">{r.title}</h3>
-                      <p className="mt-1 leading-relaxed text-muted-on-navy">{r.body}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <h2 className={h2Navy}>Por qué Pensión+</h2>
+            <ul className="mt-10 grid gap-8 sm:grid-cols-3">
+              {razones.map((r) => (
+                <li key={r.title} className="flex gap-4">
+                  <span
+                    aria-hidden
+                    className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-navy-2 text-primary"
+                  >
+                    <r.icon className="size-5" />
+                  </span>
+                  <div>
+                    <h3 className="font-display text-xl font-semibold text-white">{r.title}</h3>
+                    <p className="mt-1 leading-relaxed text-muted-on-navy">{r.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </Reveal>
-          <Reveal delay={0.1}>
-            <div>
-              <p className="font-display text-xl font-semibold text-white">
-                Lo Que Dicen Nuestros Clientes
-              </p>
-              <p className="mt-1 leading-relaxed text-muted-on-navy">
-                Miles de personas ya han optimizado su pensión con nuestra asesoría
-              </p>
-              <div className="mt-6 space-y-4">
-                {testimonios.map((t) => (
-                  <figure key={t.nombre} className="card-shadow rounded-[24px] bg-card p-6">
-                    <blockquote className="leading-relaxed text-foreground/85">{t.texto}</blockquote>
-                    <figcaption className="mt-5 flex items-center gap-4">
-                      <span
-                        aria-hidden
-                        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary font-display text-base font-semibold text-primary-text"
-                      >
-                        {initials(t.nombre)}
-                      </span>
-                      <span className="font-display text-[15px] font-semibold leading-snug text-ink">
-                        {t.nombre}
-                      </span>
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
-            </div>
+          <Reveal delay={0.1} className="mt-14">
+            <TestimonialsCarousel items={testimonios} />
           </Reveal>
         </div>
       </section>
