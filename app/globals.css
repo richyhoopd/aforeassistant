@@ -143,10 +143,27 @@
   animation: fade-up 0.2s ease-out both;
 }
 
+/* Entrada del diálogo de resultado: sube y escala apenas, 260ms ease-out-quint. */
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.anim-dialog-in {
+  animation: dialog-in 0.26s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+dialog[open]::backdrop {
+  animation: fade-in-backdrop 0.2s ease-out both;
+}
+@keyframes fade-in-backdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { transition: none; }
-  .anim-rise, .anim-fade-up { animation: none; }
+  .anim-rise, .anim-fade-up, .anim-dialog-in { animation: none; }
+  dialog[open]::backdrop { animation: none; }
   .draw-curve { animation: none; stroke-dashoffset: 0; }
   .card-lift { transition: none; }
   .card-lift:hover { transform: none; }
@@ -154,5 +171,56 @@
 
 /* Documento que arranca oculto: sin entrada, contenido visible de una vez. */
 .anim-off .anim-rise,
+.anim-off .anim-dialog-in,
 .anim-off .anim-fade-up { animation: none; }
 .anim-off .draw-curve { animation: none; stroke-dashoffset: 0; }
+
+/* Patrón de billetes y monedas en tinta navy, de trazo fino, para secciones
+   sobre el off-white. Tile de 240px con dos billetes y dos monedas; el color
+   es --ink (#10213A) escrito a mano porque va dentro de un data URI. */
+.money-ink {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%2310213a' stroke-width='1.4'%3E%3Cg transform='rotate(-9 68 52)'%3E%3Crect x='16' y='28' width='104' height='48' rx='9'/%3E%3Crect x='24' y='36' width='88' height='32' rx='5'/%3E%3Ccircle cx='68' cy='52' r='13'/%3E%3C/g%3E%3Ccircle cx='192' cy='60' r='19'/%3E%3Ccircle cx='192' cy='60' r='14'/%3E%3Cg transform='rotate(8 166 178)'%3E%3Crect x='114' y='154' width='104' height='48' rx='9'/%3E%3Crect x='122' y='162' width='88' height='32' rx='5'/%3E%3Ccircle cx='166' cy='178' r='13'/%3E%3C/g%3E%3Ccircle cx='52' cy='176' r='14'/%3E%3Ccircle cx='52' cy='176' r='10'/%3E%3C/g%3E%3Cg fill='%2310213a' font-family='Georgia, serif' font-size='16' text-anchor='middle'%3E%3Ctext x='68' y='58' transform='rotate(-9 68 52)'%3E$%3C/text%3E%3Ctext x='192' y='66'%3E$%3C/text%3E%3Ctext x='166' y='184' transform='rotate(8 166 178)'%3E$%3C/text%3E%3Ctext x='52' y='182' font-size='13'%3E$%3C/text%3E%3C/g%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+
+/* Capa de realce: la máscara la limita a un círculo de 120px bajo el cursor,
+   así que solo se avivan las figuras por las que pasa el mouse. */
+.money-spot {
+  -webkit-mask-image: radial-gradient(
+    circle 120px at var(--mx, -400px) var(--my, -400px),
+    #000 0%,
+    rgba(0, 0, 0, 0.45) 55%,
+    transparent 80%
+  );
+  mask-image: radial-gradient(
+    circle 120px at var(--mx, -400px) var(--my, -400px),
+    #000 0%,
+    rgba(0, 0, 0, 0.45) 55%,
+    transparent 80%
+  );
+  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .money-spot {
+    display: none;
+  }
+}
+
+/* Acordeón del FAQ y del <details> de la tabla: la altura se anima con grid,
+   no con max-height, así que no hay número mágico ni salto al cerrar. */
+.acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.acc-panel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.acc-panel > * {
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .acc-panel {
+    transition: none;
+  }
+}
