@@ -1,51 +1,76 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import localFont from "next/font/local";
-import "./globals.css";
+import type { Metadata, Viewport } from "next"
+import { Nunito_Sans, Outfit } from "next/font/google"
+import "./globals.css"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-});
+  weight: ["500", "600", "700"],
+  display: "swap",
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const nunito = Nunito_Sans({
+  variable: "--font-nunito",
   subsets: ["latin"],
-});
+  weight: ["400", "600", "700"],
+  display: "swap",
+})
 
-const displaySerif = localFont({
-  variable: "--font-display-serif",
-  src: [
-    { path: "../public/fonts/erode-400.woff2", weight: "400", style: "normal" },
-    { path: "../public/fonts/erode-500.woff2", weight: "500", style: "normal" },
-    { path: "../public/fonts/erode-600.woff2", weight: "600", style: "normal" },
-    { path: "../public/fonts/erode-700.woff2", weight: "700", style: "normal" },
-  ],
-});
+const SITE = "https://www.pensionmas.com.mx"
 
 export const metadata: Metadata = {
-  title: "Pensión+ — Asesoría para tu retiro AFORE por desempleo",
+  metadataBase: new URL(SITE),
+  title: "Pensión+ - Afore y Pensiones",
   description:
-    "Averigua en 2 minutos si calificas para el retiro parcial por desempleo de tu AFORE y cuánto podrías recibir. Asesoría honesta: sin anticipos y sin promesas falsas.",
+    "Pensión+ te asesora en calcular, optimizar y planear tu pensión y afore de forma sencilla.",
+  keywords: ["Pensión+", "afore", "pensiones", "retiro", "ahorro", "México", "cálculo de pensión"],
+  authors: [{ name: "Pensión+" }],
+  openGraph: {
+    title: "Pensión+ - Afore y Pensiones",
+    description: "Descubre cómo mejorar tu pensión y planear tu retiro con pensión+.",
+    url: SITE,
+    siteName: "Pension+",
+    locale: "es_MX",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pension+ - Afore y Pensiones",
+    description: "Calcula tu pensión y planifica tu retiro con pensión+.",
+    site: "@pensionmasmx",
+  },
   verification: {
     other: {
       "facebook-domain-verification": "h76gliptuljmxgit6aicr71tmqujv8",
     },
   },
-};
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  themeColor: "#10213A",
+}
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // `suppressHydrationWarning`: el script de abajo marca <html> antes de que
+  // React hidrate, igual que el patron de tema de next-themes.
   return (
-    <html lang="es-MX">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${displaySerif.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="es-MX" suppressHydrationWarning>
+      <head>
+        {/*
+          Una animacion CSS con `fill: both` se queda clavada en su fotograma
+          inicial mientras el documento esta oculto (pestana en segundo plano,
+          prerender, captura de OG). Como ese fotograma es `opacity: 0`, el hero
+          se serviria en blanco. Si el documento arranca oculto, se apaga la
+          entrada y el contenido se pinta ya visible.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "if(document.visibilityState!=='visible')document.documentElement.classList.add('anim-off')",
+          }}
+        />
+      </head>
+      <body className={`${outfit.variable} ${nunito.variable} font-sans antialiased`}>{children}</body>
     </html>
-  );
+  )
 }

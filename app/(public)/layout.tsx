@@ -1,134 +1,85 @@
-import Image from "next/image"
 import Link from "next/link"
-import { MessageCircle } from "lucide-react"
+import { Logo } from "@/components/brand/Logo"
+import { WhatsAppIcon } from "@/components/brand/WhatsAppIcon"
+import { SiteHeader } from "@/components/landing/SiteHeader"
+import { WA_LINK } from "@/lib/site"
 
-const nav = [
-  { href: "/#por-que", label: "Por qué Pensión+" },
-  { href: "/#como-funciona", label: "Cómo funciona" },
-  { href: "/#preguntas", label: "Preguntas" },
-  { href: "/pension", label: "Mejorar mi pensión" },
+const servicios = [
+  "Planificación de retiro",
+  "Modalidad 40",
+  "Optimización AFORE",
+  "Asignaciones familiares",
+  "Asesoría Ley 73/97",
 ]
+
+const footerLink =
+  "inline-flex min-h-11 items-center rounded-md transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-40 border-b border-ink/5 bg-white/85 backdrop-blur">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-            <Image
-              src="/images/pensionmas-icon.png"
-              alt=""
-              width={36}
-              height={40}
-              priority
-            />
-            Pensión+
-          </Link>
-          <nav className="hidden items-center gap-7 text-sm font-medium text-foreground/70 sm:flex">
-            {nav.map((n) => (
-              <Link key={n.href} href={n.href} className="transition-colors hover:text-foreground">
-                {n.label}
-              </Link>
-            ))}
-          </nav>
-          <Link
-            href="/pre-calificador"
-            className="inline-flex h-10 items-center rounded-full bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[oklch(0.44_0.21_262)]"
-          >
-            Ver si califico
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
+
       <main className="flex-1">{children}</main>
 
-      <footer className="bg-ink text-white/70">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-14">
-          <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+      <footer className="bg-ink text-muted-on-navy">
+        <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
             <div>
-              <p className="flex items-center gap-2 text-lg font-semibold text-white">
-                <span className="flex size-9 items-center justify-center rounded-full bg-white p-1">
-                  <Image
-                    src="/images/pensionmas-icon.png"
-                    alt=""
-                    width={28}
-                    height={31}
-                  />
-                </span>
-                Pensión+
-              </p>
-              <p className="mt-4 max-w-xs text-sm leading-relaxed">
-                Asesoría clara para recuperar lo que es tuyo: tu retiro por
-                desempleo y una mejor pensión. Sin anticipos, sin promesas
-                falsas.
+              <Logo tone="dark" className="h-11" />
+              <p className="mt-4 max-w-xs text-[15px] leading-relaxed">
+                Asesoría Financiera y Patrimonial especializada en maximizar tu pensión y asegurar tu
+                futuro.
               </p>
             </div>
-            <nav aria-label="Páginas" className="text-sm">
-              <p className="font-semibold text-white">Páginas</p>
+            <div className="text-[15px]">
+              <p className="font-bold text-white">Servicios</p>
               <ul className="mt-4 space-y-2.5">
-                <li>
-                  <Link href="/" className="transition-colors hover:text-white">
-                    Inicio
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pre-calificador" className="transition-colors hover:text-white">
-                    Pre-calificador
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pension" className="transition-colors hover:text-white">
-                    Calculadora de pensión
-                  </Link>
-                </li>
+                {servicios.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ul>
+            </div>
+            <nav aria-label="Recursos" className="text-[15px]">
+              <p className="font-bold text-white">Recursos</p>
+              <ul className="mt-2.5 space-y-0.5">
+                <li><Link href="/#calculadora" className={footerLink}>Calculadora de pensión</Link></li>
+                <li><Link href="/#estrategias" className={footerLink}>Estrategias</Link></li>
+                <li><Link href="/#preguntas" className={footerLink}>Preguntas frecuentes</Link></li>
+                <li><Link href="/terminos" className={footerLink}>Términos y condiciones</Link></li>
+                <li><Link href="/privacidad" className={footerLink}>Aviso de privacidad</Link></li>
               </ul>
             </nav>
-            <nav aria-label="Legal" className="text-sm">
-              <p className="font-semibold text-white">Legal</p>
+            <div className="text-[15px]">
+              <p className="font-bold text-white">Contacto</p>
               <ul className="mt-4 space-y-2.5">
                 <li>
-                  <Link href="/terminos" className="transition-colors hover:text-white">
-                    Términos y condiciones
-                  </Link>
+                  <a href="tel:+523313013253" className={footerLink}>+52 (33) 1301-3253</a>
                 </li>
+                <li>pensionmas.mx@gmail.com</li>
+                <li>Guadalajara, Jalisco, México</li>
                 <li>
-                  <Link href="/privacidad" className="transition-colors hover:text-white">
-                    Aviso de privacidad
-                  </Link>
+                  <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className={`gap-2 ${footerLink}`}>
+                    <WhatsAppIcon className="size-4 text-primary" />
+                    WhatsApp
+                  </a>
                 </li>
               </ul>
-            </nav>
-            <div className="text-sm">
-              <p className="font-semibold text-white">Nuestro compromiso</p>
-              <ul className="mt-4 space-y-2.5">
-                <li>Cero anticipos, siempre</li>
-                <li>Honorarios visibles antes de firmar</li>
-                <li>Firma electrónica con código por WhatsApp</li>
-              </ul>
-              <p className="mt-5 inline-flex items-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-[13px]">
-                <MessageCircle className="size-4 text-gold" aria-hidden />
-                Te acompañamos por WhatsApp
-              </p>
             </div>
           </div>
 
-          <div className="mt-12 space-y-3 border-t border-white/10 pt-8 text-xs leading-relaxed text-white/50">
+          <div className="mt-12 space-y-3 border-t border-white/10 pt-8 text-[15px] leading-relaxed text-white/60">
             <p>
-              Pensión+ es un servicio privado de asesoría y acompañamiento. No
-              somos una AFORE, institución financiera ni autoridad; no tenemos
-              vínculo con CONSAR, las AFOREs ni el IMSS. El trámite de retiro por
-              desempleo es personal y gratuito ante tu AFORE; nuestros honorarios
-              corresponden únicamente al servicio de asesoría y se pagan solo si
-              recibes tu retiro.
+              La información proporcionada es de carácter informativo y no constituye asesoría legal o
+              financiera personalizada.
             </p>
             <p>
-              Retirar recursos de tu cuenta individual puede reducir tus semanas
-              cotizadas y afectar tu pensión futura. Los montos mostrados en este
-              sitio son estimaciones; el monto final siempre lo determina tu
-              AFORE.
+              Pensión+ es un servicio privado de asesoría informativa. No somos una AFORE, institución
+              financiera ni autoridad; no tenemos vínculo con CONSAR, las AFOREs ni el IMSS.
             </p>
           </div>
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/50">
-            <p>© 2026 Pensión+. Todos los derechos reservados.</p>
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6 text-[15px] text-white/60">
+            <p>© 2025 PENSION+ Asesoría Financiera y Patrimonial. Todos los derechos reservados.</p>
             <p>pensionmas.com.mx</p>
           </div>
         </div>

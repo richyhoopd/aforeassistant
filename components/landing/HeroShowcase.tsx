@@ -25,76 +25,93 @@ const reviews = [
   },
 ]
 
+/**
+ * Prueba social compacta para móvil y tablet: los mismos tres rostros de las
+ * reseñas, apilados, con el conteo. Las tarjetas completas duplicarían la
+ * altura del hero y su contenido ya vive entero en la sección de testimonios,
+ * así que abajo de `lg` se muestra el resumen y nada se pierde.
+ */
+export function HeroProof() {
+  return (
+    <div className="flex items-center gap-3 lg:hidden">
+      <div className="flex -space-x-2.5">
+        {reviews.map((r) => (
+          <Image
+            key={r.avatar}
+            src={r.avatar}
+            alt=""
+            width={160}
+            height={160}
+            sizes="36px"
+            className="size-9 rounded-full object-cover ring-2 ring-ink"
+          />
+        ))}
+      </div>
+      <p className="font-display text-lg font-semibold tracking-[-0.01em] text-white">
+        <span className="text-primary">+500</span> personas asesoradas
+      </p>
+    </div>
+  )
+}
+
+/**
+ * Showcase del hero. La foto baja más que el contenido (margen inferior
+ * negativo) y se esconde bajo la card de la calculadora, que va con z-10;
+ * las reseñas se quedan arriba, en la franja de navy libre.
+ * Las reseñas en columna solo caben desde `lg`; abajo de eso va `HeroProof`.
+ */
 export function HeroShowcase() {
   return (
-    <div className="relative">
-      <div aria-hidden className="hero-grid absolute -inset-6 sm:-inset-10" />
-      <div
-        aria-hidden
-        className="absolute -left-4 top-10 size-7 rounded-md bg-accent sm:-left-8"
-      />
-      <div
-        aria-hidden
-        className="absolute left-[26%] top-16 size-5 rounded-md bg-card-periwinkle/50"
-      />
+    <div className="flex items-end justify-center gap-4 lg:justify-start">
+      <div className="-mb-24 shrink-0 md:-mb-28 lg:-ml-12 lg:-mr-16 xl:-ml-16 xl:-mr-20">
+        <Image
+          src="/images/persona-hero.png"
+          alt="Hombre mayor sonriendo mientras revisa su tableta con una taza de café en la mano"
+          width={725}
+          height={700}
+          priority
+          sizes="(min-width: 1280px) 380px, (min-width: 768px) 290px, 220px"
+          data-hero-photo
+          className="h-[210px] w-auto object-contain object-bottom md:h-[280px] xl:h-[370px]"
+        />
+      </div>
 
-      <div className="relative flex items-end gap-3 sm:gap-5">
-        {/* La persona sobresale hacia la banda blanca de abajo. La foto de
-            origen la recorta por la derecha, así que ese costado se mete
-            DETRÁS de las reseñas (margen negativo + z menor) y el corte recto
-            nunca queda a la vista. */}
-        {/* -mb-5 = pb del hero (56px) menos el -mt-9 de la banda (36px): deja
-            el pie de la foto exactamente sobre la línea blanca, al ras. */}
-        <div className="relative -mb-5 -mr-4 w-[45%] shrink-0 self-end sm:-mr-6 sm:w-[50%] lg:-ml-36 lg:-mr-8 lg:w-[68%]">
-          <Image
-            src="/images/persona-hero.png"
-            alt="Hombre sonriendo mientras revisa su trámite de retiro AFORE en el celular"
-            width={725}
-            height={700}
-            priority
-            sizes="(min-width: 1024px) 360px, 52vw"
-            /* Sin máscara: el corte de la foto cae justo sobre la línea blanca,
-               así que se lee como si estuviera parado sobre ella. */
-            className="h-auto w-full"
-          />
-        </div>
+      <div data-hero-reviews className="relative z-10 hidden min-w-0 flex-1 lg:block">
+        <p className="mb-2.5 font-display text-xl font-semibold tracking-[-0.01em] text-white">
+          <span className="text-primary">+500</span> personas asesoradas
+        </p>
 
-        <div className="relative z-10 min-w-0 flex-1 pb-2">
-          <p className="font-display text-xl font-semibold tracking-[-0.01em] sm:text-2xl">
-            <span className="text-primary">+500</span> personas asesoradas
-          </p>
-
-          <div className="mt-3 space-y-2.5">
-            {reviews.map((r, i) => (
-              <figure
-                key={r.name}
-                /* En móvil solo cabe la primera reseña sin alargar el hero. */
-                className={`items-start gap-2.5 rounded-xl bg-white p-3 shadow-[0_1px_2px_oklch(0.23_0.06_265/0.05),0_12px_28px_-18px_oklch(0.23_0.06_265/0.35)] sm:gap-3 sm:p-3.5 ${
-                  i === 0 ? "flex" : "hidden sm:flex"
-                }`}
-              >
-                <Image
-                  src={r.avatar}
-                  alt=""
-                  width={36}
-                  height={36}
-                  className="size-9 shrink-0 rounded-full object-cover"
-                />
-                <figcaption className="min-w-0">
-                  <p className="flex items-center gap-1.5 text-[13px] font-semibold sm:text-sm">
-                    {r.name}
-                    <span className="inline-flex items-center gap-0.5 font-normal text-muted-foreground">
-                      <Star className="size-3.5 fill-gold text-gold-deep" aria-hidden />
-                      {r.rating}
-                    </span>
-                  </p>
-                  <blockquote className="mt-0.5 text-[12.5px] leading-snug text-muted-foreground sm:text-[13px]">
-                    {r.text}
-                  </blockquote>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
+        <div className="space-y-2">
+          {reviews.map((r, i) => (
+            <figure
+              key={r.name}
+              className={`card-shadow card-lift flex items-start gap-3 rounded-xl bg-card p-3 ${
+                i % 2 === 1 ? "lg:ml-4" : ""
+              }`}
+            >
+              <Image
+                src={r.avatar}
+                alt=""
+                width={160}
+                height={160}
+                sizes="40px"
+                className="size-10 shrink-0 rounded-full object-cover"
+              />
+              <figcaption className="min-w-0">
+                <p className="flex flex-wrap items-center gap-x-2 text-[15px] font-bold text-ink">
+                  {r.name}
+                  <span className="font-normal text-muted-foreground">{r.place}</span>
+                  <span className="inline-flex items-center gap-1 font-bold text-accent-deep tabular-nums">
+                    <Star className="size-4 fill-accent" aria-hidden />
+                    {r.rating}
+                  </span>
+                </p>
+                <blockquote className="mt-0.5 text-[15px] leading-snug text-muted-foreground">
+                  {r.text}
+                </blockquote>
+              </figcaption>
+            </figure>
+          ))}
         </div>
       </div>
     </div>

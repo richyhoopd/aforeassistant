@@ -1,6 +1,0 @@
-{% extends "base.html" %}
-{% block cuerpo %}
-  <div class="kicker">{{ kicker or "AFORE POR DESEMPLEO" }} · {{ n }}/{{ total }}</div>
-  <h1>{{ titulo }}</h1>
-  <ul>{% for b in bullets %}<li>{{ b }}</li>{% endfor %}</ul>
-{% endblock %}

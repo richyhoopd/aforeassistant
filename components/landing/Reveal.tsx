@@ -4,8 +4,12 @@ import { useEffect, useRef, useState } from "react"
 
 /**
  * Scroll reveal robusto: el contenido es visible por defecto (SSR y sin JS).
- * Solo se oculta y anima si hay IntersectionObserver, el elemento está bajo
- * el fold y el usuario no pidió reducir movimiento.
+ * Solo se oculta y anima si hay IntersectionObserver, el documento está de
+ * verdad visible, el elemento está bajo el fold y el usuario no pidió reducir
+ * movimiento. Lo de la visibilidad importa: en un documento oculto (pestaña en
+ * segundo plano, prerender, captura) el navegador congela los pasos de render y
+ * el observer no entrega nada, así que ocultar ahí dejaría en blanco todo lo
+ * que va bajo el fold.
  */
 export function Reveal({
   children,
@@ -24,6 +28,7 @@ export function Reveal({
     if (!el) return
     if (
       typeof IntersectionObserver === "undefined" ||
+      document.visibilityState !== "visible" ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     )
       return
