@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { Resend } from "resend"
-import { buildResultText, type ShareKind } from "@/lib/pension/share"
-import type { Ley73Result, Ley97Result } from "@/lib/pension/calc"
+import { buildEmailPayload, type ShareKind } from "@/lib/pension/share"
+import type { Ley73Form, Ley73Result, Ley97Form, Ley97Result } from "@/lib/pension/calc"
 
 export const runtime = "nodejs"
 
@@ -23,6 +23,22 @@ type Payload = {
   email?: unknown
   kind?: unknown
   result?: unknown
+  form?: unknown
+}
+
+const FORM_KEYS = ["lastJobMonth", "lastJobYear", "monthlySalary", "weeks", "age", "edad", "saldoAfore", "salarioMensual", "semanas", "aportaciones", "rendimiento"]
+
+/** Solo strings cortos en las llaves conocidas; lo demás se descarta. */
+function sanitizeForm(f: unknown): Ley73Form | Ley97Form | undefined {
+  if (!f || typeof f !== "object") return undefined
+  const o = f as Record<string, unknown>
+  const out: Record<string, string | boolean> = {}
+  for (const k of FORM_KEYS) {
+    const v = o[k]
+    if (typeof v === "string" && v.length <= 40) out[k] = v
+  }
+  if (typeof o.currentlyWorking === "boolean") out.currentlyWorking = o.currentlyWorking
+  return Object.keys(out).length ? (out as unknown as Ley73Form | Ley97Form) : undefined
 }
 
 function isFinitePositive(n: unknown): n is number {
@@ -52,23 +68,6 @@ function validResult(kind: ShareKind, r: unknown): r is Ley73Result | Ley97Resul
   )
 }
 
-function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string)
-}
-
-function toHtml(subject: string, body: string): string {
-  const lines = body.split("\n").map((l) => escapeHtml(l))
-  const [first, ...rest] = lines
-  return [
-    `<div style="font-family:Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#10213A;line-height:1.6">`,
-    `<p style="font-size:22px;font-weight:700;margin:0 0 16px">${escapeHtml(subject)}</p>`,
-    `<p style="font-size:17px;margin:0 0 12px">${first}</p>`,
-    ...rest.map((l) => (l ? `<p style="font-size:16px;margin:0 0 8px">${l}</p>` : `<div style="height:8px"></div>`)),
-    `<p style="font-size:14px;color:#4F5868;margin:24px 0 0">Pensión+ · pensionmas.com.mx</p>`,
-    `</div>`,
-  ].join("")
-}
-
 export async function POST(req: Request) {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
@@ -95,7 +94,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "invalid_result" }, { status: 400 })
   }
 
-  const { subject, body } = buildResultText(kind, data.result)
+  const { subject, text, html } = buildEmailPayload(kind, data.result, sanitizeForm(data.form))
   const from = process.env.RESULT_FROM ?? "Pensión+ <resultados@pensionmas.com.mx>"
   const bcc = process.env.RESULT_BCC
 
@@ -106,8 +105,8 @@ export async function POST(req: Request) {
       to: email,
       ...(bcc ? { bcc } : {}),
       subject,
-      text: body,
-      html: toHtml(subject, body),
+      text,
+      html: `<div style="font-family:Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#10213A;line-height:1.6">${html}<p style="font-size:14px;color:#4F5868;margin-top:24px">Pensión+ · pensionmas.com.mx</p></div>`,
     })
     if (error) {
       console.error("[resultado] resend error", error.name, error.message)
